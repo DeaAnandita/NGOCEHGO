@@ -11,5 +11,5 @@ class MasterCaraPerolehanAir extends Model
     public $incrementing = false;
     public $timestamps = false;
     protected $keyType = 'string';
-    protected $fillable = ['kdcaraperolehanair', 'caraperolehanair  '];
+    protected $fillable = ['kdcaraperolehanair', 'caraperolehanair'];
 }

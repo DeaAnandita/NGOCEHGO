@@ -140,6 +140,11 @@ return new class extends Migration
             $table->integer('kdhubungankeluarga')->primary();
             $table->string('hubungankeluarga');
         });
+        // master_hubungankepalakeluarga
+        Schema::create('master_hubungankepalakeluarga', function (Blueprint $table) {
+            $table->integer('kdhubungankepalakeluarga')->primary();
+            $table->string('hubungankepalakeluarga');
+        });
         // master_ijasahterakhir
         Schema::create('master_ijasahterakhir', function (Blueprint $table) {
             $table->integer('kdijasahterakhir')->primary();
@@ -194,6 +199,11 @@ return new class extends Migration
         Schema::create('master_jenislantaibangunan', function (Blueprint $table) {
             $table->integer('kdjenislantaibangunan')->primary();
             $table->string('jenislantaibangunan');
+        });
+        // master_kartuidentitas
+        Schema::create('master_kartuidentitas', function (Blueprint $table) {
+            $table->integer('kdkartuidentitas')->primary();
+            $table->string('kartuidentitas');
         });
         // master_kondisiatapbangunan
         Schema::create('master_kondisiatapbangunan', function (Blueprint $table) {
@@ -424,6 +434,7 @@ return new class extends Migration
         Schema::dropIfExists('master_provinsi');
         Schema::dropIfExists('master_fasilitastempatbab');
         Schema::dropIfExists('master_hubungankeluarga');
+        Schema::dropIfExists('master_hubungankepalakeluarga');
         Schema::dropIfExists('master_ijasahterakhir');
         Schema::dropIfExists('master_imunisasi');
         Schema::dropIfExists('master_jabatan');

@@ -10,25 +10,25 @@ use App\Models\{
     MasterAgama, MasterAktaNikah, MasterAsetKeluarga, MasterAsetLahan,
     MasterAsetTernak, MasterAsetPerikanan, MasterBahanBakarMemasak,
     MasterCaraPembuanganSampah, MasterCaraPerolehanAir, MasterDusun,
-    MasterFasilitasTempatBab, MasterHubunganKeluarga, MasterImunisasi,
+    MasterFasilitasTempatBab, MasterHubunganKeluarga, MasterHubunganKepalaKeluarga, MasterImunisasi,
     MasterInventaris, MasterJabatan, MasterJawab, MasterJawabBangun,
     MasterJawabKonflik, MasterJawabKualitasBayi, MasterJawabKualitasIbuHamil,
-    MasterJawabLemdes, MasterJawabLemek, MasterJawabLemmas, MasterJawabSarpras,
+    MasterJawabLemdes, MasterJawabLemek, MasterJawabLemmas, MasterJawabSarpras, MasterJawabProgramSerta,
     MasterJawabTempatPersalinan, MasterJenisAtapBangunan, MasterJenisBahanGalian,
     MasterJenisDindingBangunan, MasterJenisDisabilitas, MasterJenisFisikBangunan,
     MasterJenisKelahiran, MasterJenisKelamin, MasterJenisLantaiBangunan,
-    MasterJenisLembaga, MasterKabupaten, MasterKecamatan, MasterDesa,
+    MasterJenisLembaga, MasterKartuIdentitas, MasterKabupaten, MasterKecamatan, MasterDesa,
     MasterKondisiAtapBangunan, MasterKondisiDindingBangunan, MasterKondisiLantaiBangunan,
-    MasterKondisiLapanganUsaha, MasterKondisiSumberAir, MasterKonflikSosial,
+    MasterKondisiLapanganUsaha, MasterLapanganUsaha, MasterKondisiSumberAir, MasterKonflikSosial,
     MasterKualitasBayi, MasterKualitasIbuHamil, MasterLembaga, MasterManfaatMataAir,
     MasterMutasiKeluar, MasterMutasiMasuk, MasterOmsetUsaha, MasterPartisipasiSekolah,
-    MasterPekerja, MasterPembangunanKeluarga, MasterPembuanganAkhirTinja,
+    MasterPekerjaan, MasterPembangunanKeluarga, MasterPembuanganAkhirTinja,
     MasterPendapatanPerbulan, MasterPenyakitKronis, MasterPertolonganPersalinan,
     MasterProgramSerta, MasterProvinsi, MasterSarprasKerja, MasterStatusKawin,
     MasterStatusKedudukanKerja, MasterStatusPemilikBangunan, MasterStatusPemilikLahan,
-    MasterSumberAirMinum, MasterSumberDayaTerpasang, MasterSumberPeneranganUtama,
+    MasterStatusTinggal, MasterSumberAirMinum, MasterSumberDayaTerpasang, MasterSumberPeneranganUtama,
     MasterTempatPersalinan, MasterTempatUsaha, MasterTercantumDalamKk,
-    MasterTingkatSulitDisabilitas, MasterTypeJawab
+    MasterTingkatSulitDisabilitas, MasterTypeJawab, MasterIjasahTerakhir,
 };
 
 class MasterController extends Controller
@@ -47,7 +47,8 @@ class MasterController extends Controller
         'dusun' => MasterDusun::class,
         'fasilitastempatbab' => MasterFasilitasTempatBab::class,
         'hubungankeluarga' => MasterHubunganKeluarga::class,
-        'ijasahterakhir' => MasterHubunganKeluarga::class,
+        'hubungankepalakeluarga' => MasterHubunganKepalaKeluarga::class,
+        'ijasahterakhir' => MasterIjasahTerakhir::class,
         'imunisasi' => MasterImunisasi::class,
         'inventaris' => MasterInventaris::class,
         'jabatan' => MasterJabatan::class,
@@ -60,6 +61,7 @@ class MasterController extends Controller
         'jawablemek' => MasterJawabLemek::class,
         'jawablemmas' => MasterJawabLemmas::class,
         'jawabsarpras' => MasterJawabSarpras::class,
+        'jawabprogramserta' => MasterJawabProgramSerta::class,
         'jawabtempatpersalinan' => MasterJawabTempatPersalinan::class,
         'jenisatapbangunan' => MasterJenisAtapBangunan::class,
         'jenisbahangalian' => MasterJenisBahanGalian::class,
@@ -70,12 +72,14 @@ class MasterController extends Controller
         'jeniskelamin' => MasterJenisKelamin::class,
         'jenislantaibangunan' => MasterJenisLantaiBangunan::class,
         'jenislembaga' => MasterJenisLembaga::class,
+        'kartuidentitas' => MasterKartuIdentitas::class,
         'kabupaten' => MasterKabupaten::class,
         'kecamatan' => MasterKecamatan::class,
         'kondisiatapbangunan' => MasterKondisiAtapBangunan::class,
         'kondisidindingbangunan' => MasterKondisiDindingBangunan::class,
         'kondisilantaibangunan' => MasterKondisiLantaiBangunan::class,
         'kondisilapanganusaha' => MasterKondisiLapanganUsaha::class,
+        'lapanganusaha' => MasterLapanganUsaha::class,
         'kondisisumberair' => MasterKondisiSumberAir::class,
         'konfliksosial' => MasterKonflikSosial::class,
         'kualitasbayi' => MasterKualitasBayi::class,
@@ -86,10 +90,10 @@ class MasterController extends Controller
         'mutasimasuk' => MasterMutasiMasuk::class,
         'omsetusaha' => MasterOmsetUsaha::class,
         'partisipasisekolah' => MasterPartisipasiSekolah::class,
-        'pekerja' => MasterPekerja::class,
+        'pekerjaan' => MasterPekerjaan::class,
         'pembangunankeluarga' => MasterPembangunanKeluarga::class,
         'pembuanganakhirtinja' => MasterPembuanganAkhirTinja::class,
-        'pendapataperbulan' => MasterPendapatanPerbulan::class,
+        'pendapatanperbulan' => MasterPendapatanPerbulan::class,
         'penyakitkronis' => MasterPenyakitKronis::class,
         'pertolonganpersalinan' => MasterPertolonganPersalinan::class,
         'programserta' => MasterProgramSerta::class,
@@ -99,6 +103,7 @@ class MasterController extends Controller
         'statuskedudukankerja' => MasterStatusKedudukanKerja::class,
         'statuspemilikbangunan' => MasterStatusPemilikBangunan::class,
         'statuspemiliklahan' => MasterStatusPemilikLahan::class,
+        'statustinggal' => MasterStatusTinggal::class,
         'sumberairminum' => MasterSumberAirMinum::class,
         'sumberdayaterpasang' => MasterSumberDayaTerpasang::class,
         'sumberpeneranganutama' => MasterSumberPeneranganUtama::class,
@@ -127,11 +132,11 @@ class MasterController extends Controller
         $data = $modelClass::query();
 
         // load relasi-relasi
-        if ($master === 'kabupaten') $data = $data->with('provinsi');
-        if ($master === 'kecamatan') $data = $data->with('kabupaten');
+        //if ($master === 'kabupaten') $data = $data->with('provinsi');
+        //if ($master === 'kecamatan') $data = $data->with('kabupaten');
         if ($master === 'desa') $data = $data->with('kecamatan');
-        if ($master === 'pembangunankeluarga') $data = $data->with('typejawab');
-        if ($master === 'lembaga') $data = $data->with('jenislembaga');
+        //if ($master === 'pembangunankeluarga') $data = $data->with('typejawab');
+        //if ($master === 'lembaga') $data = $data->with('jenislembaga');
 
         $data = $data->get();
 
@@ -142,6 +147,12 @@ class MasterController extends Controller
         }
         if ($master === 'lembaga') {
             $extra['jenislembaga'] = \App\Models\MasterJenisLembaga::all();
+        }
+        if ($master === 'kabupaten') {
+            $extra['provinsi'] = \App\Models\MasterProvinsi::all();
+        }
+        if ($master === 'kecamatan') {
+            $extra['kabupaten'] = \App\Models\MasterKabupaten::all();
         }
 
         return view('master.list', compact('data', 'master') + $extra);
@@ -166,14 +177,27 @@ class MasterController extends Controller
         if ($master === 'lembaga') {
             $jenislembaga = MasterJenisLembaga::all();
         }
+        $provinsi = null;
+        if ($master === 'kabupaten') {
+            $provinsi = MasterProvinsi::all();
+        }
+        $kabupaten = null;
+        if ($master === 'kecamatan') {
+            $kabupaten = MasterKabupaten::all();
+        }
+        $kecamatan = null;
+        if ($master === 'desa') {
+            $kecamatan = MasterKecamatan::all();
+        }
 
         //if ($master === 'pembangunankeluarga') $relasi['typejawab'] = MasterTypeJawab::all();
         //if ($master === 'lembaga') $relasi['jenislembaga'] = MasterJenisLembaga::all();
-        if ($master === 'kabupaten') $relasi['provinsi'] = Provinsi::all();
-        if ($master === 'kecamatan') $relasi['kabupaten'] = Kabupaten::all();
-        if ($master === 'desa') $relasi['kecamatan'] = Kecamatan::all();
+        //if ($master === 'kabupaten') $relasi['provinsi'] = Provinsi::all();
+        //if ($master === 'kecamatan') $relasi['kabupaten'] = Kabupaten::all();
+        //if ($master === 'desa') $relasi['kecamatan'] = Kecamatan::all();
 
-        return view('master.create', compact('master', 'relasi'));
+        return view('master.create', compact('master', 'relasi', 'typejawab', 'jenislembaga', 'provinsi', 'kabupaten', 'kecamatan'));
+
     }
 
     // Simpan master baru
@@ -206,8 +230,10 @@ class MasterController extends Controller
             'dusun' => 'dusun',
             'fasilitastempatbab' => 'fasilitastempatbab',
             'hubungankeluarga' => 'hubungankeluarga',
+            'hubungankepalakeluarga' => 'hubungankepalakeluarga',
             'jasahterakhir' => 'jasahterakhir', 
             'imunisasi' => 'imunisasi',
+            'ijasahterakhir' => 'ijasahterakhir',
             'inventaris' => 'inventaris',
             'jabatan' => 'jabatan',
             'jawab' => 'jawab',
@@ -219,6 +245,7 @@ class MasterController extends Controller
             'jawablemek' => 'jawablemek',
             'jawablemmas' => 'jawablemmas',
             'jawabsarpras' => 'jawabsarpras',
+            'jawabprogramserta' => 'jawabprogramserta',
             'jawabtempatpersalinan' => 'jawabtempatpersalinan',
             'jenisatapbangunan' => 'jenisatapbangunan',
             'jenisbahangalian' => 'jenisbahangalian',
@@ -229,14 +256,16 @@ class MasterController extends Controller
             'jeniskelamin' => 'jeniskelamin',
             'jenislantaibangunan' => 'jenislantaibangunan',
             'jenislembaga' => 'jenislembaga',            
+            'kartuidentitas' => 'kartuidentitas',
             'kondisiatapbangunan' => 'kondisiatapbangunan',
             'kondisidindingbangunan' => 'kondisidindingbangunan',
             'kondisilantaibangunan' => 'kondisilantaibangunan',
             'kondisilapanganusaha' => 'kondisilapanganusaha',
+            'lapanganusaha' => 'lapanganusaha',
             'kondisisumberair' => 'kondisisumberair',
             'konfliksosial' => 'konfliksosial',
             'kualitasbayi' => 'kualitasbayi',
-            'kualitasblhamil' => 'kualitasblhamil',
+            'kualitasibuhamil' => 'kualitasibuhamil',
             'lembaga' => 'lembaga',
             'manfaatmataair' => 'manfaatmataair',
             'mutasikeluar' => 'mutasikeluar',
@@ -255,6 +284,7 @@ class MasterController extends Controller
             'statuskedudukankerja' => 'statuskedudukankerja',
             'statuspemilikbangunan' => 'statuspemilikbangunan',
             'statuspemiliklahan' => 'statuspemiliklahan',
+            'statustinggal' => 'statustinggal',
             'sumberairminum' => 'sumberairminum',
             'sumberdayaterpasang' => 'sumberdayaterpasang',
             'sumberpeneranganutama' => 'sumberpeneranganutama',
@@ -295,10 +325,10 @@ class MasterController extends Controller
 
         try {
             $modelClass::create($data);
-            return redirect()->route('master.index', ['model' => $master])
+            return redirect()->route('master.index', ['master' => $master])
                             ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
-            // dd($e->getMessage());
+            //dd($e->getMessage());
             return redirect()->back()
                             ->withInput()
                             ->withErrors([$primaryKey => 'Kode sudah ada atau terjadi kesalahan!']);
@@ -320,9 +350,9 @@ class MasterController extends Controller
 
         if ($master === 'pembangunankeluarga') $relasi['typejawab'] = MasterTypeJawab::all();
         if ($master === 'lembaga') $relasi['jenislembaga'] = MasterJenisLembaga::all();
-        if ($master === 'kabupaten') $relasi['provinsi'] = Provinsi::all();
-        if ($master === 'kecamatan') $relasi['kabupaten'] = Kabupaten::all();
-        if ($master === 'desa') $relasi['kecamatan'] = Kecamatan::all();
+        if ($master === 'kabupaten') $relasi['provinsi'] = MasterProvinsi::all();
+        if ($master === 'kecamatan') $relasi['kabupaten'] = MasterKabupaten::all();
+        if ($master === 'desa') $relasi['kecamatan'] = MasterKecamatan::all();
 
         return view('master.edit', compact('master', 'item', 'relasi'));
     }

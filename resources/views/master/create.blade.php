@@ -9,6 +9,8 @@
                 @php
                     $model = strtolower($master);
                     $primaryKey = match($model) {
+                        'agama' => 'kdagama',
+                        'aktanikah' => 'kdaktanikah',
                         'asetkeluarga' => 'kdasetkeluarga',
                         'asetlahan' => 'kdasetlahan',
                         'asetternak' => 'kdasetternak',
@@ -20,8 +22,10 @@
                         'dusun' => 'kddusun',
                         'fasilitastempatbab' => 'kdfasilitastempatbab',
                         'hubungankeluarga' => 'kdhubungankeluarga',
+                        'hubungankepalakeluarga' => 'kdhubungankepalakeluarga',
                         'jasahterakhir' => 'kdjasahterakhir',
                         'imunisasi' => 'kdimunisasi',
+                        'ijasahterakhir' => 'kdijasahterakhir',
                         'inventaris' => 'kdinventaris',
                         'jabatan' => 'kdjabatan',
                         'jawab' => 'kdjawab',
@@ -33,6 +37,7 @@
                         'jawablemek' => 'kdjawablemek',
                         'jawablemmas' => 'kdjawablemmas',
                         'jawabsarpras' => 'kdjawabsarpras',
+                        'jawabprogramserta' => 'kdjawabprogramserta',
                         'jawabtempatpersalinan' => 'kdjawabtempatpersalinan',
                         'jenisatapbangunan' => 'kdjenisatapbangunan',
                         'jenisbahangalian' => 'kdjenisbahangalian',
@@ -43,6 +48,7 @@
                         'jeniskelamin' => 'kdjeniskelamin',
                         'jenislantaibangunan' => 'kdjenislantaibangunan',
                         'jenislembaga' => 'kdjenislembaga',
+                        'kartuidentitas' => 'kdkartuidentitas',
                         'provinsi' => 'kdprovinsi',
                         'kabupaten' => 'kdkabupaten',
                         'kecamatan' => 'kdkecamatan',
@@ -50,10 +56,11 @@
                         'kondisidindingbangunan' => 'kdkondisidindingbangunan',
                         'kondisilantaibangunan' => 'kdkondisilantaibangunan',
                         'kondisilapanganusaha' => 'kdkondisilapanganusaha',
+                        'lapanganusaha' => 'kdlapanganusaha',
                         'kondisisumberair' => 'kdkondisisumberair',
                         'konfliksosial' => 'kdkonfliksosial',
                         'kualitasbayi' => 'kdkualitasbayi',
-                        'kualitasblhamil' => 'kdkualitasblhamil',
+                        'kualitasibuhamil' => 'kdkualitasibuhamil',
                         'lembaga' => 'kdlembaga',
                         'manfaatmataair' => 'kdmanfaatmataair',
                         'mutasikeluar' => 'kdmutasikeluar',
@@ -72,6 +79,7 @@
                         'statuskedudukankerja' => 'kdstatuskedudukankerja',
                         'statuspemilikbangunan' => 'kdstatuspemilikbangunan',
                         'statuspemiliklahan' => 'kdstatuspemiliklahan',
+                        'statustinggal' => 'kdstatustinggal',
                         'sumberairminum' => 'kdsumberairminum',
                         'sumberdayaterpasang' => 'kdsumberdayaterpasang',
                         'sumberpeneranganutama' => 'kdsumberpeneranganutama',
@@ -84,9 +92,12 @@
                     };
 
                     $namaField = match($model) {
+                        'agama' => 'agama',
+                        'aktanikah' => 'aktanikah',
                         'asetkeluarga' => 'asetkeluarga',
                         'asetlahan' => 'asetlahan',
                         'asetternak' => 'asetternak',
+                        'asetperikanan' => 'asetperikanan',
                         'bahanbakarmemasak' => 'bahanbakarmemasak',
                         'carapembuangansampah' => 'carapembuangansampah',
                         'caraperolehanair' => 'caraperolehanair',
@@ -94,8 +105,10 @@
                         'dusun' => 'dusun',
                         'fasilitastempatbab' => 'fasilitastempatbab',
                         'hubungankeluarga' => 'hubungankeluarga',
+                        'hubungankepalakeluarga' => 'hubungankepalakeluarga',
                         'jasahterakhir' => 'jasahterakhir',
                         'imunisasi' => 'imunisasi',
+                        'ijasahterakhir' => 'ijasahterakhir',
                         'inventaris' => 'inventaris',
                         'jabatan' => 'jabatan',
                         'jawab' => 'jawab',
@@ -107,6 +120,7 @@
                         'jawablemek' => 'jawablemek',
                         'jawablemmas' => 'jawablemmas',
                         'jawabsarpras' => 'jawabsarpras',
+                        'jawabprogramserta' => 'jawabprogramserta',
                         'jawabtempatpersalinan' => 'jawabtempatpersalinan',
                         'jenisatapbangunan' => 'jenisatapbangunan',
                         'jenisbahangalian' => 'jenisbahangalian',
@@ -117,6 +131,7 @@
                         'jeniskelamin' => 'jeniskelamin',
                         'jenislantaibangunan' => 'jenislantaibangunan',
                         'jenislembaga' => 'jenislembaga',
+                        'kartuidentitas' => 'kartuidentitas',
                         'provinsi' => 'provinsi',
                         'kabupaten' => 'kabupaten',
                         'kecamatan' => 'kecamatan',
@@ -124,10 +139,11 @@
                         'kondisidindingbangunan' => 'kondisidindingbangunan',
                         'kondisilantaibangunan' => 'kondisilantaibangunan',
                         'kondisilapanganusaha' => 'kondisilapanganusaha',
+                        'lapanganusaha' => 'lapanganusaha',
                         'kondisisumberair' => 'kondisisumberair',
                         'konfliksosial' => 'konfliksosial',
                         'kualitasbayi' => 'kualitasbayi',
-                        'kualitasblhamil' => 'kualitasblhamil',
+                        'kualitasibuhamil' => 'kualitasibuhamil',
                         'lembaga' => 'lembaga',
                         'manfaatmataair' => 'manfaatmataair',
                         'mutasikeluar' => 'mutasikeluar',
@@ -146,6 +162,7 @@
                         'statuskedudukankerja' => 'statuskedudukankerja',
                         'statuspemilikbangunan' => 'statuspemilikbangunan',
                         'statuspemiliklahan' => 'statuspemiliklahan',
+                        'statustinggal' => 'statustinggal',
                         'sumberairminum' => 'sumberairminum',
                         'sumberdayaterpasang' => 'sumberdayaterpasang',
                         'sumberpeneranganutama' => 'sumberpeneranganutama',
@@ -197,7 +214,49 @@
                             <option value="">-- Pilih Jenis Lembaga --</option>
                             @foreach ($jenislembaga as $t)
                                 <option value="{{ $t->kdjenislembaga }}" {{ old('kdjenislembaga') == $t->kdjenislembaga ? 'selected' : '' }}>
-                                    {{ $t->kdjenislembaga }} - {{ $t->jenislembaga }}
+                                    {{ $t->kdjenislembaga }} {{ $t->jenislembaga }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
+                @if(!empty($provinsi))
+                    <div class="mb-4">
+                        <label for="kdprovinsi" class="block font-medium text-gray-700">Provinsi</label>
+                        <select name="kdprovinsi" id="kdprovinsi" class="w-full border rounded-md p-2">
+                            <option value="">-- Pilih Provinsi --</option>
+                            @foreach ($provinsi as $t)
+                                <option value="{{ $t->kdprovinsi }}" {{ old('kdprovinsi') == $t->kdprovinsi ? 'selected' : '' }}>
+                                    {{ $t->provinsi }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
+                @if(!empty($kabupaten))
+                    <div class="mb-4">
+                        <label for="kdkabupaten" class="block font-medium text-gray-700">kabupaten</label>
+                        <select name="kdkabupaten" id="kdkabupaten" class="w-full border rounded-md p-2">
+                            <option value="">-- Pilih Kabupaten --</option>
+                            @foreach ($kabupaten as $t)
+                                <option value="{{ $t->kdkabupaten }}" {{ old('kdkabupaten') == $t->kdkabupaten ? 'selected' : '' }}>
+                                    {{ $t->kabupaten }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+
+                @if(!empty($kecamatan))
+                    <div class="mb-4">
+                        <label for="kdkecamatan" class="block font-medium text-gray-700">Kecamatan</label>
+                        <select name="kdkecamatan" id="kdkecamatan" class="w-full border rounded-md p-2">
+                            <option value="">-- Pilih Kecamatan --</option>
+                            @foreach ($kecamatan as $t)
+                                <option value="{{ $t->kdkecamatan }}" {{ old('kdkecamatan') == $t->kdkecamatan ? 'selected' : '' }}>
+                                    {{ $t->kecamatan }}
                                 </option>
                             @endforeach
                         </select>

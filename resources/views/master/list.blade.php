@@ -13,9 +13,23 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                        @if(in_array($master, ['pembangunankeluarga', 'lembaga']))
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Relasi</th>
-                        @endif
+                        {{-- Kolom Header Relasi --}}
+                        @if (in_array($master, ['pembangunankeluarga', 'lembaga', 'kabupaten', 'kecamatan', 'desa']))
+                            @php
+                                $relasiHeader = match ($master) {
+                                    'pembangunankeluarga' => 'Type Jawab',
+                                    'lembaga' => 'Jenis Lembaga',
+                                    'kabupaten' => 'Provinsi',
+                                    'kecamatan' => 'Kabupaten',
+                                    'desa' => 'Kecamatan',
+                                    default => 'Relasi',
+                                };
+                            @endphp
+
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                {{ $relasiHeader }}
+                            </th>
+                            @endif
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
@@ -23,91 +37,69 @@
                     @foreach($data as $index => $item)
                         <tr>
                             @php
-                                $kode = $item->getKey(); // primary key
-                                $nama = 
-                                    $item->name ??
-                                    $item->nama ??
-                                    $item->pembangunankeluarga ??
-                                    $item->typejawab ??
-                                    $item->asetkeluarga ??
-                                    $item->asetlahan ??
-                                    $item->asetternak ??
-                                    $item->bahanbakarmemasak ??
-                                    $item->carapembuangansampah ??
-                                    $item->caraperolehanair ??
-                                    $item->desa ??
-                                    $item->dusun ??
-                                    $item->fasilitastempatbab ??
-                                    $item->hubungankeluarga ??
-                                    $item->jasahterakhir ??
-                                    $item->imunisasi ??
-                                    $item->inventaris ??
-                                    $item->jabatan ??
-                                    $item->jawab ??
-                                    $item->jawabbangun ??
-                                    $item->jawabkonflik ??
-                                    $item->jawabkualitasbayi ??
-                                    $item->jawabkualitasibuhamil ??
-                                    $item->jawablemdes ??
-                                    $item->jawablemek ??
-                                    $item->jawablemmas ??
-                                    $item->jawabsarpras ??
-                                    $item->jawabtempatpersalinan ??
-                                    $item->jenisatapbangunan ??
-                                    $item->jenisbahangalian ??
-                                    $item->jenisdindingbangunan ??
-                                    $item->jenisdisabilitas ??
-                                    $item->jenisfisikbangunan ??
-                                    $item->jeniskelahiran ??
-                                    $item->jeniskelamin ??
-                                    $item->jenislantaibangunan ??
-                                    $item->lembaga ??
-                                    $item->jenislembaga ??
-                                    $item->provinsi ??
-                                    $item->kabupaten ??
-                                    $item->kecamatan ??
-                                    $item->kondisiatapbangunan ??
-                                    $item->kondisidindingbangunan ??
-                                    $item->kondisilantaibangunan ??
-                                    $item->kondisilapanganusaha ??
-                                    $item->kondisisumberair ??
-                                    $item->konfliksosial ??
-                                    $item->kualitasbayi ??
-                                    $item->kualitasblhamil ??
-                                    $item->manfaatmataair ??
-                                    $item->mutasikeluar ??
-                                    $item->mutasimasuk ??
-                                    $item->omsetusaha ??
-                                    $item->partisipasisekolah ??
-                                    $item->pekerjaan ??
-                                    $item->pembuanganakhirtinja ??
-                                    $item->pendapatanperbulan ??
-                                    $item->penyakitkronis ??
-                                    $item->pertolonganpersalinan ??
-                                    $item->programserta ??
-                                    $item->sarpraskerja ??
-                                    $item->statuskawin ??
-                                    $item->statuskedudukankerja ??
-                                    $item->statuspemilikbangunan ??
-                                    $item->statuspemiliklahan ??
-                                    $item->sumberairminum ??
-                                    $item->sumberdayaterpasang ??
-                                    $item->sumberpeneranganutama ??
-                                    $item->tempatpersalinan ??
-                                    $item->tempatusaha ??
-                                    $item->tercantumdalamkk ??
-                                    $item->tingkatsulitdisabilitas ??
-                                    
-                                    '-';
+                                $kode = $item->getKey();
+
+                                // Ambil semua atribut model (kolom database)
+                                $attributes = $item->getAttributes();
+
+                                // Coba cari nama dari atribut string pertama
+                                $nama = collect($attributes)->first(function ($value) {
+                                    return is_string($value) && trim($value) !== '';
+                                });
+
+                                // Cek semua relasi model secara dinamis
+                                foreach ($item->getRelations() as $relation) {
+                                    if (is_object($relation)) {
+                                        // Kalau relasi berupa model tunggal
+                                        if (method_exists($relation, 'getAttributes')) {
+                                            $namaRelasi = collect($relation->getAttributes())->first(function ($val) {
+                                                return is_string($val) && trim($val) !== '';
+                                            });
+                                            if ($namaRelasi) {
+                                                $nama = $namaRelasi;
+                                                break;
+                                            }
+                                        }
+                                        // Kalau relasi berupa koleksi (hasMany)
+                                        elseif ($relation instanceof \Illuminate\Support\Collection && $relation->isNotEmpty()) {
+                                            $first = $relation->first();
+                                            if (method_exists($first, 'getAttributes')) {
+                                                $namaRelasi = collect($first->getAttributes())->first(function ($val) {
+                                                    return is_string($val) && trim($val) !== '';
+                                                });
+                                                if ($namaRelasi) {
+                                                    $nama = $namaRelasi;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $nama = $nama ?? '-';
                             @endphp
 
                             <td class="px-6 py-4">{{ $kode }}</td>
                             <td class="px-6 py-4">{{ $nama }}</td>
 
-                            @if($master === 'pembangunankeluarga')
-                                <td class="px-6 py-4">{{ $item->typejawab->kdtypejawab ??  '-' }} </td>
-                            @elseif($master === 'lembaga')
+                           {{-- Kolom relasi dinamis --}}
+                            @if ($master === 'pembangunankeluarga')
+                                <td class="px-6 py-4">{{ $item->typejawab->kdtypejawab ?? '-' }}</td>
+
+                            @elseif ($master === 'lembaga')
                                 <td class="px-6 py-4">{{ $item->jenislembaga->kdjenislembaga ?? '-' }}</td>
+
+                            @elseif ($master === 'kabupaten')
+                                <td class="px-6 py-4">{{ $item->provinsi->provinsi ?? '-' }}</td>
+
+                            @elseif ($master === 'kecamatan')
+                                <td class="px-6 py-4">{{ $item->kabupaten->kabupaten ?? '-' }}</td>
+
+                            @elseif ($master === 'desa')
+                                <td class="px-6 py-4">{{ $item->kecamatan->kecamatan ?? '-' }}</td>
+
+                            @else
+                                <td class="px-6 py-4">-</td>
                             @endif
 
                             <td class="px-6 py-4">
