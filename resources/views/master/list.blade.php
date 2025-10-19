@@ -97,9 +97,6 @@
 
                             @elseif ($master === 'desa')
                                 <td class="px-6 py-4">{{ $item->kecamatan->kecamatan ?? '-' }}</td>
-
-                            @else
-                                <td class="px-6 py-4">-</td>
                             @endif
 
                             <td class="px-6 py-4">

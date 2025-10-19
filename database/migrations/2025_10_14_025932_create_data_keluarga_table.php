@@ -30,8 +30,6 @@ return new class extends Migration
             $table->integer('kdkecamatan')->nullable(); // relasi ke master_kecamatan
             $table->integer('kddesa')->nullable();      // relasi ke master_desa
 
-            $table->timestamps();
-
             // Foreign key (opsional, bisa diaktifkan nanti)
             $table->foreign('kdmutasimasuk')->references('kdmutasimasuk')->on('master_mutasimasuk')->onDelete('set null');
             $table->foreign('kddusun')->references('kddusun')->on('master_dusun')->onDelete('set null');

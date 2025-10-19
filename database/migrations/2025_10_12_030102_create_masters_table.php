@@ -345,6 +345,11 @@ return new class extends Migration
             $table->integer('kdjawab')->primary();
             $table->string('jawab');
         });
+        // master_jawablahan
+        Schema::create('master_jawablahan', function (Blueprint $table) {
+            $table->integer('kdjawablahan')->primary();
+            $table->string('jawablahan');
+        });
         // master_jawabbangun
         Schema::create('master_jawabbangun', function (Blueprint $table) {
             $table->integer('kdjawabbangun')->primary();

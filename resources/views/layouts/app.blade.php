@@ -14,6 +14,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="//unpkg.com/alpinejs" defer></script>
+    @stack('styles')
 
     <style>
         body {
@@ -36,11 +37,10 @@
 </head>
 
 <body class="antialiased text-gray-800" x-data="{ sidebarOpen: false, settingsOpen: false }">
-
-    <!-- Sidebar -->
+    <!-- Sidebar Utama -->
     <aside id="sidebar"
-        x-bind:class="sidebarOpen ? 'ml-0' : '-ml-64'"
-        class="w-64 bg-white shadow-md h-screen fixed transition-all duration-300 z-40">
+           x-bind:class="sidebarOpen ? 'ml-0' : '-ml-64'"
+           class="w-64 bg-white shadow-md h-screen fixed transition-all duration-300 z-40">
         <div class="flex flex-col h-full">
             <!-- Header Sidebar -->
             <div class="px-6 py-4 bg-blue-600 text-white font-bold text-xl flex items-center justify-center">
@@ -50,116 +50,23 @@
             <!-- Menu List -->
             <nav class="flex-1 overflow-y-auto p-4 space-y-2">
                 <a href="{{ route('dashboard') }}"
-                   class="block px-4 py-2 rounded-lg font-semibold
-                   {{ request()->routeIs('dashboard') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    🏠 Dashboard
+                class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium
+                {{ request()->routeIs('dashboard') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                    <x-heroicon-o-home class="w-6 h-6" /> 
+                    <span>Dashboard</span>
                 </a>
-
-                <div>
-                    <a href="{{ route('menu.utama') }}"
-                       class="block px-4 py-2 rounded-lg font-semibold
-                       {{ request()->routeIs('menu.utama*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        📋 Menu Utama
-                    </a>
-
-                    <div class="ml-6 mt-1 space-y-1">
-                        <a href="{{ route('menu.kependudukan') }}"
-                           class="block px-4 py-2 rounded-lg font-semibold
-                           {{ request()->routeIs('menu.kependudukan*') ? 'bg-blue-50 text-blue-700' : 'text-gray-600 hover:bg-gray-100' }}">
-                            👨‍👩‍👧 Menu Kependudukan
-                        </a>
-
-                        {{-- <div class="ml-6 mt-1 space-y-1">
-                            <a href="{{ route('dasar-keluarga.index') }}"
-                                class="block px-3 py-1 text-sm rounded-md
-                                {{ request()->routeIs('dasar-keluarga*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                 Data Keluarga</a>
-                            <a href="{{ route('aset-keluarga.index') }}"
-                                class="block px-3 py-1 text-sm rounded-md
-                                {{ request()->routeIs('aset-keluarga*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                 Aset Keluarga</a>
-                            <a href="{{ route('aset-lahan.index') }}"
-                                class="block px-3 py-1 text-sm rounded-md
-                                {{ request()->routeIs('aset-lahan*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                 Aset Lahan & Tanah</a>
-                            <a href="{{ route('aset-keluarga.index') }}"
-                                class="block px-3 py-1 rounded-md text-sm
-                                {{ request()->routeIs('aset-keluarga*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Aset Keluarga
-                            </a>
-                            <a href="{{ route('aset-lahan.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('aset-lahan*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Aset Lahan & Tanah
-                            </a>
-                            <a href="{{ route('aset-ternak.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('aset-ternak*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Aset Ternak & Perikanan
-                            </a>
-                            <a href="{{ route('penyewaan-lahan.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('penyewaan-lahan*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Penyewaan Lahan
-                            </a>
-                            <a href="{{ route('umkm.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('umkm*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                UMKM
-                            </a>
-                            <a href="{{ route('umkm.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('layanan-ekonomi*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Layanan Ekonomi
-                            </a>
-                            <a href="{{ route('sarpras-kerja.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('sarpras-kerja*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Sarana & Prasarana Kerja
-                            </a>
-                            <a href="{{ route('usaha-art.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('usaha-art*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Usaha ART
-                            </a>
-                            <a href="{{ route('layanan-masyarakat.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('layanan-masyarakat*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Layanan Masyarakat
-                            </a>
-                            <a href="{{ route('bantuan-sosial.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('bantuan-sosial*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Bantuan Sosial
-                            </a>
-                            <a href="{{ route('konflik-sosial.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('konflik-sosial*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Konflik Sosial
-                            </a>
-                            <a href="{{ route('sosial-ekonomi.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('sosial-ekonomi*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Sosial Ekonomi
-                            </a>
-                            <a href="{{ route('ibu-hamil.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('ibu-hamil*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Kualitas Ibu Hamil
-                            </a>
-                            <a href="{{ route('bayi.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('bayi*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Kualitas Bayi
-                            </a>
-                            <a href="{{ route('kelahiran.index') }}"
-                            class="block px-3 py-1 rounded-md text-sm
-                            {{ request()->routeIs('kelahiran*') ? 'bg-blue-100 text-blue-700' : 'text-gray-500 hover:bg-gray-100' }}">
-                                Kelahiran
-                            </a>
-                        </div> --}}
-                    </div>
-                </div>
+                <a href="{{ route('menu.kependudukan') }}"
+                class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium
+                {{ request()->routeIs('menu.kependudukan') || request()->routeIs('dasar-keluarga*') || request()->routeIs('penduduk*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                <x-heroicon-o-user-group class="w-6 h-6" /> 
+                <span>Adm Penduduk</span>
+                </a>
+                <a href="{{ route('master.list') }}"
+                class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium
+                {{ request()->routeIs('master.list') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                <x-heroicon-o-inbox-stack class="w-6 h-6" /> 
+                <span>Master Data</span>
+                </a>
             </nav>
         </div>
     </aside>
@@ -176,18 +83,13 @@
         <header class="sticky top-0 z-20 bg-white shadow">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
                 <div class="flex items-center gap-2">
-                    <!-- Tombol Toggle Sidebar -->
                     <button @click="sidebarOpen = !sidebarOpen"
                             class="text-gray-700 hover:text-gray-900 focus:outline-none">
                         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto">
                     </button>
-                    {{-- <a href="{{ route('dashboard') }}">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto">
-                    </a> --}}
                     <span class="font-semibold text-gray-700">Desa Kaliwungu Kudus</span>
                 </div>
 
-                <!-- Profil -->
                 <div class="relative">
                     <button @click="settingsOpen = !settingsOpen" class="flex items-center gap-2 focus:outline-none">
                         <span>{{ Auth::user()->name }}</span>
@@ -221,7 +123,7 @@
             </div>
         @endisset
 
-        <main class="flex-1 p-6 overflow-y-auto">
+        <main class="flex-1 overflow-y-auto">
             {{ $slot }}
         </main>
 
@@ -229,6 +131,7 @@
             Sistem Informasi Desa Kaliwungu © {{ date('Y') }} | Dibuat dengan 💚 oleh Tim Kandang Macan
         </footer>
     </div>
+    @stack('scripts')
 
 </body>
 </html>
