@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder {
             MasterImunisasiSeeder::class,
             MasterInventarisSeeder::class,
             MasterJabatanSeeder::class,
-            MasterJawabBangunanSeeder::class,
+            MasterJawabBangunSeeder::class,
             MasterJawabKonflikSeeder::class,
             MasterJawabKualitasBayiSeeder::class,
             MasterJawabKualitasIbuHamilSeeder::class,
