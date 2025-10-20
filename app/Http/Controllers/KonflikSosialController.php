@@ -2,9 +2,84 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataKonflikSosial;
+use App\Models\DataKeluarga;
+use App\Models\MasterKonflikSosial;
+use App\Models\MasterJawabKonflik;
 use Illuminate\Http\Request;
 
 class KonflikSosialController extends Controller
 {
-    //
+    public function index()
+    {
+        $konfliksosials = DataKonflikSosial::with('keluarga')->get();
+        $masterKonflik = MasterKonflikSosial::pluck('konfliksosial', 'kdkonfliksosial')->toArray();
+        $masterJawab = MasterJawabKonflik::pluck('jawabkonflik', 'kdjawabkonflik')->toArray();
+
+        return view('keluarga.konfliksosial.index', compact('konfliksosials', 'masterKonflik', 'masterJawab'));
+    }
+
+    public function create()
+    {
+        $keluargas = DataKeluarga::all();
+        $masterKonflik = MasterKonflikSosial::all();
+        $masterJawab = MasterJawabKonflik::all();
+
+        return view('keluarga.konfliksosial.create', compact('keluargas', 'masterKonflik', 'masterJawab'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'no_kk' => 'required|exists:data_keluarga,no_kk',
+        ]);
+
+        $data = ['no_kk' => $request->no_kk];
+        $totalKonflik = MasterKonflikSosial::count();
+
+        for ($i = 1; $i <= $totalKonflik; $i++) {
+            $data["konfliksosial_$i"] = $request->input("konfliksosial_$i", 0);
+        }
+
+        DataKonflikSosial::create($data);
+
+        return redirect()->route('keluarga.konfliksosial.index')
+            ->with('success', 'Data konflik sosial berhasil ditambahkan.');
+    }
+
+    public function edit($no_kk)
+    {
+        $konfliksosial = DataKonflikSosial::where('no_kk', $no_kk)->firstOrFail();
+        $keluargas = DataKeluarga::all();
+        $masterKonflik = MasterKonflikSosial::all();
+        $masterJawab = MasterJawabKonflik::all();
+
+        return view('keluarga.konfliksosial.edit', compact('konfliksosial', 'keluargas', 'masterKonflik', 'masterJawab'));
+    }
+
+    public function update(Request $request, $no_kk)
+    {
+        $konfliksosial = DataKonflikSosial::where('no_kk', $no_kk)->firstOrFail();
+
+        $updateData = [];
+        $totalKonflik = MasterKonflikSosial::count();
+
+        for ($i = 1; $i <= $totalKonflik; $i++) {
+            $updateData["konfliksosial_$i"] = $request->input("konfliksosial_$i", 0);
+        }
+
+        $konfliksosial->update($updateData);
+
+        return redirect()->route('keluarga.konfliksosial.index')
+            ->with('success', 'Data konflik sosial berhasil diperbarui.');
+    }
+
+    public function destroy($no_kk)
+    {
+        $konfliksosial = DataKonflikSosial::where('no_kk', $no_kk)->firstOrFail();
+        $konfliksosial->delete();
+
+        return redirect()->route('keluarga.konfliksosial.index')
+            ->with('success', 'Data konflik sosial berhasil dihapus.');
+    }
 }

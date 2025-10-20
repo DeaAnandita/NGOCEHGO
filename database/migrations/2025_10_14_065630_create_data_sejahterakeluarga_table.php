@@ -12,8 +12,8 @@ return new class extends Migration
             $table->string('no_kk', 16); // FK ke data keluarga
 
             // 8 kolom sejahterakeluarga (hasil jawaban, 0/1)
-            for ($i = 1; $i <= 8; $i++) {
-                $table->tinyInteger("sejahterakeluarga_$i")->nullable()->default(0);
+            for ($i = 61; $i <= 68; $i++) {
+                $table->string("sejahterakeluarga_$i")->nullable()->default(0);
             }
 
             // relasi foreign key

@@ -48,7 +48,7 @@ class DataKeluarga extends Model
     }
     public function prasdas()
     {
-        return $this->hasMany(DataPrasdas::class, 'no_kk', 'no_kk');
+        return $this->hasMany(DataPrasaranaDasar::class, 'no_kk', 'no_kk');
     }
     public function asetternak()
     {
@@ -72,7 +72,7 @@ class DataKeluarga extends Model
     }
     public function konfliksosial()
     {
-        return $this->hasMany(DataKonflikKeluarga::class, 'no_kk', 'no_kk');
+        return $this->hasMany(DataKonflikSosial::class, 'no_kk', 'no_kk');
     }
     public function kualitasibuhamil()
     {

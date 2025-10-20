@@ -76,14 +76,14 @@ class MasterPembangunanKeluargaSeeder extends Seeder
             ['kdpembangunankeluarga' => 49, 'kdtypejawab' => 1, 'pembangunankeluarga' => 'Tinggal di desa/kelurahan rawan kekeringan'],
             ['kdpembangunankeluarga' => 50, 'kdtypejawab' => 1, 'pembangunankeluarga' => 'Tinggal di desa/kelurahan rawan gagal tanam/panen'],
             ['kdpembangunankeluarga' => 51, 'kdtypejawab' => 1, 'pembangunankeluarga' => 'Tinggal di daerah kawasan kering, tandus & kritis'],
-            ['kdpembangunankeluarga' => 52, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata uang saku anak untuk sekolah (perhari)'],
-            ['kdpembangunankeluarga' => 53, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Keluarga memiliki kebiasaan merokok (Jika ya, ... bungkus perhari)'],
-            ['kdpembangunankeluarga' => 54, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Kepala keluarga memiliki kebiasaan minum kopi di kedai ( ... kali)'],
-            ['kdpembangunankeluarga' => 55, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Kepala keluarga memiliki kebiasaan minum kopi di kedai (... jam perhari)'],
-            ['kdpembangunankeluarga' => 56, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata pulsa yang digunakan keluarga (seminggu)'],
-            ['kdpembangunankeluarga' => 57, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata pendapatan / penghasilan keluarga sebulan'],
-            ['kdpembangunankeluarga' => 58, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata pengeluaran keluarga sebulan'],
-            ['kdpembangunankeluarga' => 59, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata uang belanja keluarga sebulan'],
+            ['kdpembangunankeluarga' => 61, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata uang saku anak untuk sekolah (perhari)'],
+            ['kdpembangunankeluarga' => 62, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Keluarga memiliki kebiasaan merokok (Jika ya, ... bungkus perhari)'],
+            ['kdpembangunankeluarga' => 63, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Kepala keluarga memiliki kebiasaan minum kopi di kedai ( ... kali)'],
+            ['kdpembangunankeluarga' => 64, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Kepala keluarga memiliki kebiasaan minum kopi di kedai (... jam perhari)'],
+            ['kdpembangunankeluarga' => 65, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata pulsa yang digunakan keluarga (seminggu)'],
+            ['kdpembangunankeluarga' => 66, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata pendapatan / penghasilan keluarga sebulan'],
+            ['kdpembangunankeluarga' => 67, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata pengeluaran keluarga sebulan'],
+            ['kdpembangunankeluarga' => 68, 'kdtypejawab' => 2, 'pembangunankeluarga' => 'Rata-rata uang belanja keluarga sebulan'],
         ]);
     }
 }

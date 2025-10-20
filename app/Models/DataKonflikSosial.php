@@ -10,26 +10,25 @@ class DataKonflikSosial extends Model
     use HasFactory;
 
     protected $table = 'data_konfliksosial';
+    public $timestamps = false;
     protected $primaryKey = 'no_kk';
     public $incrementing = false;
     protected $keyType = 'string';
-    public $timestamps = false;
 
-    // isi semua kolom
-    protected $fillable;
+    protected $fillable = [];
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->fillable = array_merge(['no_kk'], array_map(fn($i) => "konfliksosial_$i", range(1, 32)));
+        // generate fillable otomatis dari 1 sampai 32
+        $fields = ['no_kk'];
+        for ($i = 1; $i <= 32; $i++) {
+            $fields[] = "konfliksosial_$i";
+        }
+        $this->fillable($fields);
     }
 
-
-    /**
-     * Relasi ke tabel data_keluarga
-     * Setiap data konflik sosial milik satu keluarga (by NO_KK)
-     */
     public function keluarga()
     {
         return $this->belongsTo(DataKeluarga::class, 'no_kk', 'no_kk');

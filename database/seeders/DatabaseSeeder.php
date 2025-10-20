@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\DataKonflikSosial;
+use App\Models\DataSejahteraKeluarga;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -91,6 +93,8 @@ class DatabaseSeeder extends Seeder {
             DataAsetKeluargaSeeder::class,
             DataAsetLahanSeeder::class,
             DataPrasaranaDasarSeeder::class,
+            DataSejahteraKeluargaSeeder::class,
+            DataKonflikSosialSeeder::class
         ]);
     }
 }
