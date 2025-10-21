@@ -17,67 +17,65 @@ class DataSosialEkonomi extends Model
 
     protected $fillable = [
         'nik',
-
-        // relasi master
         'kdpartisipasisekolah',
-        'kdtingkatsulitdisabilitas',
-        'kdstatuskedudukankerja',
         'kdijasahterakhir',
-        'kdpenyakitkronis',
-        'kdpendapatanperbulan',
         'kdjenisdisabilitas',
+        'kdtingkatsulitdisabilitas',
+        'kdpenyakitkronis',
         'kdlapanganusaha',
+        'kdstatuskedudukankerja',
+        'kdpendapatanperbulan',
         'kdimunisasi',
     ];
 
-    /** relasi ke tabel penduduk */
+    // Relasi ke tabel penduduk
     public function penduduk()
     {
         return $this->belongsTo(DataPenduduk::class, 'nik', 'nik');
     }
 
-    /** relasi ke master tabel */
-    public function masterPartisipasiSekolah()
+    // Relasi ke tabel master
+    public function partisipasisekolah()
     {
         return $this->belongsTo(MasterPartisipasiSekolah::class, 'kdpartisipasisekolah', 'kdpartisipasisekolah');
     }
 
-    public function masterTingkatSulitDisabilitas()
-    {
-        return $this->belongsTo(MasterTingkatSulitDisabilitas::class, 'kdtingkatsulitdisabilitas', 'kdtingkatsulitdisabilitas');
-    }
-
-    public function masterStatusKedudukanKerja()
-    {
-        return $this->belongsTo(MasterStatusKedudukanKerja::class, 'kdstatuskedudukankerja', 'kdstatuskedudukankerja');
-    }
-
-    public function masterIjasahTerakhir()
+    public function ijasahterakhir()
     {
         return $this->belongsTo(MasterIjasahTerakhir::class, 'kdijasahterakhir', 'kdijasahterakhir');
     }
 
-    public function masterPenyakitKronis()
-    {
-        return $this->belongsTo(MasterMasterPenyakitKronis::class, 'kdpenyakitkronis', 'kdpenyakitkronis');
-    }
-
-    public function masterPendapatanPerbulan()
-    {
-        return $this->belongsTo(MasterPendapatanPerbulan::class, 'kdpendapatanperbulan', 'kdpendapatanperbulan');
-    }
-
-    public function masterJenisDisabilitas()
+    public function jenisdisabilitas()
     {
         return $this->belongsTo(MasterJenisDisabilitas::class, 'kdjenisdisabilitas', 'kdjenisdisabilitas');
     }
 
-    public function masterLapanganUsaha()
+    public function tingkatsulitdisabilitas()
+    {
+        return $this->belongsTo(MasterTingkatSulitDisabilitas::class, 'kdtingkatsulitdisabilitas', 'kdtingkatsulitdisabilitas');
+    }
+
+    public function penyakitkronis()
+    {
+        return $this->belongsTo(MasterPenyakitKronis::class, 'kdpenyakitkronis', 'kdpenyakitkronis');
+    }
+
+    public function lapanganusaha()
     {
         return $this->belongsTo(MasterLapanganUsaha::class, 'kdlapanganusaha', 'kdlapanganusaha');
     }
 
-    public function masterImunisasi()
+    public function statuskedudukankerja()
+    {
+        return $this->belongsTo(MasterStatusKedudukanKerja::class, 'kdstatuskedudukankerja', 'kdstatuskedudukankerja');
+    }
+
+    public function pendapatanperbulan()
+    {
+        return $this->belongsTo(MasterPendapatanPerBulan::class, 'kdpendapatanperbulan', 'kdpendapatanperbulan');
+    }
+
+    public function imunisasi()
     {
         return $this->belongsTo(MasterImunisasi::class, 'kdimunisasi', 'kdimunisasi');
     }

@@ -17,13 +17,9 @@ class DataUsahaArt extends Model
 
     protected $fillable = [
         'nik',
-
-        // relasi master
         'kdlapanganusaha',
         'kdtempatusaha',
         'kdomsetusaha',
-
-        // field isian langsung
         'usahaart_jumlahpekerja',
         'usahaart_namausaha',
     ];
@@ -35,17 +31,17 @@ class DataUsahaArt extends Model
     }
 
     /** relasi ke master tabel */
-    public function masterLapanganUsaha()
+    public function lapanganusaha()
     {
         return $this->belongsTo(MasterLapanganUsaha::class, 'kdlapanganusaha', 'kdlapanganusaha');
     }
 
-    public function masterTempatUsaha()
+    public function tempatusaha()
     {
         return $this->belongsTo(MasterTempatUsaha::class, 'kdtempatusaha', 'kdtempatusaha');
     }
 
-    public function masterOmsetUsaha()
+    public function omsetusaha()
     {
         return $this->belongsTo(MasterOmsetUsaha::class, 'kdomsetusaha', 'kdomsetusaha');
     }
