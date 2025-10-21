@@ -22,7 +22,7 @@ class DataBangunKeluarga extends Model
     {
         parent::__construct($attributes);
 
-        $this->fillable = array_merge(['no_kk'], array_map(fn($i) => "bangunkluarga_$i", range(1, 51)));
+        $this->fillable = array_merge(['no_kk'], array_map(fn($i) => "bangunkeluarga_$i", range(1, 51)));
     }
 
 

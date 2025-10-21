@@ -2,67 +2,68 @@
     <div class="flex">
         @include('keluarga.sidebar')
 
-        <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-auto">
+        <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <div class="flex flex-col sm:flex-row justify-between items-center mb-6">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center mb-6 gap-4">
                     <h3 class="text-xl font-bold text-gray-800">Data Bangun Keluarga</h3>
-
                     <a href="{{ route('keluarga.bangunkeluarga.create') }}"
-                       class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition duration-200">
+                       class="bg-blue-600 text-white px-5 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
                         + Tambah Data
                     </a>
                 </div>
 
-                <!-- Tabel Data -->
                 <div class="overflow-x-auto">
-                    <table class="min-w-full border border-gray-200 divide-y divide-gray-200 rounded-lg">
-                        <thead class="bg-gray-100 text-gray-700">
+                    <table class="min-w-full border border-gray-200 divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-4 py-2 text-left text-sm font-semibold">No</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold">Nama Kepala Keluarga</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold">No. KK</th>
-                                <th class="px-4 py-2 text-left text-sm font-semibold">Status Bangun Keluarga</th>
-                                <th class="px-4 py-2 text-center text-sm font-semibold">Aksi</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left text-xs font-medium text-gray-600">No</th>
+                                <th class="border border-gray-200 text-xs font-medium text-gray-600">No. KK</th>
+                                <th class="border border-gray-200 text-xs font-medium text-gray-600">Kepala Keluarga</th>
+
+                                {{-- Kolom uraian --}}
+                                @foreach($masterPembangunan as $pembangunan)
+                                    <th class="border border-gray-200 text-xs font-medium text-gray-600">
+                                        {{ $pembangunan->pembangunankeluarga }}
+                                    </th>
+                                @endforeach
+
+                                <th class="border border-gray-200 text-xs font-medium text-gray-600">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 text-gray-700">
-                            @forelse($dataBangunKeluarga as $index => $data)
+
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse($bangunkeluargas as $data)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-2 text-sm text-gray-500">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $data->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $data->no_kk }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $data->no_kk }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $data->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
 
-                                    <!-- Contoh menampilkan status dari salah satu pertanyaan -->
-                                    @php
-                                        $field = 'bangunkeluarga_1';
-                                        $status = $data->$field ?? null;
-                                        $jawaban = $masterJawab->firstWhere('kdjawabbangun', $status)->jawabbangun ?? '-';
-                                    @endphp
-                                    <td class="px-4 py-2 text-sm font-medium text-gray-800">
-                                        {{ $jawaban }}
-                                    </td>
+                                    {{-- Tampilkan jawaban nama berdasarkan kode --}}
+                                    @foreach($masterPembangunan as $pembangunan)
+                                        @php 
+                                            $field = 'bangunkeluarga_' . $pembangunan->kdpembangunankeluarga;
+                                            $kodeJawab = $data->$field;
+                                            $jawabLabel = $masterJawab[$kodeJawab] ?? '-';
+                                        @endphp
+                                        <td class="border border-gray-200 px-4 py-3">{{ $jawabLabel }}</td>
+                                    @endforeach
 
-                                    <!-- Tombol aksi -->
-                                    <td class="px-4 py-2 text-sm text-center space-x-2">
+                                    <td class="border border-gray-200 px-4 py-4 text-center space-x-3">
                                         <a href="{{ route('keluarga.bangunkeluarga.edit', $data->no_kk) }}"
                                            class="text-blue-600 hover:text-blue-800 font-medium">Edit</a>
-
-                                        <form action="{{ route('keluarga.bangunkeluarga.destroy', $data->no_kk) }}"
-                                              method="POST" class="inline-block"
-                                              onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                        <form action="{{ route('keluarga.bangunkeluarga.destroy', $data->no_kk) }}" method="POST"
+                                            class="inline-block"
+                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                    class="text-red-600 hover:text-red-800 font-medium">
-                                                Hapus
-                                            </button>
+                                            <button type="submit" class="text-red-600 hover:text-red-800 font-medium">Hapus</button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-4 text-center text-gray-500">
-                                        Tidak ada data Bangun Keluarga.
+                                    <td colspan="{{ 4 + count($masterPembangunan) }}" class="px-4 py-4 text-center text-gray-500">
+                                        Belum ada data bangun keluarga.
                                     </td>
                                 </tr>
                             @endforelse
@@ -70,10 +71,6 @@
                     </table>
                 </div>
 
-                <!-- Pagination -->
-                <div class="mt-4">
-                    {{ $dataBangunKeluarga->links() }}
-                </div>
             </div>
         </div>
     </div>

@@ -10,72 +10,66 @@ use Illuminate\Http\Request;
 
 class BangunKeluargaController extends Controller
 {
-    /**
-     * Tampilkan daftar data Bangun Keluarga.
-     */
+    // Daftar data
     public function index()
     {
-        // Ambil data bangun keluarga beserta relasi ke keluarga
-        $dataBangunKeluarga = DataBangunKeluarga::with('keluarga')->paginate(10);
+        $bangunkeluargas = DataBangunKeluarga::with('keluarga')->get();
 
-        // Ambil semua master jawaban (harus pakai all(), bukan pluck)
-        $masterJawab = MasterJawabBangun::all();
+        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(1, 51))
+            ->get(['kdpembangunankeluarga', 'pembangunankeluarga']);
 
-        return view('keluarga.bangunkeluarga.index', compact('dataBangunKeluarga', 'masterJawab'));
+        $masterJawab = MasterJawabBangun::pluck('jawabbangun', 'kdjawabbangun'); // ['1' => 'Ya', '2'=>'Tidak', ...]
+
+        return view('keluarga.bangunkeluarga.index', compact('bangunkeluargas', 'masterPembangunan', 'masterJawab'));
     }
 
-    /**
-     * Tampilkan form tambah data Bangun Keluarga.
-     */
+    // Form tambah data
     public function create()
     {
         $keluargas = DataKeluarga::all();
-        $masterBangun = MasterPembangunanKeluarga::all();
+        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(1, 51))->get();
         $masterJawab = MasterJawabBangun::all();
 
-        return view('keluarga.bangunkeluarga.create', compact('keluargas', 'masterBangun', 'masterJawab'));
+        return view('keluarga.bangunkeluarga.create', compact('keluargas', 'masterPembangunan', 'masterJawab'));
     }
 
-    /**
-     * Simpan data Bangun Keluarga baru.
-     */
+    // Simpan data baru
     public function store(Request $request)
     {
         $request->validate([
             'no_kk' => 'required|exists:data_keluarga,no_kk',
         ]);
 
-        $data = $request->only(['no_kk']);
+        $data = ['no_kk' => $request->no_kk];
 
-        // Ambil semua masterBangun untuk menentukan jumlah pertanyaan
-        $jumlah = MasterPembangunanKeluarga::count();
-
-        for ($i = 1; $i <= $jumlah; $i++) {
-            $data["bangunkeluarga_$i"] = $request->input("bangunkeluarga_$i", null);
+        foreach (range(1, 51) as $i) {
+            $field = "bangunkeluarga_$i";
+            $value = $request->input($field);
+            $data[$field] = $value !== null && $value !== '' ? (int)$value : null;
         }
 
         DataBangunKeluarga::create($data);
 
         return redirect()->route('keluarga.bangunkeluarga.index')
-                         ->with('success', 'Data bangun keluarga berhasil ditambahkan.');
+            ->with('success', 'Data bangun keluarga berhasil ditambahkan.');
     }
 
-    /**
-     * Tampilkan form edit data Bangun Keluarga.
-     */
+
+
+    // Form edit data
     public function edit($no_kk)
     {
         $bangunkeluarga = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
         $keluargas = DataKeluarga::all();
-        $masterBangun = MasterPembangunanKeluarga::all();
+        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(1, 51))->get();
         $masterJawab = MasterJawabBangun::all();
 
-        return view('keluarga.bangunkeluarga.edit', compact('bangunkeluarga', 'keluargas', 'masterBangun', 'masterJawab'));
+        return view('keluarga.bangunkeluarga.edit', compact(
+            'bangunkeluarga', 'keluargas', 'masterPembangunan', 'masterJawab'
+        ));
     }
 
-    /**
-     * Update data Bangun Keluarga.
-     */
+    // Update data
     public function update(Request $request, $no_kk)
     {
         $request->validate([
@@ -83,29 +77,29 @@ class BangunKeluargaController extends Controller
         ]);
 
         $bangunkeluarga = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
-        $data = $request->only(['no_kk']);
 
-        $jumlah = MasterPembangunanKeluarga::count();
+        $data = ['no_kk' => $request->no_kk];
 
-        for ($i = 1; $i <= $jumlah; $i++) {
-            $data["bangunkeluarga_$i"] = $request->input("bangunkeluarga_$i", null);
+        foreach (range(1, 51) as $i) {
+            $field = "bangunkeluarga_$i";
+            $value = $request->input($field);
+            $data[$field] = $value !== null && $value !== '' ? $value : null;
         }
+
 
         $bangunkeluarga->update($data);
 
         return redirect()->route('keluarga.bangunkeluarga.index')
-                         ->with('success', 'Data bangun keluarga berhasil diperbarui.');
+            ->with('success', 'Data bangun keluarga berhasil diperbarui.');
     }
 
-    /**
-     * Hapus data Bangun Keluarga.
-     */
+    // Hapus data
     public function destroy($no_kk)
     {
-        $bangunkeluarga = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
-        $bangunkeluarga->delete();
+        $data = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
+        $data->delete();
 
         return redirect()->route('keluarga.bangunkeluarga.index')
-                         ->with('success', 'Data bangun keluarga berhasil dihapus.');
+            ->with('success', 'Data bangun keluarga berhasil dihapus.');
     }
 }

@@ -45,9 +45,13 @@
                                                 @php
                                                     $value = $sarpras->{"sarpraskerja_$i"} ?? 0;
                                                     $label = $masterJawab[$value] ?? '-';
-                                                    $style = $value == 0
-                                                        ? 'bg-gray-100 text-gray-600'
-                                                        : 'bg-green-100 text-green-800';
+                                                    $style = match($value) {
+                                                        0 => 'bg-gray-100 text-gray-600',
+                                                        1 => 'bg-red-100 text-red-800',
+                                                        2 => 'bg-yellow-100 text-yellow-800',
+                                                        3 => 'bg-green-100 text-green-800',
+                                                        default => 'bg-gray-100 text-gray-600',
+                                                    };
                                                 @endphp
 
                                                 <span class="text-xs px-2 py-1 rounded-full {{ $style }}">

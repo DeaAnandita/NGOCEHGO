@@ -13,10 +13,10 @@ class MasterJawabBangunSeeder extends Seeder
 
         DB::table('master_jawabbangun')->insert([
              
-            ['kdjawabbangun' => 1, 'jawabbangun' => 'TIDAK DIISI'],
-            ['kdjawabbangun' => 3, 'jawabbangun' => 'YA'],
-            ['kdjawabbangun' => 4, 'jawabbangun' => 'TIDAK'],
-	        ['kdjawabbangun' => 5, 'jawabbangun' => 'TIDAK BERLAKU'],
+            ['kdjawabbangun' => 0, 'jawabbangun' => 'TIDAK DIISI'],
+            ['kdjawabbangun' => 1, 'jawabbangun' => 'YA'],
+            ['kdjawabbangun' => 2, 'jawabbangun' => 'TIDAK'],
+	        ['kdjawabbangun' => 3, 'jawabbangun' => 'TIDAK BERLAKU'],
            
         ]);
     }

@@ -21,7 +21,7 @@
                                     <option value="">-- Pilih Keluarga --</option>
                                     @foreach($keluargas as $kel)
                                         <option value="{{ $kel->no_kk }}"
-                                            {{ $bangunkeluarga->no_kk == $kel->no_kk ? 'selected' : '' }}>
+                                            {{ (string) old('no_kk', $bangunkeluarga->no_kk) === (string) $kel->no_kk ? 'selected' : '' }}>
                                             {{ $kel->keluarga_kepalakeluarga ?? '-' }} ({{ $kel->no_kk }})
                                         </option>
                                     @endforeach
@@ -33,25 +33,23 @@
                         </div>
                     </div>
 
-                    <!-- Bangun Keluarga -->
+                    <!-- Detail Bangun Keluarga -->
                     <div class="mb-8">
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Detail Bangun Keluarga</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @foreach($masterBangun as $index => $bangun)
+                            @foreach($masterPembangunan as $pembangunan)
                                 @php
-                                    $field = 'bangunkeluarga_' . ($index + 1);
-                                    $selectedValue = $bangunkeluarga->$field ?? '';
+                                    $field = 'bangunkeluarga_' . $pembangunan->kdpembangunankeluarga;
+                                    $oldValue = old($field, $bangunkeluarga->$field);
                                 @endphp
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">
-                                        {{ $bangun->pembangunankeluarga }}
-                                    </label>
+                                    <label class="block text-sm font-medium text-gray-700">{{ $pembangunan->pembangunankeluarga }}</label>
                                     <select name="{{ $field }}"
                                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Pilih Jawaban --</option>
                                         @foreach($masterJawab as $jawab)
                                             <option value="{{ $jawab->kdjawabbangun }}"
-                                                {{ $selectedValue == $jawab->kdjawabbangun ? 'selected' : '' }}>
+                                                {{ old($field, $bangunkeluarga->$field) == $jawab->kdjawabbangun ? 'selected' : '' }}>
                                                 {{ $jawab->jawabbangun }}
                                             </option>
                                         @endforeach
@@ -64,11 +62,10 @@
                         </div>
                     </div>
 
-                    <!-- Tombol Aksi -->
                     <div class="mt-6 flex space-x-4 justify-end">
                         <button type="submit"
                             class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
-                            Perbarui
+                            Update
                         </button>
                         <a href="{{ route('keluarga.bangunkeluarga.index') }}"
                             class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">
@@ -103,19 +100,6 @@
                 height: 38px;
                 padding: 0.5rem;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            }
-
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
-                line-height: 28px;
-            }
-
-            .select2-container--default .select2-selection--single .select2-selection__arrow {
-                height: 36px;
-            }
-
-            .select2-container--default .select2-selection--single:focus {
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
             }
         </style>
     @endpush

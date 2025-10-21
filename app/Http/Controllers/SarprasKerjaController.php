@@ -29,8 +29,10 @@ class SarprasKerjaController extends Controller
         $keluargas = DataKeluarga::all();
         $masterSarpras = MasterSarprasKerja::all();
         $masterJawab = MasterJawabSarpras::all();
+
         return view('keluarga.sarpraskerja.create', compact('keluargas', 'masterSarpras', 'masterJawab'));
     }
+
 
     /**
      * Store a newly created resource in storage.

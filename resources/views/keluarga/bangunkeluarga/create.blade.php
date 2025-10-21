@@ -15,7 +15,8 @@
                         <div class="grid grid-cols-1 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">No. Kartu Keluarga</label>
-                                <select name="no_kk" id="no_kk" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <select name="no_kk" id="no_kk"
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                     <option value="">-- Pilih Keluarga --</option>
                                     @foreach($keluargas as $kel)
                                         <option value="{{ $kel->no_kk }}" {{ old('no_kk') == $kel->no_kk ? 'selected' : '' }}>
@@ -30,18 +31,22 @@
                         </div>
                     </div>
 
-                    <!-- Bangun Keluarga -->
+                    <!-- Detail Bangun Keluarga -->
                     <div class="mb-8">
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Detail Bangun Keluarga</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @foreach($masterBangun as $index => $bangun)
-                                @php $field = 'bangunkeluarga_' . ($index + 1); @endphp
+                            @foreach($masterPembangunan as $pembangunan)
+                                @php
+                                    $field = 'bangunkeluarga_' . $pembangunan->kdpembangunankeluarga;
+                                    $oldValue = old($field);
+                                @endphp
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">{{ $bangun->pembangunankeluarga }}</label>
-                                    <select name="{{ $field }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <label class="block text-sm font-medium text-gray-700">{{ $pembangunan->pembangunankeluarga }}</label>
+                                    <select name="{{ $field }}"
+                                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Pilih Jawaban --</option>
                                         @foreach($masterJawab as $jawab)
-                                            <option value="{{ $jawab->kdjawabbangun }}" {{ old($field) == $jawab->kdjawabbangun ? 'selected' : '' }}>
+                                            <option value="{{ $jawab->kdjawabbangun }}" {{ (string)$oldValue === (string)$jawab->kdjawabbangun ? 'selected' : '' }}>
                                                 {{ $jawab->jawabbangun }}
                                             </option>
                                         @endforeach
@@ -54,10 +59,15 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
                     <div class="mt-6 flex space-x-4 justify-end">
-                        <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">Simpan</button>
-                        <a href="{{ route('keluarga.bangunkeluarga.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">Batal</a>
+                        <button type="submit"
+                            class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
+                            Simpan
+                        </button>
+                        <a href="{{ route('keluarga.bangunkeluarga.index') }}"
+                            class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">
+                            Batal
+                        </a>
                     </div>
                 </form>
             </div>
@@ -69,14 +79,11 @@
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function () {
-                $('#no_kk').select2({
-                    placeholder: "-- Pilih Keluarga --",
-                    allowClear: true,
-                    width: '100%'
-                });
+                $('#no_kk').select2({ placeholder: "-- Pilih Keluarga --", allowClear: true, width: '100%' });
             });
         </script>
     @endpush
+
     @push('styles')
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <style>
@@ -86,16 +93,6 @@
                 height: 38px;
                 padding: 0.5rem;
                 box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            }
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
-                line-height: 28px;
-            }
-            .select2-container--default .select2-selection--single .select2-selection__arrow {
-                height: 36px;
-            }
-            .select2-container--default .select2-selection--single:focus {
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
             }
         </style>
     @endpush

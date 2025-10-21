@@ -11,13 +11,16 @@ return new class extends Migration
         Schema::create('data_sarpraskerja', function (Blueprint $table) {
             $table->string('no_kk', 16); // FK ke data keluarga
 
-            // 25 kolom sarpraskerja (hasil jawaban, 0/1)
+            // 25 kolom sarpraskerja (kode jawaban, bisa null)
             for ($i = 1; $i <= 25; $i++) {
-                $table->tinyInteger("sarprasekerja_$i")->nullable()->default(0);
+                $table->tinyInteger("sarpraskerja_$i")->nullable();
             }
 
             // relasi foreign key
-            $table->foreign('no_kk')->references('no_kk')->on('data_keluarga')->onDelete('cascade');
+            $table->foreign('no_kk')
+                  ->references('no_kk')
+                  ->on('data_keluarga')
+                  ->onDelete('cascade');
         });
     }
 

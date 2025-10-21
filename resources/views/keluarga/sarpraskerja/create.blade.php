@@ -4,7 +4,7 @@
 
         <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-6">Tambah Data Sarana dan Prasarana Kerja</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-6">Tambah Data Sarana dan Prasarana Kerja</h3>
 
                 <form action="{{ route('keluarga.sarpraskerja.store') }}" method="POST">
                     @csrf
@@ -12,16 +12,13 @@
                     <!-- Informasi Keluarga -->
                     <div class="mb-8">
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Informasi Keluarga</h4>
-                        <div class="grid grid-cols-1 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">No. Kartu Keluarga</label>
-                                <select name="no_kk" id="no_kk"
-                                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <label class="block text-sm font-medium text-gray-700">Keluarga</label>
+                                <select name="no_kk" id="no_kk" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                     <option value="">-- Pilih Keluarga --</option>
-                                    @foreach($keluargas ?? [] as $kel)
-                                        <option value="{{ $kel->no_kk }}" {{ old('no_kk') == $kel->no_kk ? 'selected' : '' }}>
-                                            {{ $kel->keluarga_kepalakeluarga ?? '-' }} ({{ $kel->no_kk }})
-                                        </option>
+                                    @foreach($keluargas as $kel)
+                                        <option value="{{ $kel->no_kk }}">{{ $kel->keluarga_kepalakeluarga }} ({{ $kel->no_kk }})</option>
                                     @endforeach
                                 </select>
                                 @error('no_kk')
@@ -31,27 +28,20 @@
                         </div>
                     </div>
 
-                    <!-- Sarana & Prasarana Kerja -->
+                    <!-- Sarana dan Prasarana Kerja -->
                     <div class="mb-8">
-                        <h4 class="text-sm font-semibold text-gray-700 mb-4">Detail Sarana & Prasarana Kerja</h4>
+                        <h4 class="text-sm font-semibold text-gray-700 mb-4">Sarana & Prasarana Kerja</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @foreach($masterSarpras ?? [] as $index => $sarpras)
-                                @php $field = 'sarpraskerja_' . ($index + 1); @endphp
+                            @foreach($masterSarpras as $sarpras)
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">
-                                        {{ $sarpras->sarpraskerja ?? 'Sarana Prasarana ' . ($index + 1) }}
-                                    </label>
-                                    <select name="{{ $field }}"
-                                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="">-- Pilih Jawaban --</option>
-                                        @foreach($masterJawab ?? [] as $jawab)
-                                            <option value="{{ $jawab->kdjawabsarpras }}"
-                                                    {{ old($field) == $jawab->kdjawabsarpras ? 'selected' : '' }}>
-                                                {{ $jawab->jawabsarpras }}
-                                            </option>
+                                    <label class="block text-sm font-medium text-gray-700">{{ $sarpras->sarpraskerja }}</label>
+                                    <select name="sarpraskerja_{{ $sarpras->kdsarpraskerja }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Silahkan Pilih --</option>
+                                        @foreach($masterJawab as $jawab)
+                                            <option value="{{ $jawab->kdjawabsarpras }}">{{ $jawab->jawabsarpras }}</option>
                                         @endforeach
                                     </select>
-                                    @error($field)
+                                    @error("sarpraskerja_{$sarpras->kdsarpraskerja}")
                                         <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
                                     @enderror
                                 </div>
@@ -59,16 +49,10 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
-                    <div class="mt-6 flex space-x-4 justify-end">
-                        <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
-                            Simpan
-                        </button>
-                        <a href="{{ route('keluarga.sarpraskerja.index') }}"
-                           class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">
-                            Batal
-                        </a>
+                    <!-- Tombol Aksi -->
+                    <div class="mt-6 flex space-x-4">
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200">Simpan</button>
+                        <a href="{{ route('keluarga.sarpraskerja.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-300 transition duration-200">Batal</a>
                     </div>
                 </form>
             </div>

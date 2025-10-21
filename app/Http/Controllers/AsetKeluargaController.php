@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DataAsetKeluarga;
+use App\Models\DataBangunKeluarga;
 use App\Models\DataKeluarga;
-use App\Models\MasterAsetKeluarga;
-use App\Models\MasterJawab;
+use App\Models\MasterPembangunanKeluarga;
+use App\Models\MasterJawabBangun;
 use Illuminate\Http\Request;
 
-class AsetKeluargaController extends Controller
+class BangunKeluargaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $asetkeluargas = DataAsetKeluarga::with('keluarga')->get();
-        $masterAset = MasterAsetKeluarga::pluck('asetkeluarga', 'kdasetkeluarga')->toArray();
-        $masterJawab = MasterJawab::pluck('jawab', 'kdjawab')->toArray();
-        return view('keluarga.asetkeluarga.index', compact('asetkeluargas', 'masterAset', 'masterJawab'));
+        $bangunkeluargas = DataBangunKeluarga::with('keluarga')->get();
+        $masterPembangunan = MasterPembangunanKeluarga::pluck('pembangunankeluarga', 'kdpembangunankeluarga')->toArray();
+        $masterJawab = MasterJawabBangun::pluck('jawabbangun', 'kdjawabbangun')->toArray();
+
+        return view('keluarga.bangunkeluarga.index', compact('bangunkeluargas', 'masterPembangunan', 'masterJawab'));
     }
 
     /**
@@ -27,9 +28,10 @@ class AsetKeluargaController extends Controller
     public function create()
     {
         $keluargas = DataKeluarga::all();
-        $masterAset = MasterAsetKeluarga::all();
-        $masterJawab = MasterJawab::all();
-        return view('keluarga.asetkeluarga.create', compact('keluargas', 'masterAset', 'masterJawab'));
+        $masterPembangunan = MasterPembangunanKeluarga::all();
+        $masterJawab = MasterJawabBangun::all();
+
+        return view('keluarga.bangunkeluarga.create', compact('keluargas', 'masterPembangunan', 'masterJawab'));
     }
 
     /**
@@ -39,17 +41,18 @@ class AsetKeluargaController extends Controller
     {
         $request->validate([
             'no_kk' => 'required|exists:data_keluarga,no_kk',
-            'asetkeluarga_*' => 'nullable|in:0,1,2'
         ]);
 
         $data = $request->only(['no_kk']);
-        for ($i = 1; $i <= 42; $i++) {
-            $data["asetkeluarga_$i"] = $request->input("asetkeluarga_$i", 0);
+
+        // Simpan jawaban 1-51
+        for ($i = 1; $i <= 51; $i++) {
+            $data["bangunkeluarga_$i"] = $request->input("bangunkeluarga_$i", 0); // default 0
         }
 
-        DataAsetKeluarga::create($data);
+        DataBangunKeluarga::create($data);
 
-        return redirect()->route('keluarga.asetkeluarga.index')->with('success', 'Data aset keluarga berhasil ditambahkan.');
+        return redirect()->route('keluarga.bangunkeluarga.index')->with('success', 'Data bangun keluarga berhasil ditambahkan.');
     }
 
     /**
@@ -57,32 +60,33 @@ class AsetKeluargaController extends Controller
      */
     public function edit($no_kk)
     {
-        $asetkeluarga = DataAsetKeluarga::where('no_kk', $no_kk)->firstOrFail();
+        $bangunkeluarga = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
         $keluargas = DataKeluarga::all();
-        $masterAset = MasterAsetKeluarga::all();
-        $masterJawab = MasterJawab::all();
-        return view('keluarga.asetkeluarga.edit', compact('asetkeluarga', 'keluargas', 'masterAset', 'masterJawab'));
+        $masterPembangunan = MasterPembangunanKeluarga::all();
+        $masterJawab = MasterJawabBangun::all();
+
+        return view('keluarga.bangunkeluarga.edit', compact('bangunkeluarga', 'keluargas', 'masterPembangunan', 'masterJawab'));
     }
 
-    /**
+    /** 
      * Update the specified resource in storage.
      */
     public function update(Request $request, $no_kk)
     {
         $request->validate([
             'no_kk' => 'required|exists:data_keluarga,no_kk',
-            'asetkeluarga_*' => 'nullable|in:0,1,2'
         ]);
 
-        $asetkeluarga = DataAsetKeluarga::where('no_kk', $no_kk)->firstOrFail();
+        $bangunkeluarga = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
         $data = $request->only(['no_kk']);
-        for ($i = 1; $i <= 42; $i++) {
-            $data["asetkeluarga_$i"] = $request->input("asetkeluarga_$i", 0);
+
+        for ($i = 1; $i <= 51; $i++) {
+            $data["bangunkeluarga_$i"] = $request->input("bangunkeluarga_$i", 0); // default 0
         }
 
-        $asetkeluarga->update($data);
+        $bangunkeluarga->update($data);
 
-        return redirect()->route('keluarga.asetkeluarga.index')->with('success', 'Data aset keluarga berhasil diperbarui.');
+        return redirect()->route('keluarga.bangunkeluarga.index')->with('success', 'Data bangun keluarga berhasil diperbarui.');
     }
 
     /**
@@ -90,9 +94,9 @@ class AsetKeluargaController extends Controller
      */
     public function destroy($no_kk)
     {
-        $asetkeluarga = DataAsetKeluarga::where('no_kk', $no_kk)->firstOrFail();
-        $asetkeluarga->delete();
+        $bangunkeluarga = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
+        $bangunkeluarga->delete();
 
-        return redirect()->route('keluarga.asetkeluarga.index')->with('success', 'Data aset keluarga berhasil dihapus.');
+        return redirect()->route('keluarga.bangunkeluarga.index')->with('success', 'Data bangun keluarga berhasil dihapus.');
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\DataKonflikSosial;
+use App\Models\DataSarprasKerja;
 use App\Models\DataSejahteraKeluarga;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -40,6 +41,7 @@ class DatabaseSeeder extends Seeder {
             MasterJawabLemmasSeeder::class,
             MasterJawabProgramSertaSeeder::class,
             MasterJawabSeeder::class,
+            MasterJawabSarprasSeeder::class,
             MasterJawabTempatPersalinanSeeder::class,
             MasterJenisAtapBangunanSeeder::class,
             MasterJenisBahanGalianSeeder::class,
@@ -94,7 +96,9 @@ class DatabaseSeeder extends Seeder {
             DataAsetLahanSeeder::class,
             DataPrasaranaDasarSeeder::class,
             DataSejahteraKeluargaSeeder::class,
-            DataKonflikSosialSeeder::class
+            DataKonflikSosialSeeder::class,
+            DataSarprasKerjaSeeder::class,
+            DataBangunKeluargaSeeder::class
         ]);
     }
 }
