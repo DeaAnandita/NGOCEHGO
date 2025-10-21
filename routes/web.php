@@ -192,20 +192,20 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::delete('lemdes/{nik}', [LembagaDesaController::class, 'destroy'])->name('penduduk.lemdes.destroy');
     
     // Routes untuk lembaga masyarakat
-    Route::get('lemmas', [LembagaMasyarakatController::class, 'index'])->name('penduduk.lemmas.index');
-    Route::get('lemmas/create', [LembagaMasyarakatController::class, 'create'])->name('penduduk.lemmas.create');
-    Route::post('lemmas', [LembagaMasyarakatController::class, 'store'])->name('penduduk.lemmas.store');
-    Route::get('lemmas/{nik}/edit', [LembagaMasyarakatController::class, 'edit'])->name('penduduk.lemmas.edit');
-    Route::put('lemmas/{nik}', [LembagaMasyarakatController::class, 'update'])->name('penduduk.lemmas.update');
-    Route::delete('lemmas/{nik}', [LembagaMasyarakatController::class, 'destroy'])->name('penduduk.lemmas.destroy');
+    Route::get('lemmas', [LembagaMasyarakatController::class, 'index'])->name('penduduk.lembagamasyarakat.index');
+    Route::get('lemmas/create', [LembagaMasyarakatController::class, 'create'])->name('penduduk.lembagamasyarakat.create');
+    Route::post('lemmas', [LembagaMasyarakatController::class, 'store'])->name('penduduk.lembagamasyarakat.store');
+    Route::get('lemmas/{nik}/edit', [LembagaMasyarakatController::class, 'edit'])->name('penduduk.lembagamasyarakat.edit');
+    Route::put('lemmas/{nik}', [LembagaMasyarakatController::class, 'update'])->name('penduduk.lembagamasyarakat.update');
+    Route::delete('lemmas/{nik}', [LembagaMasyarakatController::class, 'destroy'])->name('penduduk.lembagamasyarakat.destroy');
     
     //Routes untuk lembaga ekonomi
-    Route::get('lemek', [LembagaEkonomiController::class, 'index'])->name('penduduk.lemek.index');
-    Route::get('lemek/create', [LembagaEkonomiController::class, 'create'])->name('penduduk.lemek.create');
-    Route::post('lemek', [LembagaEkonomiController::class, 'store'])->name('penduduk.lemek.store');
-    Route::get('lemek/{nik}/edit', [LembagaEkonomiController::class, 'edit'])->name('penduduk.lemek.edit');
-    Route::put('lemek/{nik}', [LembagaEkonomiController::class, 'update'])->name('penduduk.lemek.update');
-    Route::delete('lemek/{nik}', [LembagaEkonomiController::class, 'destroy'])->name('penduduk.lemek.destroy');
+    Route::get('lembagaekonomi', [LembagaEkonomiController::class, 'index'])->name('penduduk.lembagaekonomi.index');
+    Route::get('lembagaekonomi/create', [LembagaEkonomiController::class, 'create'])->name('penduduk.lembagaekonomi.create');
+    Route::post('lembagaekonomi', [LembagaEkonomiController::class, 'store'])->name('penduduk.lembagaekonomi.store');
+    Route::get('lembagaekonomi/{nik}/edit', [LembagaEkonomiController::class, 'edit'])->name('penduduk.lembagaekonomi.edit');
+    Route::put('lembagaekonomi/{nik}', [LembagaEkonomiController::class, 'update'])->name('penduduk.lembagaekonomi.update');
+    Route::delete('lembagaekonomi/{nik}', [LembagaEkonomiController::class, 'destroy'])->name('penduduk.lembagaekonomi.destroy');
     
     
 });
