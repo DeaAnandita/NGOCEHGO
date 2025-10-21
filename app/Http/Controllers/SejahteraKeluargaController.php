@@ -17,7 +17,7 @@ class SejahteraKeluargaController extends Controller
         $sejahterakeluargas = DataSejahteraKeluarga::with('keluarga')->get();
 
         // Ambil label soal dari master_pembangunan_keluarga (typejawab 2 = uraian)
-        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(62, 68))
+        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(61, 68))
             ->get(['kdpembangunankeluarga', 'pembangunankeluarga']);
 
         return view('keluarga.sejahterakeluarga.index', compact('sejahterakeluargas', 'masterPembangunan'));
@@ -29,7 +29,7 @@ class SejahteraKeluargaController extends Controller
     public function create()
     {
         $keluargas = DataKeluarga::all();
-        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(62, 68))->get();
+        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(61, 68))->get();
 
         return view('keluarga.sejahterakeluarga.create', compact('keluargas', 'masterPembangunan'));
     }
@@ -45,7 +45,7 @@ class SejahteraKeluargaController extends Controller
 
         $data = ['no_kk' => $request->no_kk];
 
-        foreach (range(62, 68) as $i) {
+        foreach (range(61, 68) as $i) {
             $data["sejahterakeluarga_$i"] = $request->input("sejahterakeluarga_$i", null);
         }
 
@@ -61,7 +61,7 @@ class SejahteraKeluargaController extends Controller
     {
         $sejahterakeluarga = DataSejahteraKeluarga::where('no_kk', $no_kk)->firstOrFail();
         $keluargas = DataKeluarga::all();
-        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(62, 68))->get();
+        $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(61, 68))->get();
 
         return view('keluarga.sejahterakeluarga.edit', compact('sejahterakeluarga', 'keluargas', 'masterPembangunan'));
     }
@@ -79,7 +79,7 @@ class SejahteraKeluargaController extends Controller
 
         $data = ['no_kk' => $request->no_kk];
 
-        foreach (range(62, 68) as $i) {
+        foreach (range(61, 68) as $i) {
             $data["sejahterakeluarga_$i"] = $request->input("sejahterakeluarga_$i", null);
         }
 
