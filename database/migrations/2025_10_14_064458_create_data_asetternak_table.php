@@ -12,7 +12,7 @@ return new class extends Migration
             $table->string('no_kk', 16); // FK ke data keluarga
 
             // 40 kolom aseternak (hasil jawaban, 0/1)
-            for ($i = 1; $i <= 40; $i++) {
+            for ($i = 1; $i <= 24; $i++) {
                 $table->tinyInteger("asetternak_$i")->nullable()->default(0);
             }
 

@@ -16,13 +16,13 @@ class DataAsetTernak extends Model
     public $timestamps = false;
 
     // isi semua kolom
-    protected $fillable;
+    
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->fillable = array_merge(['no_kk'], array_map(fn($i) => "asetternak_$i", range(1, 40)));
+        $this->fillable = array_merge(['no_kk'], array_map(fn($i) => "asetternak_$i", range(1, 24)));
     }
 
 
