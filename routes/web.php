@@ -158,6 +158,14 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('kelahiran/{nik}/edit', [KelahiranController::class, 'edit'])->name('penduduk.kelahiran.edit');
     Route::put('kelahiran/{nik}', [KelahiranController::class, 'update'])->name('penduduk.kelahiran.update');
     Route::delete('kelahiran/{nik}', [KelahiranController::class, 'destroy'])->name('penduduk.kelahiran.destroy');
+    // Route::get('/kelahiran/get-penduduk', [KelahiranController::class, 'getPenduduk'])
+    // ->name('kelahiran.get-penduduk');
+    // Route::get('/kelahiran/getKabupatens', [KelahiranController::class, 'getKabupatens'])
+    // ->name('kelahiran.getKabupatens');
+    // Route::get('/kelahiran/getKecamatans', [KelahiranController::class, 'getKecamatans'])
+    // ->name('kelahiran.getKecamatans');
+    // Route::get('/kelahiran/getDesas', [KelahiranController::class, 'getDesas'])
+    // ->name('kelahiran.getDesas');
 
     // Routes untuk sosial ekonomi
     Route::get('sosialekonomi', [SosialEkonomiController::class, 'index'])->name('penduduk.sosialekonomi.index');

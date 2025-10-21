@@ -35,6 +35,10 @@ class DataKelahiran extends Model
     ];
 
 
+    public function penduduk()
+    {
+        return $this->belongsTo(DataPenduduk::class, 'nik', 'nik');
+    }
     /**
      * Relasi ke data penduduk (ibu).
      */
@@ -74,4 +78,4 @@ class DataKelahiran extends Model
     {
         return $this->belongsTo(MasterPertolonganPersalinan::class, 'kdpertolonganpersalinan', 'kdpertolonganpersalinan');
     }
-}
+} 
