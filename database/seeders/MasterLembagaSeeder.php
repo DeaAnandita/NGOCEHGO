@@ -30,7 +30,8 @@ class MasterLembagaSeeder extends Seeder
         // Pemerintah Desa (kdjenislembaga = 2)
         ['kdlembaga' => 33, 'kdjenislembaga' => 2, 'lembaga' => 'KEPALA/LURAH'],
         ['kdlembaga' => 34, 'kdjenislembaga' => 2, 'lembaga' => 'SEKRETARIS/LURAH'],
-        ['kdlembaga' => 35, 'kdjenislembaga' => 2, 'lembaga' => 'KEPALA URUSAN'],            ['kdlembaga' => 36, 'kdjenislembaga' => 2, 'lembaga' => 'KEPALA DUSUN/LINGKUNGAN'],
+        ['kdlembaga' => 35, 'kdjenislembaga' => 2, 'lembaga' => 'KEPALA URUSAN'],            
+		['kdlembaga' => 36, 'kdjenislembaga' => 2, 'lembaga' => 'KEPALA DUSUN/LINGKUNGAN'],
         ['kdlembaga' => 37, 'kdjenislembaga' => 2, 'lembaga' => 'STAF'],
         ['kdlembaga' => 38, 'kdjenislembaga' => 2, 'lembaga' => 'KETUA BPD'],
         ['kdlembaga' => 39, 'kdjenislembaga' => 2, 'lembaga' => 'WAKIL KETUA BPD'],

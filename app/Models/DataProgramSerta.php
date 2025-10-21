@@ -16,7 +16,6 @@ class DataProgramSerta extends Model
     public $timestamps = false;
 
     // isi semua kolom
-    protected $fillable;
 
     public function __construct(array $attributes = [])
     {
