@@ -103,7 +103,12 @@ class DatabaseSeeder extends Seeder {
             DataAsetTernakSeeder::class,
             DataAsetPerikananSeeder::class,
             DataLembagaDesaSeeder::class,
+            DataLembagaEkonomiSeeder::class,
+            DataLembagaMasyarakatSeeder::class,
             DataProgramSertaSeeder::class,
+            DataSosialEkonomiSeeder::class,
+            DataUsahaArtSeeder::class,
+            DataKelahiranSeeder::class
         ]);
     }
 }
