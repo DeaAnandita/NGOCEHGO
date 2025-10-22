@@ -31,7 +31,7 @@ class KonflikSosialController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_kk' => 'required|exists:data_keluarga,no_kk',
+            'no_kk'=> 'required|unique:data_konfliksosial,no_kk|exists:data_keluarga,no_kk',
         ]);
 
         $data = ['no_kk' => $request->no_kk];
@@ -59,16 +59,20 @@ class KonflikSosialController extends Controller
 
     public function update(Request $request, $no_kk)
     {
+        $request->validate([
+        'no_kk' => 'required|unique:data_konfliksosial,no_kk|exists:data_keluarga,no_kk',
+        ]);
+
+        $data = ['no_kk' => $request->no_kk];
         $konfliksosial = DataKonflikSosial::where('no_kk', $no_kk)->firstOrFail();
 
-        $updateData = [];
         $totalKonflik = MasterKonflikSosial::count();
 
         for ($i = 1; $i <= $totalKonflik; $i++) {
-            $updateData["konfliksosial_$i"] = $request->input("konfliksosial_$i", 0);
+            $data["konfliksosial_$i"] = $request->input("konfliksosial_$i", 0);
         }
 
-        $konfliksosial->update($updateData);
+        $konfliksosial->update($data);
 
         return redirect()->route('keluarga.konfliksosial.index')
             ->with('success', 'Data konflik sosial berhasil diperbarui.');
