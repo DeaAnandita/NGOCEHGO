@@ -86,7 +86,7 @@ class LembagaEkonomiController extends Controller
     public function update(Request $request, $nik)
     {
         $request->validate([
-            'nik' => 'required|exists:data_penduduk,nik',
+            'nik' => 'required|unique:data_lembagaekonomi,nik|exists:data_penduduk,nik',
         ]);
 
         $lembagaEkonomi = DataLembagaEkonomi::where('nik', $nik)->firstOrFail();
