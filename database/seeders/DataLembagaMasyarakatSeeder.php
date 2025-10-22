@@ -15,7 +15,7 @@ class DataLembagaMasyarakatSeeder extends Seeder
         ];
 
         foreach ($records as $nik) {
-            $llembagamasyarakat= ['nik' => $nik];
+            $lembagamasyarakat= ['nik' => $nik];
             for ($i = 1; $i <= 48; $i++) {
                 // 1 = punya, 0 = tidak punya (random)
                 $lembagamasyarakat["lemmas_$i"] = rand(1,4);
