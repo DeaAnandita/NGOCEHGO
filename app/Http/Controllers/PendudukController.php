@@ -102,7 +102,7 @@ class PendudukController extends Controller
 
         DataPenduduk::create($request->all());
 
-        return redirect()->route('penduduk.index')->with('success', 'Data penduduk berhasil ditambahkan.');
+        return redirect()->route('dasar-penduduk.index')->with('success', 'Data penduduk berhasil ditambahkan.');
     }
 
     /**
@@ -175,7 +175,7 @@ class PendudukController extends Controller
         $penduduk = DataPenduduk::findOrFail($nik);
         $penduduk->update($request->all());
 
-        return redirect()->route('penduduk.index')->with('success', 'Data penduduk berhasil diperbarui.');
+        return redirect()->route('dasar-penduduk.index')->with('success', 'Data penduduk berhasil diperbarui.');
     }
 
     /**
@@ -186,6 +186,6 @@ class PendudukController extends Controller
         $penduduk = DataPenduduk::findOrFail($nik);
         $penduduk->delete();
 
-        return redirect()->route('penduduk.index')->with('success', 'Data penduduk berhasil dihapus.');
+        return redirect()->route('dasar-penduduk.index')->with('success', 'Data penduduk berhasil dihapus.');
     }
 }

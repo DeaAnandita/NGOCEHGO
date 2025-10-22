@@ -18,7 +18,7 @@ class DataAsetKeluargaSeeder extends Seeder
             $asetData = ['no_kk' => $kk];
             for ($i = 1; $i <= 42; $i++) {
                 // 1 = punya, 0 = tidak punya (random untuk contoh)
-                $asetData["asetkeluarga_$i"] = rand(0, 1);
+                $asetData["asetkeluarga_$i"] = rand(0, 2);
             }
 
             DB::table('data_asetkeluarga')->insert($asetData);

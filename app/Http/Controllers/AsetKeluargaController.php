@@ -38,9 +38,14 @@ class AsetKeluargaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_kk' => 'required|exists:data_keluarga,no_kk',
-            'asetkeluarga_*' => 'nullable|in:0,1,2'
+            'no_kk' => 'required|unique:data_asetkeluarga,no_kk|exists:data_keluarga,no_kk',
+            'asetkeluarga_*' => 'sometimes|nullable|in:0,1,2'
+        ], [
+            'no_kk.required' => 'No KK wajib diisi.',
+            'no_kk.unique' => 'No KK sudah digunakan.',
+            'no_kk.exists' => 'No KK tidak ditemukan dalam data keluarga.'
         ]);
+
 
         $data = $request->only(['no_kk']);
         for ($i = 1; $i <= 42; $i++) {
@@ -49,8 +54,10 @@ class AsetKeluargaController extends Controller
 
         DataAsetKeluarga::create($data);
 
-        return redirect()->route('keluarga.asetkeluarga.index')->with('success', 'Data aset keluarga berhasil ditambahkan.');
+        return redirect()->route('keluarga.asetkeluarga.index')
+            ->with('success', 'Data aset keluarga berhasil ditambahkan.');
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -71,7 +78,7 @@ class AsetKeluargaController extends Controller
     {
         $request->validate([
             'no_kk' => 'required|exists:data_keluarga,no_kk',
-            'asetkeluarga_*' => 'nullable|in:0,1,2'
+            'asetkeluarga_*' => 'sometimes|nullable|in:0,1,2'
         ]);
 
         $asetkeluarga = DataAsetKeluarga::where('no_kk', $no_kk)->firstOrFail();
@@ -82,8 +89,10 @@ class AsetKeluargaController extends Controller
 
         $asetkeluarga->update($data);
 
-        return redirect()->route('keluarga.asetkeluarga.index')->with('success', 'Data aset keluarga berhasil diperbarui.');
+        return redirect()->route('keluarga.asetkeluarga.index')
+            ->with('success', 'Data aset keluarga berhasil diperbarui.');
     }
+
 
     /**
      * Remove the specified resource from storage.

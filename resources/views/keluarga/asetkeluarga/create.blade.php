@@ -13,13 +13,15 @@
                     <div class="mb-8">
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Informasi Keluarga</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                             <!-- Pilih Keluarga -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Keluarga</label>
-                                <select name="no_kk" id="no_kk" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <select name="no_kk" id="no_kk"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                     <option value="">-- Pilih Keluarga --</option>
                                     @foreach($keluargas as $kel)
-                                        <option value="{{ $kel->no_kk }}">{{ $kel->keluarga_kepalakeluarga }} ({{ $kel->no_kk }})</option>
+                                        <option value="{{ $kel->no_kk }}" {{ old('no_kk') == $kel->no_kk ? 'selected' : '' }}>
+                                            {{ $kel->keluarga_kepalakeluarga }} ({{ $kel->no_kk }})
+                                        </option>
                                     @endforeach
                                 </select>
                                 @error('no_kk')
@@ -39,7 +41,9 @@
                                     <select name="asetkeluarga_{{ $aset->kdasetkeluarga }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Silahkan Pilih --</option>
                                         @foreach($masterJawab as $jawab)
-                                            <option value="{{ $jawab->kdjawab }}">{{ $jawab->jawab }}</option>
+                                            <option value="{{ $jawab->kdjawab }}" {{ old("asetkeluarga_{$aset->kdasetkeluarga}") == $jawab->kdjawab ? 'selected' : '' }}>
+                                                {{ $jawab->jawab }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error("asetkeluarga_{$aset->kdasetkeluarga}")
@@ -60,7 +64,9 @@
                                     <select name="asetkeluarga_{{ $aset->kdasetkeluarga }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Silahkan Pilih --</option>
                                         @foreach($masterJawab as $jawab)
-                                            <option value="{{ $jawab->kdjawab }}">{{ $jawab->jawab }}</option>
+                                            <option value="{{ $jawab->kdjawab }}" {{ old("asetkeluarga_{$aset->kdasetkeluarga}") == $jawab->kdjawab ? 'selected' : '' }}>
+                                                {{ $jawab->jawab }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error("asetkeluarga_{$aset->kdasetkeluarga}")
@@ -81,7 +87,9 @@
                                     <select name="asetkeluarga_{{ $aset->kdasetkeluarga }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Silahkan Pilih --</option>
                                         @foreach($masterJawab as $jawab)
-                                            <option value="{{ $jawab->kdjawab }}">{{ $jawab->jawab }}</option>
+                                            <option value="{{ $jawab->kdjawab }}" {{ old("asetkeluarga_{$aset->kdasetkeluarga}") == $jawab->kdjawab ? 'selected' : '' }}>
+                                                {{ $jawab->jawab }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error("asetkeluarga_{$aset->kdasetkeluarga}")
@@ -102,7 +110,9 @@
                                     <select name="asetkeluarga_{{ $aset->kdasetkeluarga }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Silahkan Pilih --</option>
                                         @foreach($masterJawab as $jawab)
-                                            <option value="{{ $jawab->kdjawab }}">{{ $jawab->jawab }}</option>
+                                            <option value="{{ $jawab->kdjawab }}" {{ old("asetkeluarga_{$aset->kdasetkeluarga}") == $jawab->kdjawab ? 'selected' : '' }}>
+                                                {{ $jawab->jawab }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error("asetkeluarga_{$aset->kdasetkeluarga}")
@@ -122,6 +132,7 @@
             </div>
         </div>
     </div>
+
     @push('scripts')
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -135,6 +146,7 @@
             });
         </script>
     @endpush
+
     @push('styles')
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <style>
