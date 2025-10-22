@@ -15,8 +15,7 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">NIK</label>
-                                <select name="nik" id="nik"
-                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <select name="nik" id="nik" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                     <option value="">-- Pilih Penduduk --</option>
                                     @foreach($penduduks as $p)
                                         <option value="{{ $p->nik }}" {{ old('nik') == $p->nik ? 'selected' : '' }}>
@@ -36,19 +35,18 @@
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Program Bantuan yang Diterima</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @foreach([
-                                1 => 'KARTU KELUARGA SEJAHTERA(KKS)/KARTU PERLINDUNGAN SOSIAL(KPS)',
-                                2 => 'KARTU INDONESIA PINTAR (KIP)',
-                                3 => 'KARTU INDONESIA SEHAT (KIS)',
-                                4 => 'BPJS KESEHATAN NON PBI (PESERTA MANDIRI)',
-                                5 => 'JAMINAN SOSIAL TENAGA KERJA (JAMSOSTEK)',
-                                6 => 'ASURANSI KESEHATAN LAINNYA',
-                                7 => 'PROGRAM KELUARGA HARAPAN (PKH)',
-                                8 => 'BERAS UNTUK MASYARAKAT MISKIN (RASKIN)'
+                                1 => 'KKS/KPS',
+                                2 => 'KIP',
+                                3 => 'KIS',
+                                4 => 'BPJS Non PBI',
+                                5 => 'Jamsostek',
+                                6 => 'Asuransi Lainnya',
+                                7 => 'PKH',
+                                8 => 'Raskin'
                             ] as $i => $label)
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">{{ $label }}</label>
-                                    <select name="programserta_{{ $i }}"
-                                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                    <select name="programserta_{{ $i }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Silahkan Pilih --</option>
                                         @foreach($masterJawab as $key => $val)
                                             <option value="{{ $key }}" {{ old("programserta_$i") == $key ? 'selected' : '' }}>
@@ -56,22 +54,17 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error("programserta_$i")
-                                        <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                    @enderror
                                 </div>
                             @endforeach
                         </div>
                     </div>
 
                     <!-- Tombol Aksi -->
-                    <div class="mt-6 flex space-x-4 justify-end">
-                        <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700">
                             Simpan
                         </button>
-                        <a href="{{ route('penduduk.programserta.index') }}"
-                            class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">
+                        <a href="{{ route('penduduk.programserta.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300">
                             Batal
                         </a>
                     </div>
@@ -93,22 +86,8 @@
             });
         </script>
     @endpush
+
     @push('styles')
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <style>
-            .select2-container--default .select2-selection--single {
-                border: 1px solid #d1d5db;
-                border-radius: 0.375rem;
-                height: 38px;
-                padding: 0.5rem;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            }
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
-                line-height: 28px;
-            }
-            .select2-container--default .select2-selection--single .select2-selection__arrow {
-                height: 36px;
-            }
-        </style>
     @endpush
 </x-app-layout>

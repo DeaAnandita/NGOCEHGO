@@ -91,7 +91,6 @@ class DatabaseSeeder extends Seeder {
             MasterTingkatSulitDisabilitasSeeder::class,
             MasterJawabLahanSeeder::class,
             
-
             DataKeluargaSeeder::class,
             DataPendudukSeeder::class,
             DataAsetKeluargaSeeder::class,
@@ -103,11 +102,8 @@ class DatabaseSeeder extends Seeder {
             DataBangunKeluargaSeeder::class,
             DataAsetTernakSeeder::class,
             DataAsetPerikananSeeder::class,
-            DataKelahiranSeeder::class,
-            DataLembagaEkonomiSeeder::class,
-            DataLembagaMasyarakatSeeder::class,
-            DataSosialEkonomiSeeder::class,
-            DataUsahaArtSeeder::class,
+            DataLembagaDesaSeeder::class,
+            DataProgramSertaSeeder::class,
         ]);
     }
 }
