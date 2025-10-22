@@ -52,7 +52,7 @@ class LembagaEkonomiController extends Controller
     {
         // Validasi input
         $request->validate([
-            'nik' => 'required|exists:data_penduduk,nik',
+            'nik' => 'required|unique:data_lembagaekonomi,nik|exists:data_penduduk,nik',
         ]);
 
         $data = ['nik' => $request->nik];

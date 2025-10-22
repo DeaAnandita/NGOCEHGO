@@ -49,15 +49,9 @@
                     </div>
 
                     <!-- Tombol -->
-                    <div class="mt-6 flex space-x-4">
-                        <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200">
-                            Simpan
-                        </button>
-                        <a href="{{ route('penduduk.lembagamasyarakat.index') }}"
-                           class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-300 transition duration-200">
-                            Batal
-                        </a>
+                     <div class="mt-6 flex space-x-4 justify-end">
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">Simpan</button>
+                        <a href="{{ route('penduduk.lembagaekonomi.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">Batal</a>
                     </div>
                 </form>
             </div>

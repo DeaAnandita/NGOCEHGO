@@ -15,7 +15,7 @@ return new class extends Migration
             for ($i = 1; $i <= 9; $i++) {
                 $table->tinyInteger("lemdes_$i")->nullable()->default(0);
             }
-
+                
             // relasi foreign key
             $table->foreign('nik')->references('nik')->on('data_penduduk')->onDelete('cascade');
         });

@@ -19,6 +19,7 @@
                         <table id="lemmasTable" class="min-w-[2000px] table-auto border-collapse text-sm">
                             <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold sticky top-0 z-10">
                                 <tr>
+                                    <th class="border border-gray-200 px-4 py-3 text-left">NO</th>
                                     <th class="border border-gray-200 px-4 py-3 text-left">NIK</th>
                                     <th class="border border-gray-200 px-4 py-3 text-left">Nama Penduduk</th>
                                     @foreach ($masterLembaga as $kd => $nama)
@@ -35,8 +36,13 @@
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                                 @forelse ($lembagaMasyarakats as $data)
                                     <tr class="hover:bg-gray-50 transition">
+                                        <!-- ✅ Kolom NO diperbaiki -->
+                                        <td class="border border-gray-200 px-4 py-4 text-center">{{ $loop->iteration }}</td>
+
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->nik }}</td>
-                                        <td class="border border-gray-200 px-4 py-4">{{ $data->penduduk->penduduk_namalengkap ?? '-' }}</td>
+                                        <td class="border border-gray-200 px-4 py-4">
+                                            {{ $data->penduduk->penduduk_namalengkap ?? '-' }}
+                                        </td>
 
                                         @php
                                             $totalKolom = count($masterLembaga);
@@ -46,8 +52,7 @@
                                                 $value = $data->{"lemmas_$i"} ?? 0;
                                             @endphp
                                             <td class="border border-gray-200 px-4 py-4 text-center">
-                                                <span class="text-xs px-2 py-1 rounded-full
-                                                    ">
+                                                <span class="text-xs px-2 py-1 rounded-full">
                                                     {{ $masterJawabLemmas[$value] ?? '-' }}
                                                 </span>
                                             </td>
@@ -84,4 +89,3 @@
         </div>
     </div>
 </x-app-layout>
-
