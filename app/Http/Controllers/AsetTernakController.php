@@ -42,7 +42,7 @@ class AsetTernakController extends Controller
     {
         // Validasi input
         $request->validate([
-            'no_kk' => 'required|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|unique:data_asetternak,no_kk|exists:data_keluarga,no_kk',
         ]);
 
 
@@ -77,8 +77,9 @@ class AsetTernakController extends Controller
     public function update(Request $request, $no_kk)
     {
         $request->validate([
-            'no_kk' => 'required|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|unique:data_asetternak,no_kk,|exists:data_keluarga,no_kk',
             'asetternak_*' => 'nullable|string|max:255',
+            
         ]);
 
         $asetternak = DataAsetTernak::where('no_kk', $no_kk)->firstOrFail();

@@ -41,7 +41,7 @@ class AsetPerikananController extends Controller
     {
         // Validasi input
         $request->validate([
-            'no_kk' => 'required|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|unique:data_asetperikanan,no_kk|exists:data_keluarga,no_kk',
         ]);
 
         $data = ['no_kk' => $request->no_kk];
@@ -75,7 +75,7 @@ class AsetPerikananController extends Controller
     public function update(Request $request, $no_kk)
     {
         $request->validate([
-            'no_kk' => 'required|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|unique:data_asetperikanan,no_kk|exists:data_keluarga,no_kk',
             'asetperikanan_*' => 'nullable|string|max:255',
         ]);
 
