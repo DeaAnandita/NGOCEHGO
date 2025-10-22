@@ -37,7 +37,7 @@ class BangunKeluargaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_kk' => 'required|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|unique:data_bangunkeluarga,no_kk|exists:data_keluarga,no_kk',
         ]);
 
         $data = ['no_kk' => $request->no_kk];
@@ -74,6 +74,7 @@ class BangunKeluargaController extends Controller
     {
         $request->validate([
             'no_kk' => 'required|exists:data_keluarga,no_kk',
+
         ]);
 
         $bangunkeluarga = DataBangunKeluarga::where('no_kk', $no_kk)->firstOrFail();
