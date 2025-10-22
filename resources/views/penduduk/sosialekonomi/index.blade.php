@@ -2,9 +2,9 @@
     <div class="flex">
         @include('penduduk.sidebar')
 
-        <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <!-- Header -->
+                <!-- Header tetap tidak ikut scroll -->
                 <div class="flex flex-col justify-between sm:flex-row sm:items-center mb-6 gap-4">
                     <h3 class="text-xl font-bold text-gray-800">Data Sosial Ekonomi</h3>
                     <a href="{{ route('penduduk.sosialekonomi.create') }}"
@@ -13,23 +13,25 @@
                     </a>
                 </div>
 
-                <div class="w-full overflow-x-auto">
-                    <table class="w-full table-auto divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">No.</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">NIK</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Lengkap</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Partisipasi Sekolah</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ijazah Terakhir</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jenis Disabilitas</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tingkat Kesulitan Disabilitas</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penyakit Kronis</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lapangan Usaha</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status Kedudukan Kerja</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pendapatan/Bulan</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Imunisasi</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+
+                <div class="relative">
+                    <div class="overflow-x-auto w-full">
+                        <table id="sosialekonomiTable" class="min-w-[2000px] table-auto border-collapse text-sm">
+                            <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold sticky top-0 z-10">
+                                <tr>
+                                <th class="border border-gray-200 px-4 py-3 text-left">No.</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">NIK</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Nama Lengkap</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Partisipasi Sekolah</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Ijazah Terakhir</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Jenis Disabilitas</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Tingkat Kesulitan Disabilitas</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Penyakit Kronis</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Lapangan Usaha</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Status Kedudukan Kerja</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Pendapatan/Bulan</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Imunisasi</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">

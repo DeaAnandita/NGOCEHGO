@@ -23,8 +23,6 @@ return new class extends Migration
             $table->integer('usahaart_jumlahpekerja'); // required, angka
             $table->string('usahaart_namausaha'); // required, string
 
-            $table->timestamps();
-
             // Foreign key utama
             $table->foreign('nik')->references('nik')->on('data_penduduk')->onDelete('cascade');
 

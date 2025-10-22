@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\DataKonflikSosial;
 use App\Models\DataSarprasKerja;
 use App\Models\DataSejahteraKeluarga;
+use App\Models\DataSosialEkonomi;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -31,6 +32,7 @@ class DatabaseSeeder extends Seeder {
             MasterHubunganKepalaKeluargaSeeder::class,
             MasterImunisasiSeeder::class,
             MasterInventarisSeeder::class,
+            MasterIjasahTerakhirSeeder::class,
             MasterJabatanSeeder::class,
             MasterJawabBangunSeeder::class,
             MasterJawabKonflikSeeder::class,
@@ -103,7 +105,9 @@ class DatabaseSeeder extends Seeder {
             DataAsetPerikananSeeder::class,
             DataKelahiranSeeder::class,
             DataLembagaEkonomiSeeder::class,
-            DataLembagaMasyarakatSeeder::class
+            DataLembagaMasyarakatSeeder::class,
+            DataSosialEkonomiSeeder::class,
+            DataUsahaArtSeeder::class,
         ]);
     }
 }

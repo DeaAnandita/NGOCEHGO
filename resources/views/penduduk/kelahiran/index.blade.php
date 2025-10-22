@@ -13,6 +13,7 @@
                     </a>
                 </div>
 
+<<<<<<< HEAD
                 <div class="relative">
                     <div class="overflow-x-auto w-full">
                         <table id="kelahiranTable" class="min-w-[2000px] table-auto border-collapse text-sm">
@@ -29,6 +30,23 @@
                                 <th class="border border-gray-200 px-4 py-3 text-left">Berat (gram)</th>
                                 <th class="border border-gray-200 px-4 py-3 text-left">Panjang (cm)</th>
                                 <th class="border border-gray-200 px-4 py-3 text-center">Aksi</th>
+=======
+                <div class="w-full">
+                    <table class="w-full table-auto divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">NIK</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Nama Lengkap</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Tempat Persalinan</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Jenis Kelahiran</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Pertolongan Persalinan</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Jam Kelahiran</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Kelahiran Ke</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Berat (gram)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Panjang (cm)</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Aksi</th>
+>>>>>>> 9b62169 (seeder sosialekonomi-usahaart)
                             </tr>
                         </thead>
 
