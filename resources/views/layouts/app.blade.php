@@ -57,7 +57,7 @@
                 </a>
                 <a href="{{ route('menu.kependudukan') }}"
                 class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium
-                {{ request()->routeIs('menu.kependudukan') || request()->routeIs('dasar-keluarga*') || request()->routeIs('penduduk*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                {{ request()->routeIs('menu.kependudukan') || request()->routeIs('dasar-keluarga*') || request()->routeIs('dasar-penduduk*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
                 <x-heroicon-o-user-group class="w-6 h-6" /> 
                 <span>Adm Penduduk</span>
                 </a>

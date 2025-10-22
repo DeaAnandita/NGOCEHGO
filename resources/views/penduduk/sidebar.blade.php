@@ -1,6 +1,6 @@
 <div class="flex flex-col items-center w-20 h-fit py-6 space-y-6 bg-white rounded-2xl shadow-md p-4 my-6">
-    <a href="{{ route('penduduk.index') }}"
-       class="flex flex-col items-center {{ request()->routeIs('penduduk.*') ? 'bg-blue-100 text-blue-800' : 'text-gray-500 hover:text-blue-600' }} rounded-lg px-2 py-1 transition">
+    <a href="{{ route('dasar-penduduk.index') }}"
+       class="flex flex-col items-center {{ request()->routeIs('dasar-penduduk.*') ? 'bg-blue-100 text-blue-800' : 'text-gray-500 hover:text-blue-600' }} rounded-lg px-2 py-1 transition">
         <x-heroicon-o-user-group class="w-7 h-7" />
         <span class="text-[10px] mt-1 text-center">Penduduk</span>
     </a>

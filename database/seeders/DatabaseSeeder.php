@@ -100,7 +100,8 @@ class DatabaseSeeder extends Seeder {
             DataSarprasKerjaSeeder::class,
             DataBangunKeluargaSeeder::class,
             DataAsetTernakSeeder::class,
-            DataAsetPerikananSeeder::class
+            DataAsetPerikananSeeder::class,
+            DataKelahiranSeeder::class,
         ]);
     }
 }

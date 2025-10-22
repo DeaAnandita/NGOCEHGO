@@ -6,7 +6,7 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-6">Tambah Data Penduduk</h3>
 
-                <form action="{{ route('penduduk.store') }}" method="POST">
+                <form action="{{ route('dasar-penduduk.store') }}" method="POST">
                     @csrf
 
                     <!-- Informasi Pribadi -->
@@ -324,7 +324,7 @@
                     <!-- Submit Button -->
                     <div class="mt-6 flex space-x-4 justify-end">
                         <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">Simpan</button>
-                        <a href="{{ route('penduduk.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">Batal</a>
+                        <a href="{{ route('dasar-penduduk.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">Batal</a>
                     </div>
                 </form>
             </div>

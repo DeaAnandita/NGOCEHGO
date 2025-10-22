@@ -149,7 +149,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     // <<< ===================================================== >>> //
 
     // Routes untuk Penduduk
-    Route::resource('penduduk', PendudukController::class)->except(['show']);
+    Route::resource('penduduk', PendudukController::class)->except(['show'])->names('dasar-penduduk');
 
     // Routes untuk kelahiran
     Route::get('kelahiran', [KelahiranController::class, 'index'])->name('penduduk.kelahiran.index');

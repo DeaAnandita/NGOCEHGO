@@ -20,7 +20,7 @@
                         <p class="text-gray-600 text-sm mt-1 text-center">Kelola data keluarga berdasarkan Nomor Kartu Keluarga (NO_KK).</p>
                     </div>
                 </a>
-                <a href="{{ route('penduduk.index') }}"
+                <a href="{{ route('dasar-penduduk.index') }}"
                    class="group bg-gradient-to-br from-green-100 to-green-50 hover:from-green-200 hover:to-green-100 border border-green-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
                     <div class="flex flex-col items-center">
                         <div class="bg-green-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">

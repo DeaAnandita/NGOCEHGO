@@ -2,31 +2,33 @@
     <div class="flex">
         @include('penduduk.sidebar')
 
-        <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8">
+        <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
             <div class="bg-white rounded-2xl shadow-lg p-6">
-                <!-- Header -->
+                <!-- Header tetap tidak ikut scroll -->
                 <div class="flex flex-col justify-between sm:flex-row sm:items-center mb-6 gap-4">
                     <h3 class="text-xl font-bold text-gray-800">Data Penduduk</h3>
-                    <a href="{{ route('penduduk.create') }}"
+                    <a href="{{ route('dasar-penduduk.create') }}"
                        class="bg-blue-600 text-white px-5 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
                         + Tambah Data
                     </a>
                 </div>
 
-                <div class="w-full">
-                    <table class="w-full table-auto divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                <div class="relative">
+                    <div class="overflow-x-auto w-full">
+                        <table id="pendudukTable" class="min-w-[2000px] table-auto border-collapse text-sm">
+                            <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold sticky top-0 z-10">
+                                <tr>
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[40px]">No.</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Kartu Keluarga</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[60px]">No. Urut</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">NIK</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Nama Lengkap</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Tempat/Tgl Lahir</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[60px]">L/P</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Agama</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Hub. Keluarga</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Aksi</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">No.</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Kartu Keluarga</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">No. Urut</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">NIK</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Nama Lengkap</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Tempat/Tgl Lahir</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">L/P</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Agama</th>
+                                <th class="border border-gray-200 px-4 py-3 text-left">Hub. Keluarga</th>
+                                <th class="border border-gray-200 px-4 py-3 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -62,8 +64,8 @@
                                             {{ $penduduk->hubungankeluarga ? $penduduk->hubungankeluarga->hubungankeluarga : '-' }}
                                         </td>
                                         <td class="px-4 py-4 text-sm font-medium">
-                                            <a href="{{ route('penduduk.edit', $penduduk->nik) }}" class="text-blue-600 hover:text-blue-800">Edit</a>
-                                            <form action="{{ route('penduduk.destroy', $penduduk->nik) }}" method="POST" class="inline-block">
+                                            <a href="{{ route('dasar-penduduk.edit', $penduduk->nik) }}" class="text-blue-600 hover:text-blue-800">Edit</a>
+                                            <form action="{{ route('dasar-penduduk.destroy', $penduduk->nik) }}" method="POST" class="inline-block">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-800 ml-4" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
