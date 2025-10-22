@@ -13,7 +13,6 @@ class DataProgramSertaSeeder extends Seeder
         $records = [
             '3374123400000001',
             '3374123400000002',
-            '3374123400000003',
 
         ];
 

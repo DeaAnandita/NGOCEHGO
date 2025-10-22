@@ -15,11 +15,16 @@ class ProgramSertaController extends Controller
      */
     public function index()
     {
-        $programsertas = DataProgramSerta::with('penduduk')->get();
-        $masterAset = MasterProgramSerta::pluck('programserta', 'kdprogramserta')->toArray();
+        // Ambil semua data program serta dengan relasi penduduk
+        $programSertas = DataProgramSerta::with('penduduk')->get();
+
+        // Ambil daftar program dari master_programserta
+        $masterProgramSerta = MasterProgramSerta::pluck('programserta', 'kdprogramserta')->toArray();
+
+        // Ambil daftar pilihan jawaban dari master_jawabprogramserta
         $masterJawab = MasterJawabProgramSerta::pluck('jawabprogramserta', 'kdjawabprogramserta')->toArray();
 
-        return view('penduduk.programserta.index', compact('programsertas', 'masterAset', 'masterJawab'));
+        return view('penduduk.programserta.index', compact('programSertas', 'masterProgramSerta', 'masterJawab'));
     }
 
     /**
@@ -28,10 +33,10 @@ class ProgramSertaController extends Controller
     public function create()
     {
         $penduduks = DataPenduduk::all();
-        $masterAset = MasterProgramSerta::all();
-        $masterJawab = MasterJawabProgramSerta::pluck('jawabprogramserta', 'kdjawabprogramserta')->toArray();
+        $masterProgramSerta = MasterProgramSerta::all();
+        $masterJawab = MasterJawabProgramSerta::all();
 
-        return view('penduduk.programserta.create', compact('penduduks', 'masterAset', 'masterJawab'));
+        return view('penduduk.programserta.create', compact('penduduks', 'masterProgramSerta', 'masterJawab'));
     }
 
     /**
@@ -39,12 +44,21 @@ class ProgramSertaController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nik' => 'required|exists:data_penduduk,nik',
-            'programserta_*' => 'nullable|in:0,1,2'
-        ]);
+        // Validasi input
+        $rules = [
+            'nik' => 'required|unique:data_programserta,nik|exists:data_penduduk,nik',
+        ];
 
-        $data = $request->only(['nik']);
+        for ($i = 1; $i <= 8; $i++) {
+            $rules["programserta_$i"] = 'nullable|integer';
+        }
+
+        $request->validate($rules);
+
+        $data = [
+            'nik' => $request->nik,
+        ];
+
         for ($i = 1; $i <= 8; $i++) {
             $data["programserta_$i"] = $request->input("programserta_$i", 0);
         }
@@ -59,12 +73,12 @@ class ProgramSertaController extends Controller
      */
     public function edit($nik)
     {
-        $programserta = DataProgramSerta::where('nik', $nik)->firstOrFail();
+        $programSerta = DataProgramSerta::where('nik', $nik)->firstOrFail();
         $penduduks = DataPenduduk::all();
-        $masterAset = MasterProgramSerta::all();
-        $masterJawab = MasterJawabProgramSerta::pluck('jawabprogramserta', 'kdjawabprogramserta')->toArray();
+        $masterProgramSerta = MasterProgramSerta::all();
+        $masterJawab = MasterJawabProgramSerta::all();
 
-        return view('penduduk.programserta.edit', compact('programserta', 'penduduks', 'masterAset', 'masterJawab'));
+        return view('penduduk.programserta.edit', compact('programSerta', 'penduduks', 'masterProgramSerta', 'masterJawab'));
     }
 
     /**
@@ -72,18 +86,27 @@ class ProgramSertaController extends Controller
      */
     public function update(Request $request, $nik)
     {
-        $request->validate([
+        $rules = [
             'nik' => 'required|exists:data_penduduk,nik',
-            'programserta_*' => 'nullable|in:0,1,2'
-        ]);
+        ];
 
-        $programserta = DataProgramSerta::where('nik', $nik)->firstOrFail();
-        $data = $request->only(['nik']);
+        for ($i = 1; $i <= 8; $i++) {
+            $rules["programserta_$i"] = 'nullable|integer';
+        }
+
+        $request->validate($rules);
+
+        $programSerta = DataProgramSerta::where('nik', $nik)->firstOrFail();
+
+        $data = [
+            'nik' => $request->nik,
+        ];
+
         for ($i = 1; $i <= 8; $i++) {
             $data["programserta_$i"] = $request->input("programserta_$i", 0);
         }
 
-        $programserta->update($data);
+        $programSerta->update($data);
 
         return redirect()->route('penduduk.programserta.index')->with('success', 'Data program serta berhasil diperbarui.');
     }
@@ -93,8 +116,8 @@ class ProgramSertaController extends Controller
      */
     public function destroy($nik)
     {
-        $programserta = DataProgramSerta::where('nik', $nik)->firstOrFail();
-        $programserta->delete();
+        $programSerta = DataProgramSerta::where('nik', $nik)->firstOrFail();
+        $programSerta->delete();
 
         return redirect()->route('penduduk.programserta.index')->with('success', 'Data program serta berhasil dihapus.');
     }

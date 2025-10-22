@@ -4,9 +4,7 @@
 
         <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
             <div class="bg-white rounded-2xl shadow-lg p-6">
-
-                <!-- Header tetap tidak ikut scroll -->
-                <div class="flex flex-col justify-between sm:flex-row sm:items-center mb-6 gap-4">
+                <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-800">Data Lembaga Desa</h3>
                     <a href="{{ route('penduduk.lemdes.create') }}"
                        class="bg-blue-600 text-white px-5 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
@@ -14,78 +12,53 @@
                     </a>
                 </div>
 
-                <!-- Scrollable Table -->
-                <div class="w-full overflow-x-auto">
-                    <table class="min-w-full table-auto divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">No.</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">NIK</th>
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Nama Penduduk</th>
-
-                                @foreach([
-                                    'Kepala Desa/Lurah',
-                                    'Sekretaris Desa/Lurah',
-                                    'Kepala Urusan',
-                                    'Kepala Dusun/Lingkungan',
-                                    'Staf Desa/Kelurahan',
-                                    'Ketua BPD',
-                                    'Wakil Ketua BPD',
-                                    'Sekretaris BPD',
-                                    'Anggota BPD'
-                                ] as $label)
-                                    <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                        {{ $label }}
-                                    </th>
-                                @endforeach
-
-                                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @forelse($lembagadesas as $item)
+                <div class="relative">
+                    <div class="overflow-x-auto w-full">
+                        <table class="min-w-[1800px] table-auto border-collapse text-sm">
+                            <thead class="bg-gray-50 text-gray-600 uppercase text-xs font-semibold sticky top-0 z-10">
                                 <tr>
-                                    <td class="px-4 py-4 text-sm text-gray-900">{{ $loop->iteration }}</td>
-                                    <td class="px-4 py-4 text-sm text-gray-900">{{ $item->nik }}</td>
-                                    <td class="px-4 py-4 text-sm text-gray-900">{{ $item->penduduk->penduduk_namalengkap ?? '-' }}</td>
+                                    <th class="border border-gray-200 px-4 py-3 text-left">No.</th>
+                                    <th class="border border-gray-200 px-4 py-3 text-left">NIK</th>
+                                    <th class="border border-gray-200 px-4 py-3 text-left">Nama Penduduk</th>
+                                    @foreach ($masterLembaga as $kd => $nama)
+                                        <th class="border border-gray-200 px-4 py-3 text-left">{{ $nama }}</th>
+                                    @endforeach
+                                    <th class="border border-gray-200 px-4 py-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
 
-                                    @for($i = 1; $i <= 9; $i++)
-                                        <td class="px-4 py-4 text-sm text-gray-900">
-                                            {{ $item["lemdes_$i"] ? ($masterJawab[$item["lemdes_$i"]] ?? '-') : '-' }}
-                                        </td>
-                                    @endfor
-
-                                    <td class="px-4 py-4 text-sm font-medium">
-                                        <div class="flex items-center space-x-3">
-                                            <a href="{{ route('penduduk.lemdes.edit', $item->nik) }}"
-                                               class="text-blue-600 hover:text-blue-800 font-medium">
-                                                Edit
-                                            </a>
-                                            <form action="{{ route('penduduk.lemdes.destroy', $item->nik) }}"
-                                                  method="POST"
-                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-red-600 hover:text-red-800 font-medium">
-                                                    Hapus
-                                                </button>
+                            <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
+                                @forelse ($lembagaDesas as $data)
+                                    <tr class="hover:bg-gray-50 transition">
+                                        <td class="border border-gray-200 px-4 py-4 text-center">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-4">{{ $data->nik }}</td>
+                                        <td class="border border-gray-200 px-4 py-4">{{ $data->penduduk->penduduk_namalengkap ?? '-' }}</td>
+                                        @php $totalKolom = count($masterLembaga); @endphp
+                                        @for ($i = 1; $i <= $totalKolom; $i++)
+                                            @php $value = $data->{"lemdes_$i"} ?? 0; @endphp
+                                            <td class="border border-gray-200 px-4 py-4 text-center">
+                                                {{ $masterJawabLemdes[$value] ?? '-' }}
+                                            </td>
+                                        @endfor
+                                        <td class="border border-gray-200 px-4 py-4 text-center space-x-3">
+                                            <a href="{{ route('penduduk.lemdes.edit', $data->nik) }}" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Edit</a>
+                                            <form action="{{ route('penduduk.lemdes.destroy', $data->nik) }}" method="POST" class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" onclick="return confirm('Yakin ingin menghapus data ini?')" class="text-red-600 hover:text-red-800 font-medium text-sm">Hapus</button>
                                             </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="13" class="px-4 py-4 text-center text-sm text-gray-500">
-                                        Tidak ada data lembaga desa.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ count($masterLembaga) + 3 }}" class="border border-gray-200 px-4 py-4 text-center text-gray-500">
+                                            Belum ada data lembaga desa.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>

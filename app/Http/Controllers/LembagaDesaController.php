@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\DataLembagaDesa;
 use App\Models\DataPenduduk;
-use App\Models\MasterJenisLembaga;
 use App\Models\MasterLembaga;
 use App\Models\MasterJawabLemdes;
 use Illuminate\Http\Request;
@@ -16,12 +15,18 @@ class LembagaDesaController extends Controller
      */
     public function index()
     {
-        $lembagadesas = DataLembagaDesa::with('penduduk')->get();
-        $masterJenis = MasterJenisLembaga::pluck('jenislembaga', 'kdjenislembaga')->toArray();
-        $masterLembaga = MasterLembaga::pluck('lembaga', 'kdlembaga')->toArray();
-        $masterJawab = MasterJawabLemdes::pluck('jawablemdes', 'kdjawablemdes')->toArray();
+        // Ambil semua data lembaga desa dengan relasi penduduk
+        $lembagaDesas = DataLembagaDesa::with('penduduk')->get();
 
-        return view('penduduk.lemdes.index', compact('lembagadesas', 'masterJenis', 'masterLembaga', 'masterJawab'));
+        // Ambil master lembaga hanya yang kdjenislembaga = 2 (Lembaga Pemerintahan Desa)
+        $masterLembaga = MasterLembaga::where('kdjenislembaga', 2)
+            ->pluck('lembaga', 'kdlembaga')
+            ->toArray();
+
+        // Ambil daftar pilihan jawaban dari master_jawablemdes
+        $masterJawabLemdes = MasterJawabLemdes::pluck('jawablemdes', 'kdjawablemdes')->toArray();
+
+        return view('penduduk.lemdes.index', compact('lembagaDesas', 'masterLembaga', 'masterJawabLemdes'));
     }
 
     /**
@@ -30,11 +35,14 @@ class LembagaDesaController extends Controller
     public function create()
     {
         $penduduks = DataPenduduk::all();
-        $masterJenis = MasterJenisLembaga::all();
-        $masterLembaga = MasterLembaga::all();
-        $masterJawab = MasterJawabLemdes::pluck('jawablemdes', 'kdjawablemdes')->toArray();
 
-        return view('penduduk.lemdes.create', compact('penduduks', 'masterJenis', 'masterLembaga', 'masterJawab'));
+        // Ambil hanya lembaga pemerintahan desa dari master_lembaga
+        $masterLembaga = MasterLembaga::where('kdjenislembaga', 2)->get();
+
+        // Ambil semua opsi jawaban (Ya, Tidak, Pernah, dst)
+        $masterJawabLemdes = MasterJawabLemdes::all();
+
+        return view('penduduk.lemdes.create', compact('penduduks', 'masterLembaga', 'masterJawabLemdes'));
     }
 
     /**
@@ -42,13 +50,17 @@ class LembagaDesaController extends Controller
      */
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
-            'nik' => 'required|exists:data_penduduk,nik',
-            'kdjenislembaga' => 'required|exists:master_jenislembaga,kdjenislembaga',
-            'lemdes_*' => 'nullable|in:0,1,2,3,4'
+            'nik' => 'required|unique:data_lembagadesa,nik|exists:data_penduduk,nik',
         ]);
 
-        $data = $request->only(['nik', 'kdjenislembaga']);
+        $data = [
+            'nik' => $request->nik,
+            'kdjenislembaga' => 2 // ✅ Tetap fix: Lembaga Pemerintahan Desa
+        ];
+
+        // Loop untuk semua kolom lemdes_1 sampai lemdes_9
         for ($i = 1; $i <= 9; $i++) {
             $data["lemdes_$i"] = $request->input("lemdes_$i", 0);
         }
@@ -63,13 +75,12 @@ class LembagaDesaController extends Controller
      */
     public function edit($nik)
     {
-        $lembagadesa = DataLembagaDesa::where('nik', $nik)->firstOrFail();
+        $lembagaDesa = DataLembagaDesa::where('nik', $nik)->firstOrFail();
         $penduduks = DataPenduduk::all();
-        $masterJenis = MasterJenisLembaga::all();
-        $masterLembaga = MasterLembaga::all();
-        $masterJawab = MasterJawabLemdes::pluck('jawablemdes', 'kdjawablemdes')->toArray();
+        $masterLembaga = MasterLembaga::where('kdjenislembaga', 2)->get();
+        $masterJawabLemdes = MasterJawabLemdes::all();
 
-        return view('penduduk.lemdes.edit', compact('lembagadesa', 'penduduks', 'masterJenis', 'masterLembaga', 'masterJawab'));
+        return view('penduduk.lemdes.edit', compact('lembagaDesa', 'penduduks', 'masterLembaga', 'masterJawabLemdes'));
     }
 
     /**
@@ -79,17 +90,20 @@ class LembagaDesaController extends Controller
     {
         $request->validate([
             'nik' => 'required|exists:data_penduduk,nik',
-            'kdjenislembaga' => 'required|exists:master_jenislembaga,kdjenislembaga',
-            'lemdes_*' => 'nullable|in:0,1,2,3,4'
         ]);
 
-        $lembagadesa = DataLembagaDesa::where('nik', $nik)->firstOrFail();
-        $data = $request->only(['nik', 'kdjenislembaga']);
+        $lembagaDesa = DataLembagaDesa::where('nik', $nik)->firstOrFail();
+
+        $data = [
+            'nik' => $request->nik,
+            'kdjenislembaga' => 2
+        ];
+
         for ($i = 1; $i <= 9; $i++) {
             $data["lemdes_$i"] = $request->input("lemdes_$i", 0);
         }
 
-        $lembagadesa->update($data);
+        $lembagaDesa->update($data);
 
         return redirect()->route('penduduk.lemdes.index')->with('success', 'Data lembaga desa berhasil diperbarui.');
     }
@@ -99,8 +113,8 @@ class LembagaDesaController extends Controller
      */
     public function destroy($nik)
     {
-        $lembagadesa = DataLembagaDesa::where('nik', $nik)->firstOrFail();
-        $lembagadesa->delete();
+        $lembagaDesa = DataLembagaDesa::where('nik', $nik)->firstOrFail();
+        $lembagaDesa->delete();
 
         return redirect()->route('penduduk.lemdes.index')->with('success', 'Data lembaga desa berhasil dihapus.');
     }

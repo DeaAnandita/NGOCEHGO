@@ -6,48 +6,38 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-6">Edit Data Lembaga Desa</h3>
 
-                <form action="{{ route('penduduk.lemdes.update', $lembagadesa->nik) }}" method="POST">
+                <form action="{{ route('penduduk.lemdes.update', $lembagaDesa->nik) }}" method="POST">
                     @csrf
                     @method('PUT')
 
-                    <!-- Relasi Penduduk -->
+                    <!-- Pilih Penduduk -->
                     <div class="mb-8">
-                        <h4 class="text-sm font-semibold text-gray-700 mb-4">Relasi Penduduk</h4>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">NIK</label>
-                            <select name="nik" id="nik" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm">
-                                <option value="">-- Pilih Penduduk --</option>
-                                @foreach($penduduks as $p)
-                                    <option value="{{ $p->nik }}" {{ old('nik', $lembagadesa->nik) == $p->nik ? 'selected' : '' }}>
-                                        {{ $p->penduduk_namalengkap }} ({{ $p->nik }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Penduduk</label>
+                        <select name="nik" id="nik"
+                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @foreach($penduduks as $p)
+                                <option value="{{ $p->nik }}" {{ $lembagaDesa->nik == $p->nik ? 'selected' : '' }}>
+                                    {{ $p->penduduk_namalengkap }} ({{ $p->nik }})
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <!-- Lembaga Desa -->
                     <div class="mb-8">
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Keterlibatan Dalam Lembaga Desa</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @foreach([
-                                1 => 'KEPALA DESA/LURAH',
-                                2 => 'SEKRETARIS DESA/LURAH',
-                                3 => 'KEPALA URUSAN',
-                                4 => 'KEPALA DUSUN/LINGKUNGAN',
-                                5 => 'STAF DESA/KELURAHAN',
-                                6 => 'KETUA BPD',
-                                7 => 'WAKIL KETUA BPD',
-                                8 => 'SEKRETARIS BPD',
-                                9 => 'ANGGOTA BPD'
-                            ] as $i => $label)
+                            @foreach($masterLembaga as $index => $lembaga)
+                                @php $col = "lemdes_" . $loop->iteration; @endphp
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">{{ $label }}</label>
-                                    <select name="lemdes_{{ $i }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm">
+                                    <label class="block text-sm font-medium text-gray-700">{{ $lembaga->lembaga }}</label>
+                                    <select name="{{ $col }}"
+                                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Silahkan Pilih --</option>
-                                        @foreach($masterJawab as $key => $val)
-                                            <option value="{{ $key }}" {{ old("lemdes_$i", $lembagadesa["lemdes_$i"]) == $key ? 'selected' : '' }}>
-                                                {{ $val }}
+                                        @foreach($masterJawabLemdes as $jawab)
+                                            <option value="{{ $jawab->kdjawablemdes }}"
+                                                {{ $lembagaDesa->$col == $jawab->kdjawablemdes ? 'selected' : '' }}>
+                                                {{ $jawab->jawablemdes }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -56,14 +46,14 @@
                         </div>
                     </div>
 
-                    <!-- Tombol Aksi -->
+                    <!-- Tombol -->
                     <div class="mt-6 flex justify-end space-x-4">
                         <button type="submit"
-                            class="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700">
+                                class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200">
                             Simpan
                         </button>
                         <a href="{{ route('penduduk.lemdes.index') }}"
-                            class="bg-gray-200 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-300">
+                           class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-300 transition duration-200">
                             Batal
                         </a>
                     </div>
