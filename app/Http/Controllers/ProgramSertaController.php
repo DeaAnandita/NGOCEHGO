@@ -99,7 +99,7 @@ class ProgramSertaController extends Controller
     public function update(Request $request, $nik)
     {
         $rules = [
-            'nik' => 'required|exists:data_penduduk,nik',
+            'nik' => 'required|unique:data_programserta,nik|exists:data_penduduk,nik',
         ];
 
         for ($i = 1; $i <= 8; $i++) {

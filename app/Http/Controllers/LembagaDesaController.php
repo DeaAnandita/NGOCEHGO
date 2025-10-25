@@ -99,7 +99,7 @@ class LembagaDesaController extends Controller
     public function update(Request $request, $nik)
     {
         $request->validate([
-            'nik' => 'required|exists:data_penduduk,nik',
+            'nik' => 'required|unique:data_lembagadesa,nik|exists:data_penduduk,nik',
         ]);
 
         $lembagaDesa = DataLembagaDesa::where('nik', $nik)->firstOrFail();
