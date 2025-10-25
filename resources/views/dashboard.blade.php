@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div x-data="{ sidebarOpen: false }" class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div x-data="{ sidebarOpen: false }" class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- Header Card --}}
         <div class="relative bg-gradient-to-br from-blue-200 to-blue-100 hover:from-blue-200 hover:to-blue-100 border border-blue-200 text-black-800 rounded-3xl p-8 overflow-hidden">

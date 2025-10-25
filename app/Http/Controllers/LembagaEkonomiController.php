@@ -13,10 +13,25 @@ class LembagaEkonomiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Ambil semua data lembaga ekonomi dengan relasi penduduk
-        $lembagaEkonomis = DataLembagaEkonomi::with('penduduk')->get();
+        $search = $request->input('search');
+
+        // Ambil semua data lembaga desa dengan relasi penduduk
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $lembagaEkonomis = DataLembagaEkonomi::with('penduduk')
+            ->when($search, function ($query, $search) {
+                $query->where('nik', 'like', "%{$search}%")
+                    ->orWhereHas('penduduk', function ($q) use ($search) {
+                        $q->where('penduduk_namalengkap', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('nik', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
 
         // Ambil master lembaga hanya yang kdjenislembaga = 4 (Lembaga Ekonomi)
         $masterLembaga = MasterLembaga::where('kdjenislembaga', 4)
@@ -26,7 +41,7 @@ class LembagaEkonomiController extends Controller
         // Ambil daftar pilihan jawaban dari master_jawablemek
         $masterJawabLemek = MasterJawabLemek::pluck('jawablemek', 'kdjawablemek')->toArray();
 
-        return view('penduduk.lembagaekonomi.index', compact('lembagaEkonomis', 'masterLembaga', 'masterJawabLemek'));
+        return view('penduduk.lembagaekonomi.index', compact('lembagaEkonomis', 'masterLembaga', 'masterJawabLemek', 'search', 'perPage'));
     }
 
     /**

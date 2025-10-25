@@ -9,55 +9,42 @@ class DataPrasaranaDasarSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('data_prasaranadasar')->insert([
-            [
-                'no_kk' => '3374123400000001',
-                'kdstatuspemilikbangunan' => 1,
-                'kdstatuspemiliklahan' => 1,
-                'kdjenisfisikbangunan' => 1,
-                'kdjenislantaibangunan' => 1,
-                'kdkondisilantaibangunan' => 1,
-                'kdjenisdindingbangunan' => 1,
-                'kdkondisidindingbangunan' => 1,
-                'kdjenisatapbangunan' => 1,
-                'kdkondisiatapbangunan' => 1,
-                'kdsumberairminum' => 1,
-                'kdkondisisumberair' => 1,
-                'kdcaraperolehanair' => 1,
-                'kdsumberpeneranganutama' => 1,
-                'kdsumberdayaterpasang' => 1,
-                'kdbahanbakarmemasak' => 1,
-                'kdfasilitastempatbab' => 1,
-                'kdpembuanganakhirtinja' => 1,
-                'kdcarapembuangansampah' => 1,
-                'kdmanfaatmataair' => 1,
-                'prasdas_luaslantai' => 72.5,
-                'prasdas_jumlahkamar' => 3,
-            ],
-            [
-                'no_kk' => '3374123400000002',
-                'kdstatuspemilikbangunan' => 2,
-                'kdstatuspemiliklahan' => 1,
-                'kdjenisfisikbangunan' => 2,
-                'kdjenislantaibangunan' => 2,
-                'kdkondisilantaibangunan' => 2,
-                'kdjenisdindingbangunan' => 2,
-                'kdkondisidindingbangunan' => 2,
-                'kdjenisatapbangunan' => 2,
-                'kdkondisiatapbangunan' => 2,
-                'kdsumberairminum' => 2,
-                'kdkondisisumberair' => 2,
-                'kdcaraperolehanair' => 2,
-                'kdsumberpeneranganutama' => 2,
-                'kdsumberdayaterpasang' => 2,
-                'kdbahanbakarmemasak' => 2,
-                'kdfasilitastempatbab' => 2,
-                'kdpembuanganakhirtinja' => 2,
-                'kdcarapembuangansampah' => 2,
-                'kdmanfaatmataair' => 2,
-                'prasdas_luaslantai' => 54.0,
-                'prasdas_jumlahkamar' => 2,
-            ],
-        ]);
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('data_prasaranadasar')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        // Ambil 15 no_kk dari tabel data_keluarga
+        $noKKList = DB::table('data_keluarga')->limit(15)->pluck('no_kk');
+
+        $records = [];
+
+        foreach ($noKKList as $noKK) {
+            $records[] = [
+                'no_kk' => $noKK,
+                'kdstatuspemilikbangunan' => fake()->numberBetween(1, 8), // 1 = Milik sendiri
+                'kdstatuspemiliklahan' => fake()->numberBetween(1, 7),    // 1 = Milik sendiri
+                'kdjenisfisikbangunan' => fake()->numberBetween(1, 3),    // 1 = Permanen
+                'kdjenislantaibangunan' => fake()->numberBetween(1, 9),
+                'kdkondisilantaibangunan' => fake()->numberBetween(1, 2),
+                'kdjenisdindingbangunan' => fake()->numberBetween(1, 7),
+                'kdkondisidindingbangunan' => fake()->numberBetween(1, 2),
+                'kdjenisatapbangunan' => fake()->numberBetween(1, 2),
+                'kdkondisiatapbangunan' => fake()->numberBetween(1, 2),
+                'kdsumberairminum' => fake()->numberBetween(1, 3),
+                'kdkondisisumberair' => fake()->numberBetween(1, 4),
+                'kdcaraperolehanair' => fake()->numberBetween(1, 3),
+                'kdsumberpeneranganutama' => fake()->numberBetween(1, 3),
+                'kdsumberdayaterpasang' => fake()->numberBetween(1, 6),
+                'kdbahanbakarmemasak' => fake()->numberBetween(1, 9),
+                'kdfasilitastempatbab' => fake()->numberBetween(0, 3),
+                'kdpembuanganakhirtinja' => fake()->numberBetween(1, 6),
+                'kdcarapembuangansampah' => fake()->numberBetween(1, 7),
+                'kdmanfaatmataair' => fake()->numberBetween(1, 8),
+                'prasdas_luaslantai' => fake()->randomFloat(1, 36, 120), // luas antara 36–120 m2
+                'prasdas_jumlahkamar' => fake()->numberBetween(1, 5),
+            ];
+        }
+
+        DB::table('data_prasaranadasar')->insert($records);
     }
 }

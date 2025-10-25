@@ -9,18 +9,19 @@ class DataAsetPerikananSeeder extends Seeder
 {
     public function run(): void
     {
-        $records = [
-            '3374123400000001',
-        ];
+        // Ambil 3 NIK pertama dari data_penduduk (otomatis sinkron)
+        $kkList = DB::table('data_keluarga')
+            ->inRandomOrder()
+            ->limit(15)
+            ->pluck('no_kk');
 
-        foreach ($records as $kk) {
-            $asetData = ['no_kk' => $kk];
+        foreach ($kkList as $no_kk) {
+            $asetperikanan = ['no_kk' => $no_kk];
             for ($i = 1; $i <= 6; $i++) {
-                // 1 = punya, 0 = tidak punya (random untuk contoh)
-                $asetData["asetperikanan_$i"] = rand(0, 10);
+                $asetperikanan["asetperikanan_$i"] = rand(0, 10);
             }
 
-            DB::table('data_asetperikanan')->insert($asetData);
+            DB::table('data_asetperikanan')->insert($asetperikanan);
         }
     }
 }

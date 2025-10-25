@@ -9,19 +9,19 @@ class DataAsetLahanSeeder extends Seeder
 {
     public function run(): void
     {
-        $records = [
-            '3374123400000001',
-            '3374123400000002',
-        ];
+        // Ambil 3 NIK pertama dari data_penduduk (otomatis sinkron)
+        $kkList = DB::table('data_keluarga')
+            ->inRandomOrder()
+            ->limit(15)
+            ->pluck('no_kk');
 
-        foreach ($records as $kk) {
-            $asetLahan = ['no_kk' => $kk];
+        foreach ($kkList as $no_kk) {
+            $asetlahan = ['no_kk' => $no_kk];
             for ($i = 1; $i <= 10; $i++) {
-                // 1 = punya, 0 = tidak punya (random)
-                $asetLahan["asetlahan_$i"] = rand(0, 1);
+                $asetlahan["asetlahan_$i"] = rand(0, 11);
             }
 
-            DB::table('data_asetlahan')->insert($asetLahan);
+            DB::table('data_asetlahan')->insert($asetlahan);
         }
     }
 }

@@ -9,18 +9,20 @@ class DataBangunKeluargaSeeder extends Seeder
 {
     public function run(): void
     {
-        $records = [
-            '3374123400000001',
-        ];
+        // Ambil 3 NIK pertama dari data_penduduk (otomatis sinkron)
+        $kkList = DB::table('data_keluarga')
+            ->inRandomOrder()
+            ->limit(15)
+            ->pluck('no_kk');
 
-        foreach ($records as $kk) {
-            $databangunkeluarga = ['no_kk' => $kk];
+        foreach ($kkList as $no_kk) {
+            $bangunkeluarga = ['no_kk' => $no_kk];
             for ($i = 1; $i <= 51; $i++) {
-                // 1 = punya, 0 = tidak punya (random)
-                $databangunkeluarga["bangunkeluarga_$i"] = rand(0, 3);
+                $bangunkeluarga["bangunkeluarga_$i"] = rand(0, 3);
             }
 
-            DB::table('data_bangunkeluarga')->insert($databangunkeluarga);
+            DB::table('data_bangunkeluarga')->insert($bangunkeluarga);
         }
     }
+
 }

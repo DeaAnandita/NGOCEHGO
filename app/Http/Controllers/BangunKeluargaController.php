@@ -11,16 +11,28 @@ use Illuminate\Http\Request;
 class BangunKeluargaController extends Controller
 {
     // Daftar data
-    public function index()
+    public function index(Request $request)
     {
-        $bangunkeluargas = DataBangunKeluarga::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $bangunkeluargas = DataBangunKeluarga::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
 
         $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(1, 51))
             ->get(['kdpembangunankeluarga', 'pembangunankeluarga']);
 
         $masterJawab = MasterJawabBangun::pluck('jawabbangun', 'kdjawabbangun'); // ['1' => 'Ya', '2'=>'Tidak', ...]
 
-        return view('keluarga.bangunkeluarga.index', compact('bangunkeluargas', 'masterPembangunan', 'masterJawab'));
+        return view('keluarga.bangunkeluarga.index', compact('bangunkeluargas', 'masterPembangunan', 'masterJawab', 'search', 'perPage'));
     }
 
     // Form tambah data

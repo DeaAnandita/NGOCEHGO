@@ -13,8 +13,11 @@ use Illuminate\Http\Request;
 
 class PrasaranaDasarController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10 data per halaman
+
         $prasaranas = DataPrasaranaDasar::with([
             'keluarga',
             'statuspemilikbangunan',
@@ -36,9 +39,18 @@ class PrasaranaDasarController extends Controller
             'pembuanganakhirtinja',
             'carapembuangansampah',
             'manfaatmataair'
-        ])->get();
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('no_kk', 'like', "%{$search}%")
+                ->orWhereHas('keluarga', function ($q) use ($search) {
+                    $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                });
+        })
+        ->orderBy('no_kk', 'asc')
+        ->paginate($perPage)
+        ->appends(['search' => $search, 'per_page' => $perPage]);
 
-        return view('keluarga.prasarana.index', compact('prasaranas'));
+        return view('keluarga.prasarana.index', compact('prasaranas', 'search', 'perPage'));
     }
 
     public function create()

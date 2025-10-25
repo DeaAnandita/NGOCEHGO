@@ -13,20 +13,30 @@ class LembagaDesaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Ambil semua data lembaga desa dengan relasi penduduk
-        $lembagaDesas = DataLembagaDesa::with('penduduk')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $lembagaDesas = DataLembagaDesa::with('penduduk')
+            ->when($search, function ($query, $search) {
+                $query->where('nik', 'like', "%{$search}%")
+                    ->orWhereHas('penduduk', function ($q) use ($search) {
+                        $q->where('penduduk_namalengkap', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('nik', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
 
         // Ambil master lembaga hanya yang kdjenislembaga = 2 (Lembaga Pemerintahan Desa)
-        $masterLembaga = MasterLembaga::where('kdjenislembaga', 2)
-            ->pluck('lembaga', 'kdlembaga')
-            ->toArray();
+        $masterLembaga = MasterLembaga::where('kdjenislembaga', 2)->pluck('lembaga', 'kdlembaga')->toArray();
 
         // Ambil daftar pilihan jawaban dari master_jawablemdes
         $masterJawabLemdes = MasterJawabLemdes::pluck('jawablemdes', 'kdjawablemdes')->toArray();
 
-        return view('penduduk.lemdes.index', compact('lembagaDesas', 'masterLembaga', 'masterJawabLemdes'));
+        return view('penduduk.lemdes.index', compact('lembagaDesas', 'masterLembaga', 'masterJawabLemdes', 'search', 'perPage'));
     }
 
     /**

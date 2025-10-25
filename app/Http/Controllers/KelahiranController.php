@@ -33,11 +33,22 @@ class KelahiranController extends Controller
     //     return view('penduduk.kelahiran.index');
     // }
 
-    public function index()
+    public function index(Request $request)
     {
-        $kelahirans = DataKelahiran::with('penduduk', 'pertolonganPersalinan', 'jenisKelahiran', 'tempatPersalinan')->get();
-        return view('penduduk.kelahiran.index', compact('kelahirans'));
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10);
+
+        $kelahirans = DataKelahiran::with(['penduduk', 'pertolonganPersalinan', 'jenisKelahiran', 'tempatPersalinan'])
+            ->when($search, function ($query, $search) {
+                $query->where('nama_bayi', 'like', "%{$search}%")
+                    ->orWhereHas('penduduk', fn($q) => $q->where('nama_lengkap', 'like', "%{$search}%"));
+            })
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]);
+
+        return view('penduduk.kelahiran.index', compact('kelahirans', 'search', 'perPage'));
     }
+
 
     //  public function create()
     // {
@@ -105,12 +116,6 @@ class KelahiranController extends Controller
         DataKelahiran::create($data);
 
         return redirect()->route('penduduk.kelahiran.index')->with('success', 'Data kelahiran berhasil ditambahkan.');
-    }
-
-    public function show($kdkelahiran)
-    {
-        $kelahiran = DataKelahiran::with(['penduduk', 'ibu', 'ayah', 'tempatPersalinan', 'jenisKelahiran', 'pertolonganPersalinan', 'provinsi', 'kabupaten', 'kecamatan', 'desa', 'user'])->findOrFail($kdkelahiran);
-        return view('kelahiran.show', compact('kelahiran'));
     }
 
     public function edit($kdkelahiran)

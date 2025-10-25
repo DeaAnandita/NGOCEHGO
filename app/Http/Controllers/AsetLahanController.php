@@ -13,12 +13,24 @@ class AsetLahanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $asetlahans = DataAsetlahan::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $asetlahans = DataAsetLahan::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
         $masterAset = MasterAsetLahan::pluck('asetlahan', 'kdasetlahan')->toArray();
         $masterJawab = MasterJawabLahan::pluck('jawablahan', 'kdjawablahan')->toArray();
-        return view('keluarga.asetlahan.index', compact('asetlahans', 'masterAset', 'masterJawab'));
+        return view('keluarga.asetlahan.index', compact('asetlahans', 'masterAset', 'masterJawab', 'search', 'perPage'));
     }
 
     /**

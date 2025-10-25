@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class DataAsetKeluargaSeeder extends Seeder
+class DataKualitasBayiSeeder extends Seeder
 {
     public function run(): void
     {
@@ -16,12 +16,12 @@ class DataAsetKeluargaSeeder extends Seeder
             ->pluck('no_kk');
 
         foreach ($kkList as $no_kk) {
-            $asetkeluarga = ['no_kk' => $no_kk];
-            for ($i = 1; $i <= 42; $i++) {
-                $asetkeluarga["asetkeluarga_$i"] = rand(0, 2);
+            $kualitasbayi = ['no_kk' => $no_kk];
+            for ($i = 1; $i <= 7; $i++) {
+                $kualitasbayi["kualitasbayi_$i"] = rand(1, 4);
             }
 
-            DB::table('data_asetkeluarga')->insert($asetkeluarga);
+            DB::table('data_kualitasbayi')->insert($kualitasbayi);
         }
     }
 }

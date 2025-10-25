@@ -13,12 +13,26 @@ class AsetKeluargaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $asetkeluargas = DataAsetKeluarga::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $asetkeluargas = DataAsetKeluarga::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+
         $masterAset = MasterAsetKeluarga::pluck('asetkeluarga', 'kdasetkeluarga')->toArray();
         $masterJawab = MasterJawab::pluck('jawab', 'kdjawab')->toArray();
-        return view('keluarga.asetkeluarga.index', compact('asetkeluargas', 'masterAset', 'masterJawab'));
+
+        return view('keluarga.asetkeluarga.index', compact('asetkeluargas', 'masterAset', 'masterJawab', 'search', 'perPage'));
     }
 
     /**

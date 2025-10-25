@@ -12,7 +12,6 @@ class DataSarprasKerja extends Model
     protected $table = 'data_sarpraskerja';
     protected $primaryKey = 'no_kk';
     public $incrementing = false;
-    protected $keyType = 'string';
     public $timestamps = false;
 
     // isi semua kolom

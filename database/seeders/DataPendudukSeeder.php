@@ -4,111 +4,148 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class DataPendudukSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Nonaktifkan foreign key sementara
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('data_keluarga')->truncate();
         DB::table('data_penduduk')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        DB::table('data_penduduk')->insert([
-            [
-                'nik' => '3374123400000001',
-                'no_kk' => '3374123400000001',
-                'kdmutasimasuk' => 1,
-                'penduduk_tanggalmutasi' => Carbon::now(),
-                'penduduk_kewarganegaraan' => 'INDONESIA',
-                'penduduk_nourutkk' => '1',
-                'penduduk_goldarah' => 'O',
-                'penduduk_noaktalahir' => 'AKT-00001',
-                'penduduk_namalengkap' => 'Budi Santoso',
+        $namaPria = ['Budi', 'Agus', 'Rudi', 'Teguh', 'Hendra', 'Rizki', 'Andi', 'Rangga', 'Taufik', 'Wawan', 'Anton', 'Heri', 'Bambang', 'Darmawan', 'Fajar', 'Eko', 'Bayu', 'Rafli', 'Agung', 'Ridwan'];
+        $namaWanita = ['Siti', 'Rina', 'Dewi', 'Nur', 'Lina', 'Rizka', 'Ayu', 'Mira', 'Fitri', 'Rani', 'Desi', 'Dian', 'Nina', 'Ratna', 'Lilis', 'Kartini', 'Rika', 'Maya', 'Andini'];
+        $namaBelakang = ['Santoso', 'Wijaya', 'Hartono', 'Gunawan', 'Pratama', 'Saputra', 'Lestari', 'Anggraini', 'Ramadhani', 'Permata', 'Putri', 'Hidayah', 'Susanto', 'Firmansyah', 'Wahyuni', 'Nugroho'];
+
+        $dusunList = [1 => 'Winong', 2 => 'Krajan', 3 => 'Ploso', 4 => 'Gondang', 5 => 'Ngemplak'];
+        $dataKeluarga = [];
+        $dataPenduduk = [];
+        $nikCounter = 100000;
+
+        for ($i = 1; $i <= 50; $i++) {
+            $dusun = array_rand($dusunList);
+            $rw = str_pad(rand(1, 5), 3, '0', STR_PAD_LEFT);
+            $rt = str_pad(rand(1, 5), 3, '0', STR_PAD_LEFT);
+            $noKK = '33741234' . str_pad($i, 8, '0', STR_PAD_LEFT);
+
+            // Jenis mutasi: 1=Normal, 2=Datang dalam kabupaten, 3=Datang luar kabupaten
+            $mutasi = rand(1, 3);
+
+            // Wilayah datang (kalau mutasi datang)
+            $kdprovinsi = $mutasi == 3 ? rand(1, 5) : null;
+            $kdkabupaten = $mutasi == 3 ? rand(1, 7) : null;
+            $kdkecamatan = $mutasi == 3 ? rand(1, 16) : null;
+            $kddesa = $mutasi == 3 ? rand(1, 135) : null;
+
+            // Kepala keluarga laki-laki atau perempuan
+            $kkLaki = rand(1, 100) <= 75;
+
+            $namaKK = $kkLaki
+                ? $namaPria[array_rand($namaPria)] . ' ' . $namaBelakang[array_rand($namaBelakang)]
+                : $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)];
+
+            $dataKeluarga[] = [
+                'no_kk' => $noKK,
+                'kdmutasimasuk' => $mutasi,
+                'keluarga_tanggalmutasi' => now(),
+                'keluarga_kepalakeluarga' => $namaKK,
+                'kddusun' => $dusun,
+                'keluarga_rw' => $rw,
+                'keluarga_rt' => $rt,
+                'keluarga_alamatlengkap' => 'Jl. ' . Str::title(fake()->streetName()) . ' No. ' . rand(1, 50) . ', Dusun ' . $dusunList[$dusun],
+                'kdprovinsi' => $kdprovinsi,
+                'kdkabupaten' => $kdkabupaten,
+                'kdkecamatan' => $kdkecamatan,
+                'kddesa' => $kddesa,
+            ];
+
+            // ====== Penduduk (sinkron) ======
+            $nourut = 1;
+
+            // Kepala Keluarga
+            $nikCounter++;
+            $dataPenduduk[] = [
+                'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
+                'no_kk' => $noKK,
+                'kdmutasimasuk' => $mutasi,
+                'penduduk_nourutkk' => '01',
+                'penduduk_namalengkap' => $namaKK,
                 'penduduk_tempatlahir' => 'Kudus',
-                'penduduk_tanggallahir' => '1985-03-12',
-                'kdjeniskelamin' => 1,
-                'kdagama' => 1,
+                'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000,99999),
+                'penduduk_tanggallahir' => now()->subYears(rand(30, 60))->format('Y-m-d'),
+                'kdjeniskelamin' => $kkLaki ? 1 : 2,
                 'kdhubungankeluarga' => 1,
-                'kdhubungankepalakeluarga' => 1,
-                'kdstatuskawin' => 2,
-                'kdaktanikah' => 1,
-                'kdtercantumdalamkk' => 1,
-                'kdstatustinggal' => 1,
-                'kdkartuidentitas' => 1,
-                'kdpekerjaan' => 3,
-                'penduduk_namaayah' => 'Sutarman',
-                'penduduk_namaibu' => 'Sulastri',
-                'penduduk_namatempatbekerja' => 'PT Overcode Teknologi',
-                'kdprovinsi' => 1,
-                'kdkabupaten' => 1,
-                'kdkecamatan' => 1,
-                'kddesa' => 1,
-            ],
-            [
-                'nik' => '3374123400000002',
-                'no_kk' => '3374123400000001',
-                'kdmutasimasuk' => 1,
-                'penduduk_tanggalmutasi' => Carbon::now(),
-                'penduduk_kewarganegaraan' => 'INDONESIA',
-                'penduduk_nourutkk' => '2',
-                'penduduk_goldarah' => 'A',
-                'penduduk_noaktalahir' => 'AKT-00002',
-                'penduduk_namalengkap' => 'Siti Aminah',
-                'penduduk_tempatlahir' => 'Kudus',
-                'penduduk_tanggallahir' => '1988-07-19',
-                'kdjeniskelamin' => 2,
                 'kdagama' => 1,
-                'kdhubungankeluarga' => 2,
-                'kdhubungankepalakeluarga' => 2,
                 'kdstatuskawin' => 2,
-                'kdaktanikah' => 1,
-                'kdtercantumdalamkk' => 1,
-                'kdstatustinggal' => 1,
-                'kdkartuidentitas' => 1,
-                'kdpekerjaan' => 5,
-                'penduduk_namaayah' => 'Sukarman',
-                'penduduk_namaibu' => 'Sumiyati',
-                'penduduk_namatempatbekerja' => 'Rumah Tangga',
-                'kdprovinsi' => 1,
-                'kdkabupaten' => 1,
-                'kdkecamatan' => 2,
-                'kddesa' => 2,
-            ],
-            [
-                'nik' => '3374123400000003',
-                'no_kk' => '3374123400000002',
-                'kdmutasimasuk' => 2,
-                'penduduk_tanggalmutasi' => Carbon::now(),
+                'kdpekerjaan' => rand(1, 8),
+                'penduduk_namaayah' => $namaPria[array_rand($namaPria)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
+                'penduduk_namaibu' => $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
+                'penduduk_goldarah' => ['A', 'B', 'AB', 'O'][array_rand(['A', 'B', 'AB', 'O'])],
                 'penduduk_kewarganegaraan' => 'INDONESIA',
-                'penduduk_nourutkk' => '1',
-                'penduduk_goldarah' => 'B',
-                'penduduk_noaktalahir' => 'AKT-00003',
-                'penduduk_namalengkap' => 'Ahmad Fauzi',
-                'penduduk_tempatlahir' => 'Kudus',
-                'penduduk_tanggallahir' => '1992-02-11',
-                'kdjeniskelamin' => 1,
-                'kdagama' => 1,
-                'kdhubungankeluarga' => 1,
-                'kdhubungankepalakeluarga' => 1,
-                'kdstatuskawin' => 1,
-                'kdaktanikah' => 2,
-                'kdtercantumdalamkk' => 1,
-                'kdstatustinggal' => 1,
-                'kdkartuidentitas' => 1,
-                'kdpekerjaan' => 4,
-                'penduduk_namaayah' => 'Slamet',
-                'penduduk_namaibu' => 'Rohani',
-                'penduduk_namatempatbekerja' => 'CV Fadhila Gorden',
-                'kdprovinsi' => 1,
-                'kdkabupaten' => 1,
-                'kdkecamatan' => 3,
-                'kddesa' => 3,
-            ],
-        ]);
+                'penduduk_tanggalmutasi' => now(),
+            ];
+
+            // Kalau kepala keluarga laki-laki → tambah istri
+            if ($kkLaki) {
+                $nikCounter++;
+                $namaIstri = $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)];
+                $nourut++;
+                $dataPenduduk[] = [
+                    'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
+                    'no_kk' => $noKK,
+                    'kdmutasimasuk' => $mutasi,
+                    'penduduk_nourutkk' => str_pad($nourut, 2, '0', STR_PAD_LEFT),
+                    'penduduk_namalengkap' => $namaIstri,
+                    'penduduk_tempatlahir' => 'Kudus',
+                    'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000,99999),
+                    'penduduk_tanggallahir' => now()->subYears(rand(25, 55))->format('Y-m-d'),
+                    'kdjeniskelamin' => 2,
+                    'kdhubungankeluarga' => 2,
+                    'kdagama' => 1,
+                    'kdstatuskawin' => 2,
+                    'kdpekerjaan' => rand(3, 8),
+                    'penduduk_namaayah' => $namaPria[array_rand($namaPria)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
+                    'penduduk_namaibu' => $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
+                    'penduduk_goldarah' => ['A', 'B', 'AB', 'O'][array_rand(['A', 'B', 'AB', 'O'])],
+                    'penduduk_kewarganegaraan' => 'INDONESIA',
+                    'penduduk_tanggalmutasi' => now(),
+                ];
+            }
+
+            // Tambah anak-anak (1–3 anak)
+            $jumlahAnak = rand(1, 3);
+            for ($a = 1; $a <= $jumlahAnak; $a++) {
+                $nikCounter++;
+                $genderAnak = rand(0, 1) ? 1 : 2;
+                $namaAnak = ($genderAnak == 1 ? $namaPria[array_rand($namaPria)] : $namaWanita[array_rand($namaWanita)]) . ' ' . $namaBelakang[array_rand($namaBelakang)];
+                $nourut++;
+
+                $dataPenduduk[] = [
+                    'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
+                    'no_kk' => $noKK,
+                    'kdmutasimasuk' => $mutasi,
+                    'penduduk_nourutkk' => str_pad($nourut, 2, '0', STR_PAD_LEFT),
+                    'penduduk_namalengkap' => $namaAnak,
+                    'penduduk_tempatlahir' => 'Kudus',
+                    'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000,99999),
+                    'penduduk_tanggallahir' => now()->subYears(rand(5, 25))->format('Y-m-d'),
+                    'kdjeniskelamin' => $genderAnak,
+                    'kdhubungankeluarga' => 3,
+                    'kdagama' => 1,
+                    'kdstatuskawin' => 1,
+                    'kdpekerjaan' => rand(7, 10),
+                    'penduduk_namaayah' => $namaKK,
+                    'penduduk_namaibu' => $kkLaki ? $namaIstri ?? '' : $namaKK,
+                    'penduduk_goldarah' => ['A', 'B', 'AB', 'O'][array_rand(['A', 'B', 'AB', 'O'])],
+                    'penduduk_kewarganegaraan' => 'INDONESIA',
+                    'penduduk_tanggalmutasi' => now(),
+                ];
+            }
+        }
+
+        DB::table('data_keluarga')->insert($dataKeluarga);
+        DB::table('data_penduduk')->insert($dataPenduduk);
     }
 }

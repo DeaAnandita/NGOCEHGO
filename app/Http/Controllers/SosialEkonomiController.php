@@ -18,11 +18,24 @@ use Illuminate\Support\Facades\Validator;
 
 class SosialEkonomiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('penduduk.sosialekonomi.index', [
-            'sosialekonomis' => DataSosialEkonomi::with('penduduk')->get(),
-        ]);
+        // Ambil semua data sosialekonomi dengan relasi penduduk
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $sosialekonomis = DataSosialEkonomi::with('penduduk')
+            ->when($search, function ($query, $search) {
+                $query->where('nik', 'like', "%{$search}%")
+                    ->orWhereHas('penduduk', function ($q) use ($search) {
+                        $q->where('penduduk_namalengkap', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('nik', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+
+        return view('penduduk.sosialekonomi.index', compact('sosialekonomis', 'search', 'perPage'));
     }
 
     public function create()

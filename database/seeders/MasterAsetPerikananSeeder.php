@@ -15,12 +15,12 @@ class MasterAsetPerikananSeeder extends Seeder
         //DB::table('master_asetperikanan')->truncate();
 
         DB::table('master_asetperikanan')->insert([
-            ['kdasetperikanan' => 1, 'asetperikanan' => '1 KERAMBA'],
-            ['kdasetperikanan' => 2, 'asetperikanan' => '2 TAMBAK'],
-            ['kdasetperikanan' => 3, 'asetperikanan' => '3 JERMAL'],
-            ['kdasetperikanan' => 4, 'asetperikanan' => '4 PANCING'],
-            ['kdasetperikanan' => 5, 'asetperikanan' => '5 PUKAT'],
-            ['kdasetperikanan' => 6, 'asetperikanan' => '6 JALA'],
+            ['kdasetperikanan' => 1, 'asetperikanan' => 'KERAMBA'],
+            ['kdasetperikanan' => 2, 'asetperikanan' => 'TAMBAK'],
+            ['kdasetperikanan' => 3, 'asetperikanan' => 'JERMAL'],
+            ['kdasetperikanan' => 4, 'asetperikanan' => 'PANCING'],
+            ['kdasetperikanan' => 5, 'asetperikanan' => 'PUKAT'],
+            ['kdasetperikanan' => 6, 'asetperikanan' => 'JALA'],
         ]);
 
     }

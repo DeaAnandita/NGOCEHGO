@@ -43,28 +43,52 @@
            class="w-64 bg-white shadow-md h-screen fixed transition-all duration-300 z-40">
         <div class="flex flex-col h-full">
             <!-- Header Sidebar -->
-            <div class="px-6 py-4 bg-blue-600 text-white font-bold text-xl flex items-center justify-center">
-                <span>Sistem Desa</span>
+            <div class="px-6 py-4 bg-blue-500 text-white font-bold text-xl flex items-center justify-center">
+                <span>NGOCEH GO</span>
             </div>
 
             <!-- Menu List -->
             <nav class="flex-1 overflow-y-auto p-4 space-y-2">
                 <a href="{{ route('dashboard') }}"
-                class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium
+                class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm
                 {{ request()->routeIs('dashboard') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                    <x-heroicon-o-home class="w-6 h-6" /> 
+                    <x-heroicon-o-home class="w-5 h-5" /> 
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ route('menu.kependudukan') }}"
-                class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium
-                {{ request()->routeIs('menu.kependudukan') || request()->routeIs('dasar-keluarga*') || request()->routeIs('dasar-penduduk*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                <x-heroicon-o-user-group class="w-6 h-6" /> 
-                <span>Adm Penduduk</span>
-                </a>
+                <!-- Menu Kependudukan dengan Submenu -->
+                <div x-data="{ open: {{ request()->routeIs('dasar-keluarga.*') || request()->routeIs('dasar-penduduk.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open"
+                            class="flex items-center justify-between w-full gap-3 px-4 py-2 rounded-lg  text-sm 
+                            {{ request()->routeIs('dasar-keluarga.*') || request()->routeIs('dasar-penduduk.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                        <div class="flex items-center gap-3">
+                            <x-heroicon-o-user-group class="w-5 h-5" />
+                            <span>Kependudukan</span>
+                        </div>
+                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+
+                    <!-- Submenu -->
+                    <div x-show="open" x-collapse class="mt-1 space-y-1 pl-10">
+                        <a href="{{ route('dasar-keluarga.index') }}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                        {{ request()->routeIs('dasar-keluarga.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+                            <x-heroicon-o-user class="w-5 h-5" />
+                            <span>Data Keluarga</span>
+                        </a>
+                        <a href="{{ route('dasar-penduduk.index') }}"
+                        class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                        {{ request()->routeIs('dasar-penduduk.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+                            <x-heroicon-o-user class="w-5 h-5" />
+                            <span>Data Penduduk</span>
+                        </a>
+                    </div>
+                </div>
+
                 <a href="{{ route('master.list') }}"
-                class="flex items-center gap-3 px-4 py-2 rounded-lg font-medium
+                class="flex items-center gap-3 px-4 py-2 rounded-lg text-sm
                 {{ request()->routeIs('master.list') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                <x-heroicon-o-inbox-stack class="w-6 h-6" /> 
+                <x-heroicon-o-inbox-stack class="w-5 h-5" /> 
                 <span>Master Data</span>
                 </a>
             </nav>

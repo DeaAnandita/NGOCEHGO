@@ -13,11 +13,21 @@ class MasterDesaSeeder extends Seeder
         DB::table('master_provinsi')->insert([
              
             ['kdprovinsi' => 1, 'provinsi' => 'Jawa Tenggah'],
+            ['kdprovinsi' => 2, 'provinsi' => 'Jawa Barat'],
+            ['kdprovinsi' => 3, 'provinsi' => 'Jawa Timur'],
+            ['kdprovinsi' => 4, 'provinsi' => 'DKI Jakarta'],
+            ['kdprovinsi' => 5, 'provinsi' => 'DI Yogyakarta'],
            
         ]);
 	    DB::table('master_kabupaten')->insert([
              
             ['kdkabupaten' => 1, 'kdprovinsi' => 1, 'kabupaten' => 'Kudus'],
+            ['kdkabupaten' => 2, 'kdprovinsi' => 2, 'kabupaten' => 'Bandung'],
+            ['kdkabupaten' => 3, 'kdprovinsi' => 2, 'kabupaten' => 'Bogor'],
+            ['kdkabupaten' => 4, 'kdprovinsi' => 3, 'kabupaten' => 'Surabaya'],
+            ['kdkabupaten' => 5, 'kdprovinsi' => 3, 'kabupaten' => 'Malang'],
+            ['kdkabupaten' => 6, 'kdprovinsi' => 4, 'kabupaten' => 'Jakarta Selatan'],
+            ['kdkabupaten' => 7, 'kdprovinsi' => 5, 'kabupaten' => 'Sleman'],
            
         ]);
 	    DB::table('master_kecamatan')->insert([
@@ -30,6 +40,13 @@ class MasterDesaSeeder extends Seeder
             ['kdkecamatan' => 7, 'kdkabupaten' => 1, 'kecamatan' => 'Bae'],
             ['kdkecamatan' => 8, 'kdkabupaten' => 1, 'kecamatan' => 'Gebog'],
             ['kdkecamatan' => 9, 'kdkabupaten' => 1, 'kecamatan' => 'Dawe'],
+            ['kdkecamatan' => 10, 'kdkabupaten' => 2, 'kecamatan' => 'Cicendo'],
+            ['kdkecamatan' => 11, 'kdkabupaten' => 2, 'kecamatan' => 'Coblong'],
+            ['kdkecamatan' => 12, 'kdkabupaten' => 3, 'kecamatan' => 'Cibinong'],
+            ['kdkecamatan' => 13, 'kdkabupaten' => 4, 'kecamatan' => 'Genteng'],
+            ['kdkecamatan' => 14, 'kdkabupaten' => 5, 'kecamatan' => 'Klojen'],
+            ['kdkecamatan' => 15, 'kdkabupaten' => 6, 'kecamatan' => 'Kebayoran Baru'],
+            ['kdkecamatan' => 16, 'kdkabupaten' => 7, 'kecamatan' => 'Depok'],
         ]);
 	    DB::table('master_desa')->insert([
             // KECAMATAN KOTA KUDUS (kdkecamatan = 1)
@@ -177,6 +194,14 @@ class MasterDesaSeeder extends Seeder
             ['kddesa' => 126, 'kdkecamatan' => 9, 'desa' => 'Temulus'],
             ['kddesa' => 127, 'kdkecamatan' => 9, 'desa' => 'Tenggeles'],
             ['kddesa' => 128, 'kdkecamatan' => 9, 'desa' => 'Gulang'],
+
+            ['kddesa' => 129, 'kdkecamatan' => 10, 'desa' => 'Sukamaju'],
+            ['kddesa' => 130, 'kdkecamatan' => 11, 'desa' => 'Dago'],
+            ['kddesa' => 131, 'kdkecamatan' => 12, 'desa' => 'Citeureup'],
+            ['kddesa' => 132, 'kdkecamatan' => 13, 'desa' => 'Ketabang'],
+            ['kddesa' => 133, 'kdkecamatan' => 14, 'desa' => 'Oro-oro Dowo'],
+            ['kddesa' => 134, 'kdkecamatan' => 15, 'desa' => 'Pondok Pinang'],
+            ['kddesa' => 135, 'kdkecamatan' => 16, 'desa' => 'Caturtunggal'],
         ]);
     }
 }

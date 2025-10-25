@@ -27,11 +27,25 @@ class PendudukController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 50); // default 10 data per halaman
+
+        $penduduks = DataPenduduk::with('keluarga')
+            ->when($search, function ($query, $search) {
+                return $query->where('penduduk_namalengkap', 'like', "%{$search}%")
+                            ->orWhere('nik', 'like', "%{$search}%")
+                            ->orWhere('no_kk', 'like', "%{$search}%");
+            })
+            ->orderBy('no_kk')
+            ->paginate($perPage);
+
         return view('penduduk.index', [
-            'penduduks' => DataPenduduk::with('keluarga')->get(),
+            'penduduks' => $penduduks,
             'keluargas' => DataKeluarga::all(),
+            'search' => $search,
+            'perPage' => $perPage,
         ]);
     }
 

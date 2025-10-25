@@ -13,10 +13,22 @@ use Illuminate\Http\Request;
 
 class KeluargaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $keluargas = DataKeluarga::with(['mutasi', 'dusun'])->get();
-        return view('keluarga.index', compact('keluargas'));
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10);
+
+        $keluargas = DataKeluarga::with(['mutasi', 'dusun', 'provinsi', 'kabupaten', 'kecamatan', 'desa'])
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhere('keluarga_kepalakeluarga', 'like', "%{$search}%")
+                    ->orWhereHas('dusun', fn($q) => $q->where('dusun', 'like', "%{$search}%"));
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]);
+
+        return view('keluarga.index', compact('keluargas', 'search', 'perPage'));
     }
 
     public function create()

@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class DataKelahiranSeeder extends Seeder
 {
-    /**
-     * Jalankan database seeder.
-     */
     public function run(): void
     {
         // Nonaktifkan foreign key sementara agar bisa truncate
@@ -17,46 +14,33 @@ class DataKelahiranSeeder extends Seeder
         DB::table('data_kelahiran')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Data kelahiran sesuai dengan data_penduduk
-        DB::table('data_kelahiran')->insert([
-            [
-                'nik' => '3374123400000001', // NIK bayi baru
-                'kdtempatpersalinan' => 1, // Rumah Sakit
-                'kdjeniskelahiran' => 1, // Tunggal
-                'kdpertolonganpersalinan' => 1, // Dokter
-                'kelahiran_jamkelahiran' => '07:45:00',
-                'kelahiran_kelahiranke' => 1,
-                'kelahiran_berat' => 3100,
-                'kelahiran_panjang' => 49,
-                'kelahiran_nikibu' => '3374123400000002', // Siti Aminah
-                'kelahiran_nikayah' => '3374123400000003', // Budi Santoso
-                'kelahiran_rw' => '03',
-                'kelahiran_rt' => '01',
+        // Ambil 15 NIK dari data_penduduk (anggap 15 bayi lahir)
+        $nikList = DB::table('data_penduduk')->limit(15)->pluck('nik');
+
+        $records = [];
+
+        foreach ($nikList as $index => $nik) {
+            $records[] = [
+                'nik' => $nik,
+                'kdtempatpersalinan' => fake()->numberBetween(1, 3), // 1=RS, 2=Puskesmas, 3=Rumah
+                'kdjeniskelahiran' => fake()->numberBetween(1, 2),   // 1=Tunggal, 2=Kembar
+                'kdpertolonganpersalinan' => fake()->numberBetween(1, 3), // 1=Dokter, 2=Bidan, 3=Tenaga Medis
+                'kelahiran_jamkelahiran' => fake()->time('H:i:s'),
+                'kelahiran_kelahiranke' => fake()->numberBetween(1, 4),
+                'kelahiran_berat' => fake()->numberBetween(2700, 4000), // gram
+                'kelahiran_panjang' => fake()->numberBetween(45, 55),   // cm
+                'kelahiran_nikibu' => DB::table('data_penduduk')->inRandomOrder()->value('nik'),
+                'kelahiran_nikayah' => DB::table('data_penduduk')->inRandomOrder()->value('nik'),
+                'kelahiran_rw' => str_pad(fake()->numberBetween(1, 5), 2, '0', STR_PAD_LEFT),
+                'kelahiran_rt' => str_pad(fake()->numberBetween(1, 5), 2, '0', STR_PAD_LEFT),
                 'kdprovinsi' => 1,
                 'kdkabupaten' => 1,
-                'kdkecamatan' => 1,
-                'kddesa' => 1,
+                'kdkecamatan' => fake()->numberBetween(1, 3),
+                'kddesa' => fake()->numberBetween(1, 5),
                 'created_by' => 1,
-            ],
-            [
-                'nik' => '3374123400000002', // Anak Ahmad Fauzi & Rohani
-                'kdtempatpersalinan' => 2, // Puskesmas
-                'kdjeniskelahiran' => 1, // Tunggal
-                'kdpertolonganpersalinan' => 2, // Bidan
-                'kelahiran_jamkelahiran' => '14:30:00',
-                'kelahiran_kelahiranke' => 2,
-                'kelahiran_berat' => 3200,
-                'kelahiran_panjang' => 50,
-                'kelahiran_nikibu' => '3374123400000003', // Ibu = Rohani
-                'kelahiran_nikayah' => '3374123400000001', // Ayah = Ahmad Fauzi (sementara disamakan)
-                'kelahiran_rw' => '02',
-                'kelahiran_rt' => '05',
-                'kdprovinsi' => 1,
-                'kdkabupaten' => 1,
-                'kdkecamatan' => 3,
-                'kddesa' => 3,
-                'created_by' => 1,
-            ],
-        ]);
+            ];
+        }
+
+        DB::table('data_kelahiran')->insert($records);
     }
 }

@@ -12,15 +12,27 @@ class SejahteraKeluargaController extends Controller
     /**
      * Tampilkan daftar data sejahtera keluarga.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sejahterakeluargas = DataSejahteraKeluarga::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $sejahterakeluargas = DataSejahteraKeluarga::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
 
         // Ambil label soal dari master_pembangunan_keluarga (typejawab 2 = uraian)
         $masterPembangunan = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(61, 68))
             ->get(['kdpembangunankeluarga', 'pembangunankeluarga']);
 
-        return view('keluarga.sejahterakeluarga.index', compact('sejahterakeluargas', 'masterPembangunan'));
+        return view('keluarga.sejahterakeluarga.index', compact('sejahterakeluargas', 'masterPembangunan', 'search', 'perPage'));
     }
 
     /**

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DataKualitasBayi;
 use App\Models\DataKeluarga;
 use App\Models\MasterKualitasBayi;
-use App\Models\MasterJawab;
+use App\Models\MasterJawabKualitasBayi;
 use Illuminate\Http\Request;
 
 class KualitasBayiController extends Controller
@@ -13,12 +13,25 @@ class KualitasBayiController extends Controller
     /**
      * Menampilkan daftar data kualitas bayi.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kualitasbayis = DataKualitasBayi::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $kualitasbayis = DataKualitasBayi::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+
         $masterKualitas = MasterKualitasBayi::pluck('kualitasbayi', 'kdkualitasbayi')->toArray();
-        $masterJawab = MasterJawab::pluck('jawab', 'kdjawab')->toArray();
-        return view('keluarga.kualitasbayi.index', compact('kualitasbayis', 'masterKualitas', 'masterJawab'));
+        $masterJawab = MasterJawabKualitasBayi::pluck('jawabkualitasbayi', 'kdjawabkualitasbayi')->toArray();
+        return view('keluarga.kualitasbayi.index', compact('kualitasbayis', 'masterKualitas', 'masterJawab', 'search', 'perPage'));
     }
 
     /**
@@ -28,7 +41,7 @@ class KualitasBayiController extends Controller
     {
         $keluargas = DataKeluarga::all();
         $masterKualitas = MasterKualitasBayi::all();
-        $masterJawab = MasterJawab::all();
+        $masterJawab = MasterJawabKualitasBayi::all();
         return view('keluarga.kualitasbayi.create', compact('keluargas', 'masterKualitas', 'masterJawab'));
     }
 
@@ -43,7 +56,7 @@ class KualitasBayiController extends Controller
         ]);
 
         $data = $request->only(['no_kk']);
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 7; $i++) {
             $data["kualitasbayi_$i"] = $request->input("kualitasbayi_$i", 0);
         }
 
@@ -60,7 +73,7 @@ class KualitasBayiController extends Controller
         $kualitasbayi = DataKualitasBayi::where('no_kk', $no_kk)->firstOrFail();
         $keluargas = DataKeluarga::all();
         $masterKualitas = MasterKualitasBayi::all();
-        $masterJawab = MasterJawab::all();
+        $masterJawab = MasterJawabKualitasBayi::all();
 
         return view('keluarga.kualitasbayi.edit', compact('kualitasbayi', 'keluargas', 'masterKualitas', 'masterJawab'));
     }
@@ -77,7 +90,7 @@ class KualitasBayiController extends Controller
 
         $kualitasbayi = DataKualitasBayi::where('no_kk', $no_kk)->firstOrFail();
         $data = $request->only(['no_kk']);
-        for ($i = 1; $i <= 30; $i++) {
+        for ($i = 1; $i <= 7; $i++) {
             $data["kualitasbayi_$i"] = $request->input("kualitasbayi_$i", 0);
         }
 

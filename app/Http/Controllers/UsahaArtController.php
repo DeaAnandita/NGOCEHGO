@@ -15,12 +15,26 @@ class UsahaArtController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('penduduk.usahaart.index', [
-            'usahaarts' => DataUsahaArt::with('penduduk')->get(),
-            'penduduks' => DataPenduduk::all(),
-        ]);
+        // Ambil semua data usahaart dengan relasi penduduk
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $usahaarts = DataUsahaArt::with('penduduk')
+            ->when($search, function ($query, $search) {
+                $query->where('nik', 'like', "%{$search}%")
+                    ->orWhereHas('penduduk', function ($q) use ($search) {
+                        $q->where('penduduk_namalengkap', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('nik', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+
+        $penduduks = DataPenduduk::all();
+
+        return view('penduduk.usahaart.index', compact('usahaarts', 'penduduks', 'search', 'perPage'));
     }
 
     /**

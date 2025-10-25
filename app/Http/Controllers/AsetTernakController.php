@@ -12,15 +12,26 @@ class AsetTernakController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua data aset ternak beserta keluarga
-        $asetternaks = DataAsetTernak::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $asetternaks = DataAsetTernak::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
 
         // Ambil daftar master aset ternak (keterangan jenis aset)
         $masterAset = MasterAsetTernak::pluck('asetternak', 'kdasetternak')->toArray();
 
-        return view('keluarga.asetternak.index', compact('asetternaks', 'masterAset'));
+        return view('keluarga.asetternak.index', compact('asetternaks', 'masterAset', 'search', 'perPage'));
     }
 
     /**

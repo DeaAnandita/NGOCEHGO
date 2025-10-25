@@ -9,16 +9,16 @@ class DataLembagaMasyarakatSeeder extends Seeder
 {
     public function run(): void
     {
-        $records = [
-            '3374123400000001',
-            '3374123400000002',
-        ];
+        // Ambil 3 NIK pertama dari data_penduduk (otomatis sinkron)
+        $nikList = DB::table('data_penduduk')
+            ->inRandomOrder()
+            ->limit(15)
+            ->pluck('nik');
 
-        foreach ($records as $nik) {
-            $lembagamasyarakat= ['nik' => $nik];
+        foreach ($nikList as $nik) {
+            $lembagamasyarakat = ['nik' => $nik];
             for ($i = 1; $i <= 48; $i++) {
-                // 1 = punya, 0 = tidak punya (random)
-                $lembagamasyarakat["lemmas_$i"] = rand(1,4);
+                $lembagamasyarakat["lemmas_$i"] = rand(1, 4);
             }
 
             DB::table('data_lembagamasyarakat')->insert($lembagamasyarakat);

@@ -10,13 +10,26 @@ use Illuminate\Http\Request;
 
 class KonflikSosialController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $konfliksosials = DataKonflikSosial::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $konfliksosials = DataKonflikSosial::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+
         $masterKonflik = MasterKonflikSosial::pluck('konfliksosial', 'kdkonfliksosial')->toArray();
         $masterJawab = MasterJawabKonflik::pluck('jawabkonflik', 'kdjawabkonflik')->toArray();
 
-        return view('keluarga.konfliksosial.index', compact('konfliksosials', 'masterKonflik', 'masterJawab'));
+        return view('keluarga.konfliksosial.index', compact('konfliksosials', 'masterKonflik', 'masterJawab', 'search', 'perPage'));
     }
 
     public function create()

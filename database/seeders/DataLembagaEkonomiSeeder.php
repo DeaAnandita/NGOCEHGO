@@ -9,16 +9,16 @@ class DataLembagaEkonomiSeeder extends Seeder
 {
     public function run(): void
     {
-        $records = [
-            '3374123400000001',
-            '3374123400000002',
-        ];
+        // Ambil 3 NIK pertama dari data_penduduk (otomatis sinkron)
+        $nikList = DB::table('data_penduduk')
+            ->inRandomOrder()
+            ->limit(15)
+            ->pluck('nik');
 
-        foreach ($records as $nik) {
-            $lembagaekonomi= ['nik' => $nik];
+        foreach ($nikList as $nik) {
+            $lembagaekonomi = ['nik' => $nik];
             for ($i = 1; $i <= 75; $i++) {
-                // 1 = punya, 0 = tidak punya (random)
-                $lembagaekonomi["lemek_$i"] = rand(1,4);
+                $lembagaekonomi["lemek_$i"] = rand(1, 4);
             }
 
             DB::table('data_lembagaekonomi')->insert($lembagaekonomi);

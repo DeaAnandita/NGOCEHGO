@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DataKualitasIbuHamil;
 use App\Models\DataKeluarga;
 use App\Models\MasterKualitasIbuHamil;
-use App\Models\MasterJawab;
+use App\Models\MasterJawabKualitasIbuHamil;
 use Illuminate\Http\Request;
 
 class KualitasIbuHamilController extends Controller
@@ -13,12 +13,25 @@ class KualitasIbuHamilController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kualitasibuhamils = DataKualitasIbuHamil::with('keluarga')->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10); // default 10
+
+        $kualitasibuhamils = DataKualitasIbuHamil::with('keluarga')
+            ->when($search, function ($query, $search) {
+                $query->where('no_kk', 'like', "%{$search}%")
+                    ->orWhereHas('keluarga', function ($q) use ($search) {
+                        $q->where('keluarga_kepalakeluarga', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('no_kk', 'asc')
+            ->paginate($perPage)
+            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+
         $masterKualitas = MasterKualitasIbuHamil::pluck('kualitasibuhamil', 'kdkualitasibuhamil')->toArray();
-        $masterJawab = MasterJawab::pluck('jawab', 'kdjawab')->toArray();
-        return view('keluarga.kualitasibuhamil.index', compact('kualitasibuhamils', 'masterKualitas', 'masterJawab'));
+        $masterJawab = MasterJawabKualitasIbuHamil::pluck('jawabkualitasibuhamil', 'kdjawabkualitasibuhamil')->toArray();
+        return view('keluarga.kualitasibuhamil.index', compact('kualitasibuhamils', 'masterKualitas', 'masterJawab', 'search', 'perPage'));
     }
 
     /**
@@ -28,7 +41,7 @@ class KualitasIbuHamilController extends Controller
     {
         $keluargas = DataKeluarga::all();
         $masterKualitas = MasterKualitasIbuHamil::all();
-        $masterJawab = MasterJawab::all();
+        $masterJawab = MasterJawabKualitasIbuHamil::all();
 
         return view('keluarga.kualitasibuhamil.create', compact('keluargas', 'masterKualitas', 'masterJawab'));
     }
@@ -44,7 +57,7 @@ class KualitasIbuHamilController extends Controller
         ]);
 
         $data = $request->only(['no_kk']);
-        for ($i = 1; $i <= 42; $i++) {
+        for ($i = 1; $i <= 13; $i++) {
             $data["kualitasibuhamil_$i"] = $request->input("kualitasibuhamil_$i", 0);
         }
 
@@ -61,7 +74,7 @@ class KualitasIbuHamilController extends Controller
         $kualitasibuhamil = DataKualitasIbuHamil::where('no_kk', $no_kk)->firstOrFail();
         $keluargas = DataKeluarga::all();
         $masterKualitas = MasterKualitasIbuHamil::all();
-        $masterJawab = MasterJawab::all();
+        $masterJawab = MasterJawabKualitasIbuHamil::all();
         return view('keluarga.kualitasibuhamil.edit', compact('kualitasibuhamil', 'keluargas', 'masterKualitas', 'masterJawab'));
     }
 
