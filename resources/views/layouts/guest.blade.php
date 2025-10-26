@@ -14,17 +14,29 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-[Poppins] text-gray-900 antialiased min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-    style="background-color: rgb(148, 194, 255)">
+<body class="font-[Poppins] text-gray-900 antialiased min-h-screen flex items-center justify-center bg-blue-100">
 
-    <div class="w-full sm:max-w-md mx-auto px-6 py-6 bg-white/95 backdrop-blur-sm shadow-xl rounded-2xl">
-        <div class="flex flex-col items-center mb-6">
-            <a href="{{ route('login') }}">
-                <img src="{{ asset('images/ijo.png') }}" alt="Logo" class="h-20 w-auto">
-            </a>
+    <!-- Wrapper kotak putih -->
+    <div class="flex flex-col md:flex-row bg-white rounded-2xl shadow-xl overflow-hidden max-w-5xl w-full mx-6">
+        
+        <!-- Kiri: Ilustrasi -->
+        <div class="hidden md:flex w-1/2 bg-blue-50 items-center justify-center p-8">
+            <img src="{{ asset('images/logo-ngoceh.png') }}" 
+                 alt="Ilustrasi NGOCEH GO" 
+                 class="max-w-sm">
         </div>
 
-        {{ $slot }}
+        <!-- Kanan: Slot Form -->
+        <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+            <div class="flex flex-col items-center mb-6">
+                <a href="/">
+                    <img src="{{ asset('images/ijo.png') }}" alt="Logo NGOCEH GO" class="h-16 w-auto mb-3">
+                </a>
+            </div>
+
+            {{ $slot }}
+        </div>
+
     </div>
 
 </body>
