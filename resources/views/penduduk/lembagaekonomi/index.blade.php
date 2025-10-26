@@ -64,7 +64,7 @@
                                 @forelse ($lembagaEkonomis as $data)
                                     <tr class="hover:bg-gray-50 transition">
                                         <!-- ✅ Ganti $data->nO dengan $loop->iteration -->
-                                        <td class="border border-gray-200 px-4 py-4 text-center">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $lembagaEkonomis->firstItem() + $loop->index }}</td>
 
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->nik }}</td>
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->penduduk->penduduk_namalengkap ?? '-' }}</td>

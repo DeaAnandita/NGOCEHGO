@@ -65,7 +65,7 @@
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                                 @forelse($prasaranas as $pras)
                                     <tr class="hover:bg-gray-50 transition">
-                                        <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $prasaranas->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-3">{{ $pras->no_kk }}</td>
                                         <td class="border border-gray-200 px-4 py-3">{{ $pras->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
                                         <td class="border border-gray-200 px-4 py-3">

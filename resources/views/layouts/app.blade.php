@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Sistem Informasi Desa Kaliwungu') }}</title>
+    <title>{{ config('app.name', 'NGOCEH GO') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -43,8 +43,8 @@
            class="w-64 bg-white shadow-md h-screen fixed transition-all duration-300 z-40">
         <div class="flex flex-col h-full">
             <!-- Header Sidebar -->
-            <div class="px-6 py-4 bg-blue-500 text-white font-bold text-xl flex items-center justify-center">
-                <span>NGOCEH GO</span>
+            <div class="px-6 py-4 bg-white-500 text-white font-bold text-xl flex items-center justify-center">
+                 <img src="{{ asset('images/logo-ngoceh.png') }}" class="w-30 h-17">
             </div>
 
             <!-- Menu List -->
@@ -109,9 +109,11 @@
                 <div class="flex items-center gap-2">
                     <button @click="sidebarOpen = !sidebarOpen"
                             class="text-gray-700 hover:text-gray-900 focus:outline-none">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto">
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <img src="{{ asset('images/ijo.png') }}" alt="Logo" class="h-10 w-auto object-contain" />
+                            <span class="font-semibold text-gray-700 text-left">"Ngoceh GO" Desa Kaliwungu Kudus</span>
+                        </div>
                     </button>
-                    <span class="font-semibold text-gray-700">Desa Kaliwungu Kudus</span>
                 </div>
 
                 <div class="relative">

@@ -68,7 +68,7 @@
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                                 @forelse($sarpraskerjas as $data)
                                     <tr class="hover:bg-gray-50 transition">
-                                        <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $sarpraskerjas->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->no_kk }}</td>
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
                                         @for($i = 1; $i <= 25; $i++)

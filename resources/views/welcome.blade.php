@@ -1,64 +1,58 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>{{ config('app.name', 'Sistem Informasi Aset Desa') }}</title>
-
-    <!-- Fonts: Poppins -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGOCEH. NDATA.</title>
+    @vite('resources/css/app.css')
+    <script src="https://unpkg.com/@tailwindcss/browser"></script>
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.0.0/dist/framer-motion.umd.js"></script>
 </head>
+<body class="bg-[#F4F9FF] min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
-<body class="antialiased relative min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-      style="background-image: url('{{ asset('images/bgdb.png') }}');">
-
-    {{-- Overlay lembut agar teks tetap jelas --}}
-    <div class="absolute inset-0"></div>
-
-    <div class="relative z-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-16 gap-10">
-        {{-- Bagian kiri: teks & tombol --}}
-        <div class="md:w-1/2 text-center md:text-left">
-            <div class="flex justify-center md:justify-start">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-24 w-auto mx-auto md:mx-0 mb-6">
-                <h2 class="sr-only">Desa Kaliwungu Kudus</h2>
-            </div>
-            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4 drop-shadow-sm" style="color: #4890CF;">
-                Selamat Datang di <span style="color: #064175;">Sistem Pendataan Survey Kemiskinan</span>
-            </h1>
-            <p class="text-gray-700 text-lg mb-8 leading-relaxed">
-                Platform untuk memantau dan mengelola data kemiskinan di Desa Kaliwungu Kudus secara efisien dan transparan.
-            </p>
-
-            <div class="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-                <a href="{{ route('login') }}"
-                   class="px-4 py-2 text-white font-semibold rounded shadow-md hover:bg-indigo-700 transition"
-                   style="background-color: #064175;">
-                    Masuk
-                </a>
-                <a href="{{ route('register') }}"
-                   class="px-4 py-2 font-semibold rounded hover:bg-indigo-600 hover:text-white transition"
-                   style="border-color: #064175; text-color: #064175; border-width: 2px;">
-                    Daftar
-                </a>
-            </div>
+    <!-- Navbar -->
+    <header class="w-full flex justify-between items-center px-10 py-5 border-b border-gray-200">
+        <div class="flex items-center space-x-2">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10">
+            <h1 class="text-lg font-semibold text-blue-800">NGOCEH</h1>
         </div>
+        <a href="{{ route('login') }}" 
+           class="bg-white text-blue-700 border border-blue-200 px-4 py-2 rounded-full hover:bg-blue-700 hover:text-white transition duration-300">
+            Sign in
+        </a>
+    </header>
+
+    <!-- Title -->
+    <div class="text-center mt-10">
+        <h1 class="text-4xl sm:text-5xl font-bold text-blue-900 tracking-wide">NGOCEH. NDATA.</h1>
     </div>
 
-    {{-- Footer kecil --}}
-    {{-- <footer class="absolute bottom-4 w-full text-center text-gray-600 text-sm z-10 font-medium">
-        &copy; {{ date('Y') }} Desa Kaliwungu Kudus — All rights reserved.
-    </footer> --}}
+    <!-- Cards -->
+    <div class="flex flex-wrap justify-center gap-10 mt-16 px-4 animate-bounce">
+        @for ($i = 1; $i <= 3; $i++)
+        <a href="#" 
+           class="w-72 h-64 bg-white rounded-[2rem] shadow-lg flex flex-col items-center justify-center text-center
+                  text-lg font-semibold text-gray-900 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:scale-105">
+            <span class="text-xl font-bold mb-2">REPORT DATA</span>
+            <p class="text-sm text-gray-500">Klik untuk melihat laporan</p>
+        </a>
+        @endfor
+    </div>
+
+    <!-- Background Curves -->
+    <div class="absolute top-0 left-0 w-1/2 h-full bg-[#EAF3F8] rounded-br-[50%] -z-10"></div>
+    <div class="absolute top-0 right-0 w-1/2 h-full bg-[#EAF3F8] rounded-bl-[50%] -z-10"></div>
+
+    <!-- Animation CSS -->
+    <style>
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(40px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slideUp 1s ease-out;
+        }
+    </style>
 
 </body>
 </html>

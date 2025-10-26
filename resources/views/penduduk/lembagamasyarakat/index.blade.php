@@ -64,7 +64,7 @@
                                 @forelse ($lembagaMasyarakats as $data)
                                     <tr class="hover:bg-gray-50 transition">
                                         <!-- ✅ Kolom NO diperbaiki -->
-                                        <td class="border border-gray-200 px-4 py-4 text-center">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $lembagaMasyarakats->firstItem() + $loop->index }}</td>
 
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->nik }}</td>
                                         <td class="border border-gray-200 px-4 py-4">

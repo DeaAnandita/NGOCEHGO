@@ -68,7 +68,7 @@
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                                 @forelse($bangunkeluargas as $data)
                                     <tr class="hover:bg-gray-50 transition">
-                                        <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $bangunkeluargas->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-2 truncate">{{ $data->no_kk }}</td>
                                         <td class="border border-gray-200 px-4 py-2 truncate">{{ $data->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
                                         @foreach($masterPembangunan as $pembangunan)

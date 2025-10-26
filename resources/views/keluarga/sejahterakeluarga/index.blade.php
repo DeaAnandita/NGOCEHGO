@@ -58,7 +58,7 @@
                         <tbody class="divide-y divide-gray-100">
                             @forelse($sejahterakeluargas as $data)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $sejahterakeluargas->firstItem() + $loop->index }}</td>
                                     <td class="border border-gray-200 px-4 py-3">{{ $data->no_kk }}</td>
                                     <td class="border border-gray-200 px-4 py-3">{{ $data->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
                                     @foreach($masterPembangunan as $pembangunan)

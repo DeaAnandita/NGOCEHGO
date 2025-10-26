@@ -66,7 +66,7 @@
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                                 @forelse($konfliksosials as $konflik)
                                     <tr class="hover:bg-gray-50 transition">
-                                        <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $konfliksosials->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-2 truncate">{{ $konflik->no_kk }}</td>
                                         <td class="border border-gray-200 px-4 py-2 truncate">{{ $konflik->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
 

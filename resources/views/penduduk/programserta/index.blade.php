@@ -59,7 +59,7 @@
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                                 @forelse ($programSertas as $data)
                                     <tr class="hover:bg-gray-50 transition">
-                                        <td class="border border-gray-200 px-4 py-4 text-center">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $programSertas->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->nik }}</td>
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->penduduk->penduduk_namalengkap ?? '-' }}</td>
 

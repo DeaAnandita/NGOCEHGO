@@ -68,7 +68,7 @@
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
                                 @forelse($asetlahans as $aset)
                                     <tr class="hover:bg-gray-50 transition">
-                                        <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $asetlahans->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-4">{{ $aset->no_kk }}</td>
                                         <td class="border border-gray-200 px-4 py-4">{{ $aset->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
                                         @for ($i = 1; $i <= 10; $i++)

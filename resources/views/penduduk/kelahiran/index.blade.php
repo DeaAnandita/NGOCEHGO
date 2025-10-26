@@ -62,7 +62,7 @@
                             @forelse($kelahirans as $kelahiran)
                                 <tr>
                                     <!-- Nomor urut otomatis -->
-                                    <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $loop->iteration }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $kelahirans->firstItem() + $loop->index }}</td>
 
                                     <!-- NIK -->
                                     <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $kelahiran->nik }}</td>

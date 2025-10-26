@@ -30,24 +30,42 @@ class PendudukController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $perPage = $request->input('per_page', 50); // default 10 data per halaman
+        $perPage = (int) $request->input('per_page', 10); // default 50
 
-        $penduduks = DataPenduduk::with('keluarga')
-            ->when($search, function ($query, $search) {
-                return $query->where('penduduk_namalengkap', 'like', "%{$search}%")
-                            ->orWhere('nik', 'like', "%{$search}%")
-                            ->orWhere('no_kk', 'like', "%{$search}%");
+        // Query untuk mendapatkan distinct no_kk (sbb: hanya pilih kolom no_kk)
+        $kkQuery = \App\Models\DataPenduduk::select('no_kk')
+            ->when($search, function($q) use ($search) {
+                $q->where('no_kk', 'like', "%{$search}%")
+                ->orWhere('penduduk_namalengkap', 'like', "%{$search}%")
+                ->orWhere('nik', 'like', "%{$search}%");
             })
-            ->orderBy('no_kk')
-            ->paginate($perPage);
+            ->distinct()
+            ->orderBy('no_kk');
 
-        return view('penduduk.index', [
-            'penduduks' => $penduduks,
-            'keluargas' => DataKeluarga::all(),
+        // Paginate hasil distinct KK
+        $kkPaginated = $kkQuery->paginate($perPage)->appends([
             'search' => $search,
+            'per_page' => $perPage,
+        ]);
+
+        // Ambil semua penduduk yang masuk ke page ini (semua NIK untuk no_kk yang ada)
+        $noKks = $kkPaginated->pluck('no_kk')->toArray();
+
+        // Eager load relasi yang diperlukan (adjust relasi sesuai modelmu)
+        $penduduksForPage = \App\Models\DataPenduduk::with(['jeniskelamin','agama','hubungankeluarga'])
+            ->whereIn('no_kk', $noKks)
+            ->get()
+            ->groupBy('no_kk');
+
+        // Kirim ke view
+        return view('penduduk.index', [
+            'kkPaginated' => $kkPaginated,
+            'penduduksGrouped' => $penduduksForPage,
             'perPage' => $perPage,
+            'search' => $search,
         ]);
     }
+
 
     /**
      * Show the form for creating a new resource.

@@ -57,10 +57,9 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @php $no = 1; @endphp
                             @foreach($usahaarts as $usahaart)
                                 <tr>
-                                    <td class="px-4 py-4 text-sm text-gray-900">{{ $no++ }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $usahaarts->firstItem() + $loop->index }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-900">{{ $usahaart->nik }}</td>
                                     <td class="px-4 py-4 text-sm text-gray-900">
                                         {{ $usahaart->penduduk->penduduk_namalengkap ?? '-' }}

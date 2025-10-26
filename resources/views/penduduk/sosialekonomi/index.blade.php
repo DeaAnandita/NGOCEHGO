@@ -61,10 +61,9 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @php $no = 1; @endphp
                             @foreach($sosialekonomis as $sosialekonomi)
                                 <tr>
-                                    <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $no++ }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $sosialekonomis->firstItem() + $loop->index }}</td>
                                     <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $sosialekonomi->nik }}</td>
                                     <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">
                                         {{ $sosialekonomi->penduduk->penduduk_namalengkap ?? '-' }}

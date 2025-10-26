@@ -59,7 +59,7 @@
                         <tbody class="bg-white divide-y divide-gray-100">
                             @foreach($keluargas as $keluarga)
                                 <tr class="hover:bg-gray-50">
-                                    <td class="border border-gray-200 px-4 py-3">{{ $loop->iteration }}</td>
+                                    <td class="border border-gray-200 px-4 py-3">{{ $keluargas->firstItem() + $loop->index }}</td>
                                     <td class="border border-gray-200 px-3 py-2 truncate">{{ $keluarga->no_kk }}</td>
                                     <td class="border border-gray-200 px-3 py-2 truncate">{{ $keluarga->keluarga_kepalakeluarga }}</td>
                                     <td class="border border-gray-200 px-3 py-2 truncate">{{ $keluarga->mutasi->mutasimasuk ?? '-' }}</td>

@@ -4,7 +4,7 @@
             <!-- Logo -->
             <div class="flex items-center">
                 <a href="{{ route('dashboard') }}">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-10 w-auto">
+                    <img src="{{ asset('images/ijo.png') }}" alt="Logo" class="h-10 w-auto">
                 </a>
                 <div class="ml-3 leading-tight">
                     <span class="block text-base font-semibold text-gray-800">DESA</span>
