@@ -7,8 +7,18 @@
 
                 <!-- Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                    <h3 class="text-xl font-bold text-gray-800">Data Usaha ART</h3>
 
+                    <!-- Kiri: Judul + Tombol Report -->
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-xl font-bold text-gray-800">Data Usaha ART</h3>
+                        <a href="{{ route('penduduk.usahaart.report') }}"
+                           class="bg-indigo-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
+                            <x-heroicon-o-document-text class="w-4 h-4" />
+                            Report
+                        </a>
+                    </div>
+
+                    <!-- Kanan: Tampilkan + Cari + Tambah -->
                     <div class="flex flex-wrap items-center gap-2">
                         <!-- Dropdown Per Page -->
                         <form method="GET" action="{{ route('penduduk.usahaart.index') }}" class="flex items-center gap-2">
@@ -66,24 +76,12 @@
                                     <tr>
                                         <td class="border border-gray-200 px-4 py-3">{{ $usahaarts->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $usaha->nik }}</td>
-                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">
-                                            {{ $usaha->penduduk->penduduk_namalengkap ?? '-' }}
-                                        </td>
-                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">
-                                            {{ $usaha->usahaart_namausaha  ?? '-' }}
-                                        </td>
-                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">
-                                            {{ $usaha->lapanganusaha->lapanganusaha ?? '-' }}
-                                        </td>
-                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">
-                                            {{ $usaha->tempatusaha->tempatusaha ?? '-' }}
-                                        </td>
-                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">
-                                            {{ $usaha->omsetusaha->omsetusaha ?? '-' }}
-                                        </td>
-                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">
-                                            {{ $usaha->usahaart_jumlahpekerja ?? '-' }}
-                                        </td>
+                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $usaha->penduduk->penduduk_namalengkap ?? '-' }}</td>
+                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $usaha->usahaart_namausaha  ?? '-' }}</td>
+                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $usaha->lapanganusaha->lapanganusaha ?? '-' }}</td>
+                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $usaha->tempatusaha->tempatusaha ?? '-' }}</td>
+                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $usaha->omsetusaha->omsetusaha ?? '-' }}</td>
+                                        <td class="border border-gray-200 px-4 py-4 text-sm text-gray-900">{{ $usaha->usahaart_jumlahpekerja ?? '-' }}</td>
                                         <td class="border border-gray-200 px-2 py-2 text-center w-[80px]">
                                             <div class="flex justify-center gap-1">
                                                 <a href="{{ route('penduduk.usahaart.edit', $usaha->nik) }}"

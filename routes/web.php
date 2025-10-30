@@ -174,6 +174,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('sosialekonomi/{nik}/edit', [SosialEkonomiController::class, 'edit'])->name('penduduk.sosialekonomi.edit');
     Route::put('sosialekonomi/{nik}', [SosialEkonomiController::class, 'update'])->name('penduduk.sosialekonomi.update');
     Route::delete('sosialekonomi/{nik}', [SosialEkonomiController::class, 'destroy'])->name('penduduk.sosialekonomi.destroy');
+    Route::get('sosialekonomi/report', [SosialEkonomiController::class, 'report'])->name('penduduk.sosialekonomi.report');
 
     // Routes untuk usahaart
     Route::get('usahaart', [UsahaArtController::class, 'index'])->name('penduduk.usahaart.index');
@@ -182,6 +183,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('usahaart/{nik}/edit', [UsahaArtController::class, 'edit'])->name('penduduk.usahaart.edit');
     Route::put('usahaart/{nik}', [UsahaArtController::class, 'update'])->name('penduduk.usahaart.update');
     Route::delete('usahaart/{nik}', [UsahaArtController::class, 'destroy'])->name('penduduk.usahaart.destroy');
+    Route::get('usahaart/report', [UsahaArtController::class, 'report'])->name('penduduk.usahaart.report');
 
     // Routes untuk programserta
     Route::get('programserta', [ProgramSertaController::class, 'index'])->name('penduduk.programserta.index');
