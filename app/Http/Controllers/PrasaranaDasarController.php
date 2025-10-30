@@ -153,7 +153,7 @@ class PrasaranaDasarController extends Controller
         $prasarana = DataPrasaranaDasar::where('no_kk', $no_kk)->firstOrFail();
 
         $validated = $request->validate([
-            'no_kk' => 'required|string|unique:data_prasaranadasar,no_kk|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|string|exists:data_keluarga,no_kk',
             'kdstatuspemilikbangunan' => 'nullable|integer',
             'kdstatuspemiliklahan' => 'nullable|integer',
             'kdjenisfisikbangunan' => 'nullable|integer',

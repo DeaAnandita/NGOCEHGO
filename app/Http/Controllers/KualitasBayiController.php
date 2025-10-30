@@ -51,7 +51,7 @@ class KualitasBayiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'no_kk' => 'required|unique:data_kualitasbayi,no_kk|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|exists:data_keluarga,no_kk',
             'kualitasbayi_*' => 'nullable|in:0,1,2'
         ]);
 

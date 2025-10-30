@@ -73,7 +73,7 @@ class KonflikSosialController extends Controller
     public function update(Request $request, $no_kk)
     {
         $request->validate([
-        'no_kk' => 'required|unique:data_konfliksosial,no_kk|exists:data_keluarga,no_kk',
+        'no_kk' => 'required|exists:data_keluarga,no_kk',
         ]);
 
         $data = ['no_kk' => $request->no_kk];

@@ -94,7 +94,7 @@ class UsahaArtController extends Controller
     public function update(Request $request, $nik)
     {
         $validator = Validator::make($request->all(), [
-            'nik' => 'required|string|size:16|exists:data_penduduk,nik|unique:data_usahaart,nik,' . $nik . ',nik',
+            'nik' => 'required|string|size:16|unique:data_usahaart,nik,' . $nik . ',nik',
             'kdlapanganusaha' => 'required|integer|exists:master_lapanganusaha,kdlapanganusaha',
             'usahaart_jumlahpekerja' => 'required|numeric|min:0',
             'usahaart_namausaha' => 'required|string|max:255',

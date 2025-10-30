@@ -137,7 +137,7 @@ class KelahiranController extends Controller
     public function update(Request $request, $kdkelahiran)
     {
         $validator = Validator::make($request->all(), [
-            'nik' => 'required|string|size:16|unique:data_kelahiran,nik|exists:data_penduduk,nik',
+            'nik' => 'required|string|size:16|exists:data_penduduk,nik',
             'kdtempatpersalinan' => 'nullable|integer|exists:master_tempatpersalinan,kdtempatpersalinan',
             'kdjeniskelahiran' => 'nullable|integer|exists:master_jeniskelahiran,kdjeniskelahiran',
             'kdpertolonganpersalinan' => 'nullable|integer|exists:master_pertolonganpersalinan,kdpertolonganpersalinan',

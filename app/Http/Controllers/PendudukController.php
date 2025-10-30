@@ -170,7 +170,7 @@ class PendudukController extends Controller
     public function update(Request $request, $nik)
     {
         $validator = Validator::make($request->all(), [
-            'nik' => 'required|string|size:16|unique:data_penduduk,nik,' . $nik . ',nik',
+            'nik' => 'required|string|size:16',
             'no_kk' => 'required|string|size:16|exists:data_keluarga,no_kk',
             'penduduk_nourutkk' => 'required|string|max:4',
             'penduduk_goldarah' => 'required|string|max:2',

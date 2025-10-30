@@ -20,6 +20,8 @@ class DataPendudukSeeder extends Seeder
         $namaBelakang = ['Santoso', 'Wijaya', 'Hartono', 'Gunawan', 'Pratama', 'Saputra', 'Lestari', 'Anggraini', 'Ramadhani', 'Permata', 'Putri', 'Hidayah', 'Susanto', 'Firmansyah', 'Wahyuni', 'Nugroho'];
 
         $dusunList = [1 => 'Winong', 2 => 'Krajan', 3 => 'Ploso', 4 => 'Gondang', 5 => 'Ngemplak'];
+        $tempatKerja = ['PT Maju Jaya', 'CV Sinar Abadi', 'UD Berkah Makmur', 'Toko Sumber Rezeki', 'Pabrik Gula Kudus', 'Kantor Desa Kaliwungu', 'PT Overcode Teknologi'];
+
         $dataKeluarga = [];
         $dataPenduduk = [];
         $nikCounter = 100000;
@@ -30,18 +32,13 @@ class DataPendudukSeeder extends Seeder
             $rt = str_pad(rand(1, 5), 3, '0', STR_PAD_LEFT);
             $noKK = '33741234' . str_pad($i, 8, '0', STR_PAD_LEFT);
 
-            // Jenis mutasi: 1=Normal, 2=Datang dalam kabupaten, 3=Datang luar kabupaten
             $mutasi = rand(1, 3);
+            $kdprovinsi = $mutasi == 3 ? rand(1, 5) : 1;
+            $kdkabupaten = $mutasi == 3 ? rand(1, 7) : 1;
+            $kdkecamatan = $mutasi == 3 ? rand(1, 16) : 1;
+            $kddesa = $mutasi == 3 ? rand(1, 135) : 1;
 
-            // Wilayah datang (kalau mutasi datang)
-            $kdprovinsi = $mutasi == 3 ? rand(1, 5) : null;
-            $kdkabupaten = $mutasi == 3 ? rand(1, 7) : null;
-            $kdkecamatan = $mutasi == 3 ? rand(1, 16) : null;
-            $kddesa = $mutasi == 3 ? rand(1, 135) : null;
-
-            // Kepala keluarga laki-laki atau perempuan
             $kkLaki = rand(1, 100) <= 75;
-
             $namaKK = $kkLaki
                 ? $namaPria[array_rand($namaPria)] . ' ' . $namaBelakang[array_rand($namaBelakang)]
                 : $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)];
@@ -61,11 +58,11 @@ class DataPendudukSeeder extends Seeder
                 'kddesa' => $kddesa,
             ];
 
-            // ====== Penduduk (sinkron) ======
             $nourut = 1;
-
-            // Kepala Keluarga
             $nikCounter++;
+
+            // Kepala keluarga
+            $kdpekerjaan = rand(1, 10);
             $dataPenduduk[] = [
                 'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
                 'no_kk' => $noKK,
@@ -73,25 +70,37 @@ class DataPendudukSeeder extends Seeder
                 'penduduk_nourutkk' => '01',
                 'penduduk_namalengkap' => $namaKK,
                 'penduduk_tempatlahir' => 'Kudus',
-                'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000,99999),
-                'penduduk_tanggallahir' => now()->subYears(rand(30, 60))->format('Y-m-d'),
+                'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000, 99999),
+                'penduduk_tanggallahir' => now()->subYears(rand(35, 60))->format('Y-m-d'),
                 'kdjeniskelamin' => $kkLaki ? 1 : 2,
                 'kdhubungankeluarga' => 1,
-                'kdagama' => 1,
+                'kdhubungankepalakeluarga' => 1,
+                'kdagama' => rand(1, 6),
                 'kdstatuskawin' => 2,
-                'kdpekerjaan' => rand(1, 8),
+                'kdpekerjaan' => $kdpekerjaan,
+                'penduduk_namatempatbekerja' => $kdpekerjaan <= 4 ? $tempatKerja[array_rand($tempatKerja)] : null,
+                'kdstatustinggal' => rand(1, 3),
+                'kdkartuidentitas' => 1,
+                'kdprovinsi' => $kdprovinsi,
+                'kdkabupaten' => $kdkabupaten,
+                'kdkecamatan' => $kdkecamatan,
+                'kddesa' => $kddesa,
                 'penduduk_namaayah' => $namaPria[array_rand($namaPria)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
                 'penduduk_namaibu' => $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
                 'penduduk_goldarah' => ['A', 'B', 'AB', 'O'][array_rand(['A', 'B', 'AB', 'O'])],
                 'penduduk_kewarganegaraan' => 'INDONESIA',
                 'penduduk_tanggalmutasi' => now(),
+                'kdaktanikah' => 2, // sudah menikah
+                'kdtercantumdalamkk' => 1, // kepala keluarga
             ];
 
-            // Kalau kepala keluarga laki-laki → tambah istri
+            // Istri
             if ($kkLaki) {
                 $nikCounter++;
-                $namaIstri = $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)];
                 $nourut++;
+                $namaIstri = $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)];
+                $kdpekerjaan = rand(3, 10);
+
                 $dataPenduduk[] = [
                     'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
                     'no_kk' => $noKK,
@@ -99,28 +108,39 @@ class DataPendudukSeeder extends Seeder
                     'penduduk_nourutkk' => str_pad($nourut, 2, '0', STR_PAD_LEFT),
                     'penduduk_namalengkap' => $namaIstri,
                     'penduduk_tempatlahir' => 'Kudus',
-                    'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000,99999),
-                    'penduduk_tanggallahir' => now()->subYears(rand(25, 55))->format('Y-m-d'),
+                    'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000, 99999),
+                    'penduduk_tanggallahir' => now()->subYears(rand(25, 50))->format('Y-m-d'),
                     'kdjeniskelamin' => 2,
                     'kdhubungankeluarga' => 2,
-                    'kdagama' => 1,
+                    'kdhubungankepalakeluarga' => 2,
+                    'kdagama' => rand(1, 6),
                     'kdstatuskawin' => 2,
-                    'kdpekerjaan' => rand(3, 8),
+                    'kdpekerjaan' => $kdpekerjaan,
+                    'penduduk_namatempatbekerja' => $kdpekerjaan <= 4 ? $tempatKerja[array_rand($tempatKerja)] : null,
+                    'kdstatustinggal' => rand(1, 3),
+                    'kdkartuidentitas' => 1,
+                    'kdprovinsi' => $kdprovinsi,
+                    'kdkabupaten' => $kdkabupaten,
+                    'kdkecamatan' => $kdkecamatan,
+                    'kddesa' => $kddesa,
                     'penduduk_namaayah' => $namaPria[array_rand($namaPria)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
                     'penduduk_namaibu' => $namaWanita[array_rand($namaWanita)] . ' ' . $namaBelakang[array_rand($namaBelakang)],
                     'penduduk_goldarah' => ['A', 'B', 'AB', 'O'][array_rand(['A', 'B', 'AB', 'O'])],
                     'penduduk_kewarganegaraan' => 'INDONESIA',
                     'penduduk_tanggalmutasi' => now(),
+                    'kdaktanikah' => 2, // sudah menikah
+                    'kdtercantumdalamkk' => 2, // istri
                 ];
             }
 
-            // Tambah anak-anak (1–3 anak)
+            // Anak-anak
             $jumlahAnak = rand(1, 3);
             for ($a = 1; $a <= $jumlahAnak; $a++) {
                 $nikCounter++;
-                $genderAnak = rand(0, 1) ? 1 : 2;
-                $namaAnak = ($genderAnak == 1 ? $namaPria[array_rand($namaPria)] : $namaWanita[array_rand($namaWanita)]) . ' ' . $namaBelakang[array_rand($namaBelakang)];
                 $nourut++;
+                $genderAnak = rand(1, 2);
+                $namaAnak = ($genderAnak == 1 ? $namaPria[array_rand($namaPria)] : $namaWanita[array_rand($namaWanita)]) . ' ' . $namaBelakang[array_rand($namaBelakang)];
+                $kdpekerjaan = rand(7, 10);
 
                 $dataPenduduk[] = [
                     'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
@@ -129,18 +149,28 @@ class DataPendudukSeeder extends Seeder
                     'penduduk_nourutkk' => str_pad($nourut, 2, '0', STR_PAD_LEFT),
                     'penduduk_namalengkap' => $namaAnak,
                     'penduduk_tempatlahir' => 'Kudus',
-                    'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000,99999),
+                    'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000, 99999),
                     'penduduk_tanggallahir' => now()->subYears(rand(5, 25))->format('Y-m-d'),
                     'kdjeniskelamin' => $genderAnak,
                     'kdhubungankeluarga' => 3,
-                    'kdagama' => 1,
-                    'kdstatuskawin' => 1,
-                    'kdpekerjaan' => rand(7, 10),
+                    'kdhubungankepalakeluarga' => 3,
+                    'kdagama' => rand(1, 6),
+                    'kdstatuskawin' => rand(1, 2),
+                    'kdpekerjaan' => $kdpekerjaan,
+                    'penduduk_namatempatbekerja' => $kdpekerjaan <= 4 ? $tempatKerja[array_rand($tempatKerja)] : null,
+                    'kdstatustinggal' => rand(1, 3),
+                    'kdkartuidentitas' => 1,
+                    'kdprovinsi' => $kdprovinsi,
+                    'kdkabupaten' => $kdkabupaten,
+                    'kdkecamatan' => $kdkecamatan,
+                    'kddesa' => $kddesa,
                     'penduduk_namaayah' => $namaKK,
                     'penduduk_namaibu' => $kkLaki ? $namaIstri ?? '' : $namaKK,
                     'penduduk_goldarah' => ['A', 'B', 'AB', 'O'][array_rand(['A', 'B', 'AB', 'O'])],
                     'penduduk_kewarganegaraan' => 'INDONESIA',
                     'penduduk_tanggalmutasi' => now(),
+                    'kdaktanikah' => 1, // belum menikah
+                    'kdtercantumdalamkk' => 2, // anak
                 ];
             }
         }

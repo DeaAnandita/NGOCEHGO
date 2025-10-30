@@ -91,7 +91,7 @@ class AsetKeluargaController extends Controller
     public function update(Request $request, $no_kk)
     {
         $request->validate([
-            'no_kk' => 'required|unique:data_asetkeluarga,no_kk|exists:data_keluarga,no_kk',
+            'no_kk' => 'required|exists:data_keluarga,no_kk',
             'asetkeluarga_*' => 'sometimes|nullable|in:0,1,2'
         ]);
 

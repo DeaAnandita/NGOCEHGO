@@ -99,7 +99,7 @@ class SosialEkonomiController extends Controller
     public function update(Request $request, $nik)
     {
         $validator = Validator::make($request->all(), [
-            'nik' => 'required|string|size:16|unique:data_sosialekonomi,nik,' . $nik . ',nik',
+            'nik' => 'required|string|size:16' . $nik . ',nik',
             'kdpartisipasisekolah' => 'nullable|integer|exists:master_partisipasisekolah,kdpartisipasisekolah',
             'kdijasahterakhir' => 'nullable|integer|exists:master_ijasahterakhir,kdijasahterakhir',
             'kdjenisdisabilitas' => 'nullable|integer|exists:master_jenisdisabilitas,kdjenisdisabilitas',

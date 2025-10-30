@@ -101,7 +101,7 @@ class KeluargaController extends Controller
         $validated = $request->validate([
             'kdmutasimasuk' => 'required|exists:master_mutasimasuk,kdmutasimasuk',
             'keluarga_tanggalmutasi' => 'required|date',
-            'no_kk' => 'required|string|max:20|unique:data_keluarga,no_kk,' . $id . ',no_kk',
+            'no_kk' => 'required|string|max:20' . $id . ',no_kk',
             'keluarga_kepalakeluarga' => 'required|string|max:255',
             'kddusun' => 'required|exists:master_dusun,kddusun',
             'keluarga_rw' => 'required|string|max:10',
