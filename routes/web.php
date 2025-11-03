@@ -34,6 +34,15 @@ Route::middleware('auth')->group(function () {
 });
 
 // ===============================
+// REPORT
+// ===============================
+Route::middleware(['auth'])->group(function () {
+    Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+    Route::get('/report/export/pdf', [ReportController::class, 'exportPdf'])->name('report.export.pdf');
+    Route::get('/report/export/excel', [ReportController::class, 'exportExcel'])->name('report.export.excel');
+});
+
+// ===============================
 // MASTER DATA
 // ===============================
 Route::prefix('master')->name('master.')->group(function () {
