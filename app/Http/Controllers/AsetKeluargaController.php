@@ -7,6 +7,7 @@ use App\Models\DataKeluarga;
 use App\Models\MasterAsetKeluarga;
 use App\Models\MasterJawab;
 use Illuminate\Http\Request;
+use App\Exports\DataAsetKeluargaPDFExport;
 
 class AsetKeluargaController extends Controller
 {
@@ -118,4 +119,12 @@ class AsetKeluargaController extends Controller
 
         return redirect()->route('keluarga.asetkeluarga.index')->with('success', 'Data aset keluarga berhasil dihapus.');
     }
+
+    
+
+public function exportPdf()
+{
+    return DataAsetKeluargaPDFExport::export();
+}
+
 }

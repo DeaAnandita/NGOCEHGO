@@ -36,11 +36,18 @@ Route::middleware('auth')->group(function () {
 // ===============================
 // REPORT
 // ===============================
-Route::middleware(['auth'])->group(function () {
-    Route::get('/report', [ReportController::class, 'index'])->name('report.index');
-    Route::get('/report/export/pdf', [ReportController::class, 'exportPdf'])->name('report.export.pdf');
-    Route::get('/report/export/excel', [ReportController::class, 'exportExcel'])->name('report.export.excel');
-});
+use App\Exports\DataAsetKeluargaExport;
+
+Route::get('/export-aset-keluarga', function () {
+    return DataAsetKeluargaExport::export();
+})->name('export.asetkeluarga');
+
+use App\Exports\DataAsetKeluargaPdfExport;
+
+Route::get('/export-asetkeluarga-pdf', function () {
+    return DataAsetKeluargaPdfExport::export();
+})->name('asetkeluarga.export.pdf');
+
 
 // ===============================
 // MASTER DATA
