@@ -42,11 +42,31 @@ Route::get('/export-aset-keluarga', function () {
     return DataAsetKeluargaExport::export();
 })->name('export.asetkeluarga');
 
-use App\Exports\DataAsetKeluargaPdfExport;
+// routes/web.php
+use App\Exports\DataKeluargaExport;
 
-Route::get('/export-asetkeluarga-pdf', function () {
-    return DataAsetKeluargaPdfExport::export();
-})->name('asetkeluarga.export.pdf');
+Route::get('/export/data-keluarga', function () {
+    return DataKeluargaExport::export();
+})->name('export.datakeluarga');
+
+use App\Exports\DataKeluargaPdfExport;
+
+Route::get('/export-datakeluarga-pdf', function () {
+    return DataKeluargaPdfExport::export();
+})->name('datakeluarga.export.pdf');
+
+//prasarana
+use App\Exports\DataPrasaranaExport;
+
+Route::get('/export/data-prasarana', function () {
+    return DataPrasaranaExport::export();
+})->name('export.dataprasarana');
+
+use App\Exports\DataPrasaranaPdfExport;
+
+// Route::get('/export-dataprasarana-pdf', function () {
+//     return DataPrasaranaPdfExport::export();
+// })->name('dataprasarana.export.pdf');
 
 
 // ===============================
@@ -81,6 +101,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('prasarana/{no_kk}/edit', [PrasaranaDasarController::class, 'edit'])->name('keluarga.prasarana.edit');
     Route::put('prasarana/{no_kk}', [PrasaranaDasarController::class, 'update'])->name('keluarga.prasarana.update');
     Route::delete('prasarana/{no_kk}', [PrasaranaDasarController::class, 'destroy'])->name('keluarga.prasarana.destroy');
+    Route::get('prasarana/export/pdf', [PrasaranaDasarController::class, 'exportPdf'])
+    ->name('dataprasarana.export.pdf');
+
 
     // Routes untuk Aset Keluarga
     Route::get('asetkeluarga', [AsetKeluargaController::class, 'index'])->name('keluarga.asetkeluarga.index');
@@ -89,6 +112,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('asetkeluarga/{no_kk}/edit', [AsetKeluargaController::class, 'edit'])->name('keluarga.asetkeluarga.edit');
     Route::put('asetkeluarga/{no_kk}', [AsetKeluargaController::class, 'update'])->name('keluarga.asetkeluarga.update');
     Route::delete('asetkeluarga/{no_kk}', [AsetKeluargaController::class, 'destroy'])->name('keluarga.asetkeluarga.destroy');
+    Route::get('/laporan/asetkeluarga/pdf', [App\Http\Controllers\AsetKeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
 
     // Routes untuk Aset Lahan
     Route::get('asetlahan', [AsetLahanController::class, 'index'])->name('keluarga.asetlahan.index');

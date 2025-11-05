@@ -9,6 +9,7 @@ MasterJenisAtapBangunan, MasterKondisiAtapBangunan, MasterSumberAirMinum, Master
 MasterCaraPerolehanAir, MasterSumberPeneranganUtama, MasterSumberDayaTerpasang, MasterBahanBakarMemasak,
 MasterFasilitasTempatBab,MasterPembuanganAkhirTinja, MasterCaraPembuanganSampah, MasterManfaatMataAir};
 use App\Models\DataKeluarga;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PrasaranaDasarController extends Controller
@@ -191,4 +192,37 @@ class PrasaranaDasarController extends Controller
         return redirect()->route('keluarga.prasarana.index')
                          ->with('success', 'Data prasarana dasar berhasil dihapus.');
     }
+
+    public function exportPdf()
+{
+    // Ambil semua data dengan relasi yang dibutuhkan
+    $prasaranas = DataPrasaranaDasar::with([
+        'keluarga',
+        'statuspemilikbangunan',
+        'statuspemiliklahan',
+        'jenisfisikbangunan',
+        'jenislantaibangunan',
+        'kondisilantaibangunan',
+        'jenisdindingbangunan',
+        'kondisidindingbangunan',
+        'jenisatapbangunan',
+        'kondisiatapbangunan',
+        'sumberairminum',
+        'kondisisumberair',
+        'caraperolehanair',
+        'sumberpeneranganutama',
+        'sumberdayaterpasang',
+        'fasilitastempatbab',
+        'pembuanganakhirtinja',
+        'carapembuangansampah',
+        'bahanbakarmemasak',
+        'manfaatmataair'
+    ])->get();
+
+    // Ganti $records → $prasaranas
+    $pdf = Pdf::loadView('keluarga.prasarana.export_pdf', compact('prasaranas'))
+        ->setPaper('a4', 'landscape');
+
+    return $pdf->download('data_prasarana.pdf');
+}
 }
