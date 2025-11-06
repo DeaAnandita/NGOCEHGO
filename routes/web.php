@@ -148,6 +148,20 @@ use App\Exports\DataKualitasBayiExport;
 Route::get('/export/kualitas-bayi', [DataKualitasBayiExport::class, 'export'])
     ->name('export.kualitasbayi');
 
+//report aset ternak
+use App\Exports\DataAsetTernakExport;
+
+Route::get('/export-aset-ternak', function () {
+    return DataAsetTernakExport::export();
+})->name('export.asetternak');
+//report aset perikanan
+use App\Exports\DataAsetPerikananExport;
+
+Route::get('/export-aset-perikanan', function () {
+    return DataAsetPerikananExport::export();
+})->name('export.asetperikanan');
+
+use App\Exports\DataAsetPerikananPdfExport;
 
 // ===============================
 // MASTER DATA
