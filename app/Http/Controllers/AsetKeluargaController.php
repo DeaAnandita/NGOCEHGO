@@ -181,44 +181,51 @@ class AsetKeluargaController extends Controller
         $barChartData = [
             'type' => 'bar',
             'data' => [
-                'labels'   => array_column($topAset, 'nama'),
+                'labels' => array_column($topAset, 'nama'),
                 'datasets' => [[
-                    'label'           => 'Jumlah Dimiliki',
-                    'data'            => array_column($topAset, 'jumlah'),
+                    'label' => 'Jumlah Dimiliki',
+                    'data' => array_column($topAset, 'jumlah'),
                     'backgroundColor' => '#4f46e5',
                 ]]
             ],
             'options' => [
-                // -------------------------------------------------------------
-                // 2. SKALA Y – PAKSA MULAI DARI 0
+                'responsive' => true,
+                'maintainAspectRatio' => false,
+                'layout' => [
+                    'padding' => 10
+                ],
                 'scales' => [
                     'y' => [
-                        'beginAtZero' => true,      // tetap ada, tapi tidak cukup
-                        'min'         => 0,         // PAKSA
-                        'max'         => $maxVal,   // PAKSA
-                        'ticks'       => [
-                            'stepSize'  => $step,   // tick integer
+                        'type' => 'linear',
+                        'beginAtZero' => true,
+                        'grace' => 0, // ⬅️ PAKSA tanpa gap di bawah
+                        'ticks' => [
+                            'beginAtZero' => true, // ⬅️ QuickChart kadang cuma baca ini
+                            'stepSize' => 1,
                             'precision' => 0,
                         ],
+                        'min' => 0, // ⬅️ tetap disertakan untuk jaga-jaga
+                        'suggestedMin' => 0,
+                    ],
+                    'x' => [
+                        'type' => 'category',
                     ],
                 ],
-                // -------------------------------------------------------------
                 'plugins' => [
                     'legend' => [
-                        'display'  => true,
+                        'display' => true,
                         'position' => 'top',
                     ],
                     'title' => [
                         'display' => true,
-                        'text'    => '5 Aset Keluarga Paling Banyak Dimiliki',
+                        'text' => '5 Aset Keluarga Paling Banyak Dimiliki',
                     ],
                 ],
             ],
         ];
 
-
         $pieChartUrl = "https://quickchart.io/chart?c=" . urlencode(json_encode($pieChartData));
-        $barChartUrl = "https://quickchart.io/chart?c=" . urlencode(json_encode($barChartData));
+        $barChartUrl = "https://quickchart.io/chart?c=" . urlencode(json_encode($barChartData)) . "&_t=" . time();
 
         $pieChartBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pieChartUrl));
         $barChartBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($barChartUrl));
