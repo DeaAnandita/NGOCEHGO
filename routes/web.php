@@ -83,6 +83,22 @@ Route::get('/export-konflik-sosial', function () {
 })->name('export.konfliksosial');
 
 
+use App\Exports\DataPendudukExport;
+
+Route::get('/export-penduduk', function () {
+    return DataPendudukExport::export();
+})->name('export.penduduk');
+
+use App\Exports\DataPendudukPdfExport;
+
+use App\Exports\DataKelahiranExport;
+
+Route::get('/export-kelahiran', function () {
+    return DataKelahiranExport::export();
+})->name('export.kelahiran');
+
+use App\Exports\DataKelahiranPdfExport;
+
 
 // ===============================
 // MASTER DATA
