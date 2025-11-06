@@ -163,6 +163,22 @@ Route::get('/export-aset-perikanan', function () {
 
 use App\Exports\DataAsetPerikananPdfExport;
 
+//Sofi
+use App\Exports\DataSarprasKerjaExport;
+
+Route::get('/export-sarpras-kerja', function () {
+    return DataSarprasKerjaExport::export();
+})->name('export.sarpraskerja');
+
+
+//Sofi
+use App\Exports\DataBangunKeluargaExport;
+use App\Models\DataBangunKeluarga;
+
+Route::get('/export-bangun-keluarga', function () {
+    return DataBangunKeluargaExport::export();
+})->name('export.bangunkeluarga');
+
 // ===============================
 // MASTER DATA
 // ===============================
