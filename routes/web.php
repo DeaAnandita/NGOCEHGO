@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     KelahiranController, SosialEkonomiController, UsahaArtController, ProgramSertaController, 
     LembagaDesaController,LembagaMasyarakatController, LembagaEkonomiController};
 
+use App\Exports\DataKualitasIbuHamilExport;
 use Illuminate\Support\Facades\Route;
 
 // ===============================
@@ -137,6 +138,15 @@ Route::get('/export-lembaga-masyarakat', function ()  {
 })->name('export.lembagamasyarakat');
 
 
+
+//rema
+Route::get('/export/kualitas-ibu-hamil', [DataKualitasIbuHamilExport::class, 'export'])
+    ->name('export.kualitasibuhamil');
+
+use App\Exports\DataKualitasBayiExport;
+
+Route::get('/export/kualitas-bayi', [DataKualitasBayiExport::class, 'export'])
+    ->name('export.kualitasbayi');
 
 
 // ===============================
