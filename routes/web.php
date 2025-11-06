@@ -113,6 +113,18 @@ Route::get('/export-usaha-art', function () {
 })->name('export.usahaart');
 
 
+use App\Exports\DataProgramSertaExport;
+
+Route::get('/export-programserta', function () {
+    return DataProgramSertaExport::export();
+})->name('export.programserta');
+
+use App\Exports\DataLembagaDesaExport;
+
+Route::get('/export-lembagadesa', function () {
+    return DataLembagaDesaExport::export();
+})->name('export.lembagadesa');
+
 
 // ===============================
 // MASTER DATA
