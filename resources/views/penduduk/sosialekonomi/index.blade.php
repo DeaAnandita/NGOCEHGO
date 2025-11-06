@@ -10,11 +10,29 @@
                     <!-- Kiri: Judul + Tombol Report -->
                     <div class="flex items-center gap-3">
                         <h3 class="text-xl font-bold text-gray-800">Data Sosial Ekonomi</h3>
-                        <a href="{{ route('penduduk.sosialekonomi.report') }}"
-                           class="bg-indigo-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
-                            <x-heroicon-o-document-text class="w-4 h-4" />
-                            Report
-                        </a>
+                        <!-- Dropdown Export -->
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open"
+                                class="bg-indigo-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
+                                <x-heroicon-o-document-arrow-down class="w-4 h-4" />
+                                Export Data
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div x-show="open" @click.away="open = false"
+                                x-transition
+                                class="absolute mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <a href="{{ route('export.sosialekonomi') }}"
+                                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">
+                                    <x-heroicon-o-document-arrow-down class="w-4 h-4 text-green-600" />
+                                    Export Excel
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Kanan: Tampilkan + Cari + Tambah -->

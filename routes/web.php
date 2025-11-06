@@ -99,6 +99,20 @@ Route::get('/export-kelahiran', function () {
 
 use App\Exports\DataKelahiranPdfExport;
 
+use App\Exports\DataSosialEkonomiExport;
+
+Route::get('/export-sosial-ekonomi', function () {
+    return DataSosialEkonomiExport::export();
+})->name('export.sosialekonomi');
+
+
+use App\Exports\DataUsahaArtExport;
+
+Route::get('/export-usaha-art', function () {
+    return DataUsahaArtExport::export();
+})->name('export.usahaart');
+
+
 
 // ===============================
 // MASTER DATA

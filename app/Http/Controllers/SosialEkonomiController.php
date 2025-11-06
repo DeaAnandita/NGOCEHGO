@@ -15,6 +15,7 @@ use App\Models\MasterPendapatanPerbulan;
 use App\Models\MasterImunisasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Exports\DataSosialEkonomiPdfExport;
 
 class SosialEkonomiController extends Controller
 {
@@ -128,4 +129,8 @@ class SosialEkonomiController extends Controller
 
         return redirect()->route('penduduk.sosialekonomi.index')->with('success', 'Data sosial ekonomi berhasil dihapus.');
     }
+    public function exportPdf()
+{
+    return DataSosialEkonomiPDFExport::export();
+}
 }

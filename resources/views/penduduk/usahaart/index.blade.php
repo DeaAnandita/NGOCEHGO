@@ -5,18 +5,36 @@
         <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
             <div class="bg-white rounded-2xl shadow-lg p-6">
 
-                <!-- Header -->
+                 <!-- Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-
                     <!-- Kiri: Judul + Tombol Report -->
                     <div class="flex items-center gap-3">
-                        <h3 class="text-xl font-bold text-gray-800">Data Usaha ART</h3>
-                        <a href="{{ route('penduduk.usahaart.report') }}"
-                           class="bg-indigo-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
-                            <x-heroicon-o-document-text class="w-4 h-4" />
-                            Report
-                        </a>
+                        <h3 class="text-xl font-bold text-gray-800">Data Usaha Art</h3>
+                        <!-- Dropdown Export -->
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open"
+                                class="bg-indigo-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
+                                <x-heroicon-o-document-arrow-down class="w-4 h-4" />
+                                Export Data
+                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div x-show="open" @click.away="open = false"
+                                x-transition
+                                class="absolute mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <a href="{{ route('export.usahaart') }}"
+                                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">
+                                    <x-heroicon-o-document-arrow-down class="w-4 h-4 text-green-600" />
+                                    Export Excel
+                                </a>
+                            </div>
+                        </div>
                     </div>
+
 
                     <!-- Kanan: Tampilkan + Cari + Tambah -->
                     <div class="flex flex-wrap items-center gap-2">
