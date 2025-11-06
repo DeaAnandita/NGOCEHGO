@@ -44,6 +44,9 @@ Route::get('/export-aset-keluarga', function () {
 
 // routes/web.php
 use App\Exports\DataKeluargaExport;
+use App\Exports\DataAsetKeluargaPdfExport;
+use App\Exports\DataLembagaEkonomiExport;
+use App\Exports\DataLembagamasyarakatExport;
 
 Route::get('/export/data-keluarga', function () {
     return DataKeluargaExport::export();
@@ -124,6 +127,16 @@ use App\Exports\DataLembagaDesaExport;
 Route::get('/export-lembagadesa', function () {
     return DataLembagaDesaExport::export();
 })->name('export.lembagadesa');
+
+Route::get('/export-lembaga-ekonomi', function ()  {
+    return DataLembagaEkonomiExport::export();
+})->name('export.lembagaekonomi');
+
+Route::get('/export-lembaga-masyarakat', function ()  {
+    return DataLembagaMasyarakatExport::export();
+})->name('export.lembagamasyarakat');
+
+
 
 
 // ===============================
@@ -313,6 +326,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('lembagaekonomi/{nik}/edit', [LembagaEkonomiController::class, 'edit'])->name('penduduk.lembagaekonomi.edit');
     Route::put('lembagaekonomi/{nik}', [LembagaEkonomiController::class, 'update'])->name('penduduk.lembagaekonomi.update');
     Route::delete('lembagaekonomi/{nik}', [LembagaEkonomiController::class, 'destroy'])->name('penduduk.lembagaekonomi.destroy');
+
     
     
 });
