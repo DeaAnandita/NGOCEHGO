@@ -68,6 +68,21 @@ use App\Exports\DataPrasaranaPdfExport;
 //     return DataPrasaranaPdfExport::export();
 // })->name('dataprasarana.export.pdf');
 
+//bela
+use App\Exports\DataSejahteraKeluargaExport;
+
+Route::get('/export-sejahtera-keluarga', function () {
+    return DataSejahteraKeluargaExport::export();
+})->name('export.sejahterakeluarga');
+
+//bela
+use App\Exports\DataKonflikSosialExport;
+
+Route::get('/export-konflik-sosial', function () {
+    return DataKonflikSosialExport::export();
+})->name('export.konfliksosial');
+
+
 
 // ===============================
 // MASTER DATA
