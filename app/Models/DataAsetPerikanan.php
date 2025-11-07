@@ -22,7 +22,7 @@ class DataAsetPerikanan extends Model
     {
         parent::__construct($attributes);
 
-        $this->fillable = array_merge(['no_kk'], array_map(fn($i) => "asetperikanan_$i", range(1, 6)));
+        $this->fillable = array_merge( ['no_kk'], array_map(fn($i) => "asetperikanan_$i", range(1, 6)));
     }
 
 
