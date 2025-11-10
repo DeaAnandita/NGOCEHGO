@@ -10,7 +10,6 @@ class DataKonflikSosial extends Model
     use HasFactory;
 
     protected $table = 'data_konfliksosial';
-    public $timestamps = false;
     protected $primaryKey = 'no_kk';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -21,12 +20,12 @@ class DataKonflikSosial extends Model
     {
         parent::__construct($attributes);
 
-        // generate fillable otomatis dari 1 sampai 32
         $fields = ['no_kk'];
         for ($i = 1; $i <= 32; $i++) {
             $fields[] = "konfliksosial_$i";
         }
-        $this->fillable($fields);
+
+        $this->fillable = $fields;
     }
 
     public function keluarga()

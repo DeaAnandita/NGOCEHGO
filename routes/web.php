@@ -86,6 +86,18 @@ Route::get('/export-konflik-sosial', function () {
     return DataKonflikSosialExport::export();
 })->name('export.konfliksosial');
 
+//bela
+use App\Exports\DataKonflikSosialPdfExport;
+
+Route::get('/laporan/konfliksosial/pdf', [App\Http\Controllers\KonflikSosialController::class, 'exportPdf'])
+    ->name('konfliksosial.export.pdf');
+
+//bela
+use App\Exports\DataSejahteraKeluargaPdfExport;
+
+Route::get('/laporan/sejahterakeluarga/pdf', [App\Http\Controllers\SejahteraKeluargaController::class, 'exportPdf'])
+    ->name('sejahterakeluarga.export.pdf');
+
 
 use App\Exports\DataPendudukExport;
 
@@ -264,7 +276,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::put('bangunkeluarga/{no_kk}', [BangunKeluargaController::class, 'update'])->name('keluarga.bangunkeluarga.update');
     Route::delete('bangunkeluarga/{no_kk}', [BangunKeluargaController::class, 'destroy'])->name('keluarga.bangunkeluarga.destroy');
 
-    // Routes untuk Sarpras Kerja
+    // Routes untuk Sejahtera Keluarga
     Route::get('sejahterakeluarga', [SejahteraKeluargaController::class, 'index'])->name('keluarga.sejahterakeluarga.index');
     Route::get('sejahterakeluarga/create', [SejahteraKeluargaController::class, 'create'])->name('keluarga.sejahterakeluarga.create');
     Route::post('sejahterakeluarga', [SejahteraKeluargaController::class, 'store'])->name('keluarga.sejahterakeluarga.store');
@@ -272,7 +284,7 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::put('sejahterakeluarga/{no_kk}', [SejahteraKeluargaController::class, 'update'])->name('keluarga.sejahterakeluarga.update');
     Route::delete('sejahterakeluarga/{no_kk}', [SejahteraKeluargaController::class, 'destroy'])->name('keluarga.sejahterakeluarga.destroy');
 
-    // Routes untuk Sarpras Kerja
+    // Routes untuk Konflik  Sosial
     Route::get('konfliksosial', [KonflikSosialController::class, 'index'])->name('keluarga.konfliksosial.index');
     Route::get('konfliksosial/create', [KonflikSosialController::class, 'create'])->name('keluarga.konfliksosial.create');
     Route::post('konfliksosial', [KonflikSosialController::class, 'store'])->name('keluarga.konfliksosial.store');
