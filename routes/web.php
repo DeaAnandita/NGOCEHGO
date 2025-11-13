@@ -191,4 +191,4 @@ Route::get('/asetperikanan/export/pdf', [AsetPerikananController::class, 'export
 // ===============================
 // AUTH
 // ===============================
-require _DIR_ . '/auth.php';
+require __DIR__ . '/auth.php';
