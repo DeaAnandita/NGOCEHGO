@@ -9,7 +9,7 @@ use App\Http\Controllers\{
     KelahiranController, SosialEkonomiController, UsahaArtController, ProgramSertaController,
     LembagaDesaController, LembagaMasyarakatController, LembagaEkonomiController
 };
-use App\Http\Controllers\Voice\{
+use App\Http\Controllers\{
     VoiceKeluargaController,
     VoicePrasaranaController,
     VoicePendudukController,
