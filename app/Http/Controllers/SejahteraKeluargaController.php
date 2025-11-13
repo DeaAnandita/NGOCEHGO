@@ -202,3 +202,5 @@ class SejahteraKeluargaController extends Controller
         return $pdf->download('Laporan_Analisis_Sejahtera_Keluarga.pdf');
     }
 }
+
+

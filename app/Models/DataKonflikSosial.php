@@ -13,6 +13,7 @@ class DataKonflikSosial extends Model
     protected $primaryKey = 'no_kk';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [];
 
