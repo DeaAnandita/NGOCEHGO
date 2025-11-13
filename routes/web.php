@@ -132,8 +132,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::delete('/{id}', 'destroy')->name('destroy');
         });
     }
-    
-    // Routes untuk Penduduk
+
+	// Routes untuk Penduduk
     Route::resource('penduduk', PendudukController::class)->except(['show'])->names('dasar-penduduk');
     // Penduduk 
     $pendudukControllers = [
@@ -173,6 +173,11 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/lembagamasyarakat/pdf', [App\Http\Controllers\LembagaMasyarakatController::class, 'exportPdf'])->name('lembagamasyarakat.exportAnalisisPDF');
     Route::get('/laporan/kualitasbayi/pdf', [App\Http\Controllers\KualitasBayiController::class, 'exportPdf'])->name('kualitasbayi.exportAnalisisPDF');
     Route::get('/laporan/kualitasibuhamil/pdf', [App\Http\Controllers\KualitasIbuHamilController::class, 'exportPdf'])->name('kualitasibuhamil.exportAnalisisPDF');
+    Route::get('/laporan/sosialekonomi/pdf', [App\Http\Controllers\SosialEkonomiController::class, 'exportPdf'])->name('sosialekonomi.exportAnalisisPDF');
+    Route::get('/laporan/usahaart/pdf', [App\Http\Controllers\UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
+    Route::get('/asetperikanan/export/pdf', [AsetPerikananController::class, 'exportPdf'])->name('asetperikanan.export.pdf');
+    Route::get('/asetternak/export/pdf', [AsetTernakController::class, 'exportPdf'])->name('asetternak.export.pdf');
+    Route::get('laporan/asetkeluarga/pdf', [AsetKeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
 });
 
 // ===============================
