@@ -35,8 +35,8 @@
         <span class="text-[10px] mt-1 text-center">Lembaga Desa</span>
     </a>
 
-    <a href="{{ route('penduduk.lembagamasyarakat.index') }}"
-       class="flex flex-col items-center {{ request()->routeIs('penduduk.lembagamasyarakat.*') ? 'bg-blue-100 text-blue-800' : 'text-gray-500 hover:text-blue-600' }} rounded-lg px-2 py-1 transition">
+    <a href="{{ route('penduduk.lemmas.index') }}"
+       class="flex flex-col items-center {{ request()->routeIs('penduduk.lemmas.*') ? 'bg-blue-100 text-blue-800' : 'text-gray-500 hover:text-blue-600' }} rounded-lg px-2 py-1 transition">
         <x-heroicon-o-swatch class="w-7 h-7" />
         <span class="text-[10px] mt-1 text-center">Lembaga Masyarakat</span>
     </a>
