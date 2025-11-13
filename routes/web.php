@@ -70,7 +70,6 @@ Route::middleware('auth')->group(function () {
 // ===============================
 // EXPORT EXCEL
 // ===============================
-<<<<<<< HEAD
 Route::prefix('export')->group(function () {
     Route::get('aset-keluarga', fn() => DataAsetKeluargaExport::export())->name('export.asetkeluarga');
     Route::get('data-keluarga', fn() => DataKeluargaExport::export())->name('export.datakeluarga');
@@ -93,158 +92,6 @@ Route::prefix('export')->group(function () {
     Route::get('sarpras-kerja', fn() => DataSarprasKerjaExport::export())->name('export.sarpraskerja');
     Route::get('bangun-keluarga', fn() => DataBangunKeluargaExport::export())->name('export.bangunkeluarga');
 });
-=======
-use App\Exports\DataAsetKeluargaExport;
-
-Route::get('/export-aset-keluarga', function () {
-    return DataAsetKeluargaExport::export();
-})->name('export.asetkeluarga');
-
-// routes/web.php
-use App\Exports\DataKeluargaExport;
-use App\Exports\DataAsetKeluargaPdfExport;
-use App\Exports\DataLembagaEkonomiExport;
-use App\Exports\DataLembagamasyarakatExport;
-
-Route::get('/export/data-keluarga', function () {
-    return DataKeluargaExport::export();
-})->name('export.datakeluarga');
-
-use App\Exports\DataKeluargaPdfExport;
-
-Route::get('/export-datakeluarga-pdf', function () {
-    return DataKeluargaPdfExport::export();
-})->name('datakeluarga.export.pdf');
-
-//prasarana
-use App\Exports\DataPrasaranaExport;
-
-Route::get('/export/data-prasarana', function () {
-    return DataPrasaranaExport::export();
-})->name('export.dataprasarana');
-
-use App\Exports\DataPrasaranaPdfExport;
-
-// Route::get('/export-dataprasarana-pdf', function () {
-//     return DataPrasaranaPdfExport::export();
-// })->name('dataprasarana.export.pdf');
-
-//bela
-use App\Exports\DataSejahteraKeluargaExport;
-
-Route::get('/export-sejahtera-keluarga', function () {
-    return DataSejahteraKeluargaExport::export();
-})->name('export.sejahterakeluarga');
-
-//bela
-use App\Exports\DataKonflikSosialExport;
-
-Route::get('/export-konflik-sosial', function () {
-    return DataKonflikSosialExport::export();
-})->name('export.konfliksosial');
-
-
-use App\Exports\DataPendudukExport;
-
-Route::get('/export-penduduk', function () {
-    return DataPendudukExport::export();
-})->name('export.penduduk');
-
-use App\Exports\DataPendudukPdfExport;
-
-use App\Exports\DataKelahiranExport;
-
-Route::get('/export-kelahiran', function () {
-    return DataKelahiranExport::export();
-})->name('export.kelahiran');
-
-use App\Exports\DataKelahiranPdfExport;
-
-use App\Exports\DataSosialEkonomiExport;
-
-Route::get('/export-sosial-ekonomi', function () {
-    return DataSosialEkonomiExport::export();
-})->name('export.sosialekonomi');
-
-
-use App\Exports\DataUsahaArtExport;
-
-Route::get('/export-usaha-art', function () {
-    return DataUsahaArtExport::export();
-})->name('export.usahaart');
-
-
-use App\Exports\DataProgramSertaExport;
-
-Route::get('/export-programserta', function () {
-    return DataProgramSertaExport::export();
-})->name('export.programserta');
-
-use App\Exports\DataLembagaDesaExport;
-
-Route::get('/export-lembagadesa', function () {
-    return DataLembagaDesaExport::export();
-})->name('export.lembagadesa');
-
-Route::get('/export-lembaga-ekonomi', function ()  {
-    return DataLembagaEkonomiExport::export();
-})->name('export.lembagaekonomi');
-
-Route::get('/export-lembaga-masyarakat', function ()  {
-    return DataLembagaMasyarakatExport::export();
-})->name('export.lembagamasyarakat');
-
-
-
-//rema
-Route::get('/export/kualitas-ibu-hamil', [DataKualitasIbuHamilExport::class, 'export'])
-    ->name('export.kualitasibuhamil');
-
-use App\Exports\DataKualitasBayiExport;
-
-Route::get('/export/kualitas-bayi', [DataKualitasBayiExport::class, 'export'])
-    ->name('export.kualitasbayi');
-
-//report aset ternak
-use App\Exports\DataAsetTernakExport;
-
-Route::get('/export-aset-ternak', function () {
-    return DataAsetTernakExport::export();
-})->name('export.asetternak');
-//report aset perikanan
-use App\Exports\DataAsetPerikananExport;
-
-Route::get('/export-aset-perikanan', function () {
-    return DataAsetPerikananExport::export();
-})->name('export.asetperikanan');
-
-use App\Exports\DataAsetPerikananPdfExport;
-
-//Sofi
-use App\Exports\DataSarprasKerjaExport;
-
-Route::get('/export-sarpras-kerja', function () {
-    return DataSarprasKerjaExport::export();
-})->name('export.sarpraskerja');
-
-use App\Exports\DataSarprasKerjaPdfExport;
-
-Route::get('/laporan/sarpraskerja/pdf', [App\Http\Controllers\SarprasKerjaController::class, 'exportPdf'])
-    ->name('sarpraskerja.export.pdf');
-
-//Sofi
-use App\Exports\DataBangunKeluargaExport;
-use App\Models\DataBangunKeluarga;
-
-Route::get('/export-bangun-keluarga', function () {
-    return DataBangunKeluargaExport::export();
-})->name('export.bangunkeluarga');
->>>>>>> 50f2f57 (export excel)
-
-use App\Exports\DataBangunKeluargaPdfExport;
-
-Route::get('/laporan/bangunkeluarga/pdf', [App\Http\Controllers\BangunKeluargaController::class, 'exportPdf'])
-    ->name('bangunkeluarga.export.pdf');
 
 // ===============================
 // MASTER DATA
@@ -326,6 +173,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/usahaart/pdf', [App\Http\Controllers\UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
     Route::get('/asetperikanan/export/pdf', [AsetPerikananController::class, 'exportPdf'])->name('asetperikanan.export.pdf');
     Route::get('/asetternak/export/pdf', [AsetTernakController::class, 'exportPdf'])->name('asetternak.export.pdf');
+    Route::get('/laporan/bangunkeluarga/pdf', [App\Http\Controllers\BangunKeluargaController::class, 'exportPdf'])->name('bangunkeluarga.export.pdf');
+    Route::get('/laporan/sarpraskerja/pdf', [App\Http\Controllers\SarprasKerjaController::class, 'exportPdf'])->name('sarpraskerja.export.pdf');
 });
 
 // ===============================
