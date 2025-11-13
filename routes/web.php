@@ -146,11 +146,20 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Report PDF laporan (Keluarga)
     Route::get('laporan/asetkeluarga/pdf', [AsetKeluargaController::class, 'exportPdf'])
         ->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('/laporan/sosialekonomi/pdf', [App\Http\Controllers\SosialEkonomiController::class, 'exportPdf'])->name('sosialekonomi.exportAnalisisPDF');
+    Route::get('/laporan/usahaart/pdf', [App\Http\Controllers\UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
+
+
 
     // 🎤 Voice Input Mode (Aset Keluarga)
     Route::get('asetkeluarga/voice', [AsetKeluargaController::class, 'voiceInput'])
         ->name('keluarga.asetkeluarga.voice');
 
+Route::get('/asetperikanan/export/pdf', [AsetPerikananController::class, 'exportPdf'])
+    ->name('asetperikanan.export.pdf');
+
+    Route::get('/asetternak/export/pdf', [AsetTernakController::class, 'exportPdf'])
+    ->name('asetternak.export.pdf');
 	// Routes untuk Penduduk
     Route::resource('penduduk', PendudukController::class)->except(['show'])->names('dasar-penduduk');
     // Penduduk 
@@ -182,4 +191,4 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 // ===============================
 // AUTH
 // ===============================
-require __DIR__ . '/auth.php';
+require _DIR_ . '/auth.php';
