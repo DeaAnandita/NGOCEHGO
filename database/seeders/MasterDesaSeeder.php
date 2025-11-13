@@ -12,7 +12,7 @@ class MasterDesaSeeder extends Seeder
 
         DB::table('master_provinsi')->insert([
              
-            ['kdprovinsi' => 1, 'provinsi' => 'Jawa Tenggah'],
+            ['kdprovinsi' => 1, 'provinsi' => 'Jawa Tengah'],
             ['kdprovinsi' => 2, 'provinsi' => 'Jawa Barat'],
             ['kdprovinsi' => 3, 'provinsi' => 'Jawa Timur'],
             ['kdprovinsi' => 4, 'provinsi' => 'DKI Jakarta'],

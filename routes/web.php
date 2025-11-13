@@ -23,32 +23,21 @@ use App\Exports\{
 
 Route::get('/admin/voice', [VoiceKeluargaController::class, 'index'])->name('voice.menu');
 
-Route::prefix('admin/voice')->group(function () {
-    Route::get('/keluarga', [VoiceKeluargaController::class, 'keluarga'])->name('voice.keluarga');
-    
-    Route::post('/session', [VoiceKeluargaController::class, 'createSession'])->name('voice.session');
-    Route::post('/answer', [VoiceKeluargaController::class, 'storeAnswer'])->name('voice.answer');
-    Route::post('/final-save', [VoiceKeluargaController::class, 'finalSave'])->name('voice.final-save');
-    
-    Route::post('/keluarga/store', [VoiceKeluargaController::class, 'store'])->name('voice.keluarga.store');
+Route::prefix('admin/voice')->name('voice.')->group(function () {
+    Route::get('/', [VoiceKeluargaController::class, 'index'])->name('menu');
+    Route::get('/keluarga', [VoiceKeluargaController::class, 'keluarga'])->name('keluarga');
 
-    // TAMBAHAN: untuk cek duplikat suara
-    Route::post('/check-duplicate', [VoiceKeluargaController::class, 'checkDuplicate'])
-         ->name('voice.check-duplicate');
-         Route::post('/upload-voice', [VoiceKeluargaController::class, 'uploadVoice'])->name('voice.upload');
+    Route::post('/keluarga/cek-no-kk', [VoiceKeluargaController::class, 'cekNoKk'])
+        ->name('keluarga.cek-no-kk');
 
-
-    // Dynamic wilayah (pastikan ada!)
-    Route::get('/get-kabupaten/{id}', [VoiceKeluargaController::class, 'getKabupaten']);
-    Route::get('/get-kecamatan/{id}', [VoiceKeluargaController::class, 'getKecamatan']);
-    Route::get('/get-desa/{id}', [VoiceKeluargaController::class, 'getDesa']);
+    Route::post('/keluarga/store', [VoiceKeluargaController::class, 'store'])
+        ->name('keluarga.store');
 });
 
-
+// Wilayah API (tidak perlu prefix admin)
 Route::get('/get-kabupaten/{kdprovinsi}', [WilayahController::class, 'getKabupaten']);
 Route::get('/get-kecamatan/{kdkabupaten}', [WilayahController::class, 'getKecamatan']);
 Route::get('/get-desa/{kdkecamatan}', [WilayahController::class, 'getDesa']);
-
 
 // ===============================
 // HALAMAN AWAL
