@@ -7,6 +7,10 @@ use App\Models\DataPenduduk;
 use App\Models\MasterLembaga;
 use App\Models\MasterJawabLemmas;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class LembagaMasyarakatController extends Controller
 {
@@ -123,5 +127,79 @@ class LembagaMasyarakatController extends Controller
         $lembagaMasyarakat->delete();
 
         return redirect()->route('penduduk.lembagamasyarakat.index')->with('success', 'Data lembaga masyarakat berhasil dihapus.');
+    }
+
+    /**
+     * Export laporan analisis lembaga masyarakat ke PDF
+     */
+   public function exportPdf()
+    {
+        $data = DataLembagaMasyarakat::all();
+        $totalPenduduk = $data->count();
+
+        if ($totalPenduduk === 0) {
+            return back()->with('error', 'Tidak ada data lembaga masyarakat untuk dianalisis.');
+        }
+
+        // Hitung kategori partisipasi
+        $rendah = $sedang = $tinggi = 0;
+        foreach ($data as $row) {
+            $skor = 0;
+            for ($i = 1; $i <= 48; $i++) {
+                $val = $row->{"lemmas_$i"};
+                if ($val == 1) $skor++;
+            }
+
+            if ($skor >= 8) $tinggi++;
+            elseif ($skor >= 3) $sedang++;
+            else $rendah++;
+        }
+
+        $persenRendah = round(($rendah / $totalPenduduk) * 100, 1);
+        $persenSedang = round(($sedang / $totalPenduduk) * 100, 1);
+        $persenTinggi = round(($tinggi / $totalPenduduk) * 100, 1);
+
+        $kategori = ['Rendah' => $rendah, 'Sedang' => $sedang, 'Tinggi' => $tinggi];
+        arsort($kategori);
+        $dominan = array_key_first($kategori);
+        $persenDominan = match ($dominan) {
+            'Rendah' => $persenRendah,
+            'Sedang' => $persenSedang,
+            'Tinggi' => $persenTinggi,
+        };
+
+        $master = MasterLembaga::pluck('lembaga', 'kdlembaga')->toArray();
+
+        // Hitung jumlah "ADA" per indikator
+        $soalCount = [];
+        foreach ($master as $kode => $nama) {
+            $jumlah = $data->where("lemmas_$kode", 1)->count();
+            $soalCount[$kode] = [
+                'nama' => ucfirst(Str::lower($nama)),
+                'jumlah' => $jumlah,
+            ];
+        }
+
+        // Ambil 8 besar partisipasi
+        usort($soalCount, fn($a, $b) => $b['jumlah'] <=> $a['jumlah']);
+        $topSoal = array_slice($soalCount, 0, 8);
+
+        // Generate PDF tanpa diagram
+        $pdf = Pdf::loadView('laporan.lembagamasyarakat', [
+            'totalPenduduk' => $totalPenduduk,
+            'rendah' => $rendah,
+            'sedang' => $sedang,
+            'tinggi' => $tinggi,
+            'persenRendah' => $persenRendah,
+            'persenSedang' => $persenSedang,
+            'persenTinggi' => $persenTinggi,
+            'dominan' => $dominan,
+            'persenDominan' => $persenDominan,
+            'topSoal' => $topSoal,
+            'periode' => Carbon::now()->translatedFormat('F Y'),
+            'tanggal' => Carbon::now()->translatedFormat('d F Y'),
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Laporan-Analisis-Lembaga-Masyarakat.pdf');
     }
 }

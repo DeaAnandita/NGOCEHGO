@@ -7,6 +7,10 @@ use App\Models\DataPenduduk;
 use App\Models\MasterLembaga;
 use App\Models\MasterJawabLemek;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class LembagaEkonomiController extends Controller
 {
@@ -127,4 +131,83 @@ class LembagaEkonomiController extends Controller
 
         return redirect()->route('penduduk.lembagaekonomi.index')->with('success', 'Data lembaga ekonomi berhasil dihapus.');
     }
+/**
+     * Export laporan analisis lembaga ekonomi ke PDF
+     */
+    public function exportPdf()
+{
+    $data = DataLembagaEkonomi::all();
+    $totalPenduduk = $data->count();
+
+    if ($totalPenduduk === 0) {
+        return back()->with('error', 'Tidak ada data lembaga ekonomi untuk dianalisis.');
+    }
+
+    // Hitung kategori partisipasi
+    $rendah = $sedang = $tinggi = 0;
+    foreach ($data as $row) {
+        $skor = 0;
+        for ($i = 1; $i <= 75; $i++) {
+            $val = $row->{"lemek_$i"};
+            if ($val == 1) $skor++;
+        }
+
+        if ($skor >= 12) $tinggi++;        // ambang batas disesuaikan (misal ≥12 = tinggi)
+        elseif ($skor >= 5) $sedang++;     // 5–11 = sedang
+        else $rendah++;                    // <5 = rendah
+    }
+
+    $persenRendah = round(($rendah / $totalPenduduk) * 100, 1);
+    $persenSedang = round(($sedang / $totalPenduduk) * 100, 1);
+    $persenTinggi = round(($tinggi / $totalPenduduk) * 100, 1);
+
+    $kategori = ['Rendah' => $rendah, 'Sedang' => $sedang, 'Tinggi' => $tinggi];
+    arsort($kategori);
+    $dominan = array_key_first($kategori);
+    $persenDominan = match ($dominan) {
+        'Rendah' => $persenRendah,
+        'Sedang' => $persenSedang,
+        'Tinggi' => $persenTinggi,
+    };
+
+    // Ambil data master indikator lembaga ekonomi
+    $master = MasterLembaga::where('kdjenislembaga', 4)
+    ->orderBy('kdlembaga', 'asc')
+    ->pluck('lembaga', 'kdlembaga')
+    ->values() // buang key asli, ubah jadi indeks numerik mulai 0
+    ->toArray();
+
+// Hitung jumlah "ADA" per indikator
+$soalCount = [];
+foreach ($master as $i => $nama) {
+    $kolom = "lemek_" . ($i + 1); // sesuai urutan kolom 1–75
+    $jumlah = $data->where($kolom, 1)->count();
+    $soalCount[] = [
+        'nama' => ucfirst(Str::lower($nama)),
+        'jumlah' => $jumlah,
+    ];
 }
+
+
+    // Ambil 10 besar aktivitas ekonomi dominan
+    usort($soalCount, fn($a, $b) => $b['jumlah'] <=> $a['jumlah']);
+    $topSoal = array_slice($soalCount, 0, 10);
+
+    // Generate PDF tanpa diagram
+    $pdf = Pdf::loadView('laporan.lembagaekonomi', [
+        'totalPenduduk' => $totalPenduduk,
+        'rendah' => $rendah,
+        'sedang' => $sedang,
+        'tinggi' => $tinggi,
+        'persenRendah' => $persenRendah,
+        'persenSedang' => $persenSedang,
+        'persenTinggi' => $persenTinggi,
+        'dominan' => $dominan,
+        'persenDominan' => $persenDominan,
+        'topSoal' => $topSoal,
+        'periode' => Carbon::now()->translatedFormat('F Y'),
+        'tanggal' => Carbon::now()->translatedFormat('d F Y'),
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->stream('Laporan-Analisis-Lembaga-Ekonomi.pdf');
+}}

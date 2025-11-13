@@ -180,7 +180,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/konfliksosial/pdf', [App\Http\Controllers\KonflikSosialController::class, 'exportPdf'])->name('konfliksosial.export.pdf');
     Route::get('/laporan/programserta/pdf', [App\Http\Controllers\ProgramSertaController::class, 'exportPdf'])->name('programserta.exportAnalisisPDF');
     Route::get('/laporan/programserta/pdf', [App\Http\Controllers\ProgramSertaController::class, 'exportPdf'])->name('programserta.exportAnalisisPDF');
-
+    Route::get('/laporan/lembagaekonomi/pdf', [App\Http\Controllers\LembagaEkonomiController::class, 'exportPdf'])->name('lembagaekonomi.exportAnalisisPDF');
+    Route::get('/laporan/lembagamasyarakat/pdf', [App\Http\Controllers\LembagaMasyarakatController::class, 'exportPdf'])->name('lembagamasyarakat.exportAnalisisPDF');
 });
 
 // ===============================
