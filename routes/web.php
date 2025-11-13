@@ -132,7 +132,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
             Route::delete('/{id}', 'destroy')->name('destroy');
         });
     }
-
+    
 	// Routes untuk Penduduk
     Route::resource('penduduk', PendudukController::class)->except(['show'])->names('dasar-penduduk');
     // Penduduk 
