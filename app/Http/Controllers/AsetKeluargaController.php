@@ -250,4 +250,13 @@ class AsetKeluargaController extends Controller
 
         return $pdf->stream('Laporan-Analisis-Aset-Keluarga.pdf');
     }
+
+    //VOICE INPUT
+    public function voiceInput()
+    {
+        $keluargas = DataKeluarga::all();
+        $masterAset = MasterAsetKeluarga::all();
+        return view('keluarga.asetkeluarga.voice', compact('keluargas', 'masterAset'));
+    }
+
 }

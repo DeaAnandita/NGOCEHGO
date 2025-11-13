@@ -25,10 +25,25 @@
                         <div class="bg-green-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
                             📂
                         </div>
-                        <h4 class="text-lg font-semibold text-green-800 group-hover:text-green-900">Administrasi Penduduk</h4>
+                        <h4 class="text-lg font-semibold text-green-800 group-hover:text-green-900">Adm Penduduk</h4>
                         <p class="text-gray-600 text-sm mt-1 text-center">Kelola data Administrasi Penduduk.</p>
                     </div>
                 </a>
+                <a href="{{ route('voice.menu') }}"
+                    class="group bg-gradient-to-br from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 
+                            border border-purple-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
+                        <div class="flex flex-col items-center">
+                            <div class="bg-purple-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
+                                🔊
+                            </div>
+                            <h4 class="text-lg font-semibold text-purple-800 group-hover:text-purple-900">
+                                Adm Penduduk (Voice)
+                            </h4>
+                            <p class="text-gray-600 text-sm mt-1 text-center">
+                                Input data keluarga & penduduk secara otomatis dengan suara.
+                            </p>
+                        </div>
+                    </a>
                 <a href="{{ route('master.list') }}"
                    class="group bg-gradient-to-br from-blue-100 to-blue-50 hover:from-blue-200 hover:to-blue-100 border border-blue-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
                     <div class="flex flex-col items-center">
@@ -39,16 +54,7 @@
                         <p class="text-gray-600 text-sm mt-1 text-center">Kelola semua master data.</p>
                     </div>
                 </a>
-                <a href="#"
-                   class="group bg-gradient-to-br from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 border border-purple-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-purple-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            🔊
-                        </div>
-                        <h4 class="text-lg font-semibold text-purple-800 group-hover:text-purple-900">Master Data Voice</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Buat dan kelola Master Data Voice.</p>
-                    </div>
-                </a>
+                
                 <a href="{{ route('profile.edit') }}"
                    class="group bg-gradient-to-br from-orange-100 to-orange-50 hover:from-orange-200 hover:to-orange-100 border border-orange-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
                     <div class="flex flex-col items-center">
