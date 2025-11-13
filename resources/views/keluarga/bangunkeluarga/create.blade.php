@@ -35,13 +35,15 @@
                     <div class="mb-8">
                         <h4 class="text-sm font-semibold text-gray-700 mb-4">Detail Bangun Keluarga</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @foreach($masterPembangunan as $pembangunan)
+                            @foreach($masterBangun as $pembangunan)
                                 @php
                                     $field = 'bangunkeluarga_' . $pembangunan->kdpembangunankeluarga;
                                     $oldValue = old($field);
                                 @endphp
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">{{ $pembangunan->pembangunankeluarga }}</label>
+                                    <label class="block text-sm font-medium text-gray-700">
+                                        {{ $pembangunan->pembangunankeluarga }}
+                                    </label>
                                     <select name="{{ $field }}"
                                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Pilih Jawaban --</option>
@@ -59,6 +61,7 @@
                         </div>
                     </div>
 
+                    <!-- Tombol Aksi -->
                     <div class="mt-6 flex space-x-4 justify-end">
                         <button type="submit"
                             class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
@@ -79,7 +82,11 @@
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function () {
-                $('#no_kk').select2({ placeholder: "-- Pilih Keluarga --", allowClear: true, width: '100%' });
+                $('#no_kk').select2({
+                    placeholder: "-- Pilih Keluarga --",
+                    allowClear: true,
+                    width: '100%'
+                });
             });
         </script>
     @endpush
