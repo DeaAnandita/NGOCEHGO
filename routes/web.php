@@ -175,6 +175,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/asetternak/export/pdf', [AsetTernakController::class, 'exportPdf'])->name('asetternak.export.pdf');
     Route::get('/laporan/bangunkeluarga/pdf', [App\Http\Controllers\BangunKeluargaController::class, 'exportPdf'])->name('bangunkeluarga.export.pdf');
     Route::get('/laporan/sarpraskerja/pdf', [App\Http\Controllers\SarprasKerjaController::class, 'exportPdf'])->name('sarpraskerja.export.pdf');
+    Route::get('/laporan/sejahterakeluarga/pdf', [App\Http\Controllers\SejahteraKeluargaController::class, 'exportPdf'])
+    ->name('sejahterakeluarga.export.pdf');
+    Route::get('/laporan/konfliksosial/pdf', [App\Http\Controllers\KonflikSosialController::class, 'exportPdf'])
+    ->name('konfliksosial.export.pdf');
 });
 
 // ===============================
