@@ -87,20 +87,59 @@
             <tr>
                 <th style="width:40px;">No</th>
                 <th>Nama Indikator</th>
-                <th style="width:140px;">Nilai Rata-rata</th>
+                <th style="width:160px;">Nilai Rata-rata</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td align="center">61</td><td>Rata-rata uang saku anak per hari</td><td align="center">{{ number_format($indikator['uang_saku'], 2) }}</td></tr>
-            <tr><td align="center">62</td><td>Keluarga memiliki kebiasaan merokok (bungkus per hari)</td><td align="center">{{ number_format($indikator['rokok'], 2) }}</td></tr>
-            <tr><td align="center">63</td><td>Kepala keluarga minum kopi di kedai (kali per hari)</td><td align="center">{{ number_format($indikator['kopi_kali'], 2) }}</td></tr>
-            <tr><td align="center">64</td><td>Kepala keluarga minum kopi di kedai (jam per hari)</td><td align="center">{{ number_format($indikator['kopi_jam'], 2) }}</td></tr>
-            <tr><td align="center">65</td><td>Rata-rata pulsa yang digunakan per minggu</td><td align="center">{{ number_format($indikator['pulsa'], 2) }}</td></tr>
-            <tr><td align="center">66</td><td>Rata-rata pendapatan keluarga per bulan</td><td align="center">{{ number_format($indikator['pendapatan'], 2) }}</td></tr>
-            <tr><td align="center">67</td><td>Rata-rata pengeluaran keluarga per bulan</td><td align="center">{{ number_format($indikator['pengeluaran'], 2) }}</td></tr>
-            <tr><td align="center">68</td><td>Rata-rata uang belanja keluarga per bulan</td><td align="center">{{ number_format($indikator['belanja'], 2) }}</td></tr>
+            <tr>
+                <td align="center">61</td>
+                <td>Rata-rata uang saku anak per hari</td>
+                <td align="center">Rp {{ number_format($indikator['uang_saku'], 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td align="center">62</td>
+                <td>Keluarga memiliki kebiasaan merokok (bungkus per hari)</td>
+                <td align="center">{{ round($indikator['rokok']) }} bungkus</td>
+            </tr>
+            <tr>
+                <td align="center">63</td>
+                <td>Kepala keluarga minum kopi di kedai (kali per hari)</td>
+                <td align="center">{{ round($indikator['kopi_kali']) }} kali</td>
+            </tr>
+            <tr>
+                <td align="center">64</td>
+                <td>Kepala keluarga minum kopi di kedai (jam per hari)</td>
+                <td align="center">{{ round($indikator['kopi_jam']) }} jam</td>
+            </tr>
+            <tr>
+                <td align="center">65</td>
+                <td>Rata-rata pulsa yang digunakan per minggu</td>
+                <td align="center">Rp {{ number_format($indikator['pulsa'], 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td align="center">66</td>
+                <td>Rata-rata pendapatan keluarga per bulan</td>
+                <td align="center">Rp {{ number_format($indikator['pendapatan'], 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td align="center">67</td>
+                <td>Rata-rata pengeluaran keluarga per bulan</td>
+                <td align="center">Rp {{ number_format($indikator['pengeluaran'], 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td align="center">68</td>
+                <td>Rata-rata uang belanja keluarga per bulan</td>
+                <td align="center">Rp {{ number_format($indikator['belanja'], 0, ',', '.') }}</td>
+            </tr>
         </tbody>
     </table>
+
+    @php
+        // Hitung konsumsi rokok dan kopi terhadap pendapatan lebih realistis
+        $biaya_rokok = $indikator['rokok'] * 10000; // anggap 1 bungkus = Rp 10.000
+        $biaya_kopi  = (($indikator['kopi_kali'] + $indikator['kopi_jam']) / 2) * 5000; // 1x kopi/jam = Rp 5.000
+        $persen_konsumsi = ($biaya_rokok + $biaya_kopi) / max($indikator['pendapatan'], 1) * 100;
+    @endphp
 
     <h3>Analisis Interpretatif</h3>
     <div class="summary">
@@ -111,7 +150,7 @@
             {{ $indikator['pendapatan'] > 0 ? round($indikator['belanja'] / $indikator['pendapatan'] * 100, 2) : 0 }}%
         </p>
         <p>• <strong>Konsumsi Rokok & Kopi terhadap Pendapatan:</strong> 
-            {{ round((($indikator['rokok'] + $indikator['kopi_kali']) / max($indikator['pendapatan'],1)) * 100, 2) }}%
+            {{ round($persen_konsumsi, 2) }}%
         </p>
         <p>• <strong>Interpretasi Umum:</strong> 
             {{ $kategori === 'Sejahtera Stabil' ? 'Keluarga memiliki keseimbangan pendapatan dan pengeluaran.' : 

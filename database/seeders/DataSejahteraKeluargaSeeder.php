@@ -7,175 +7,41 @@ use Illuminate\Support\Facades\DB;
 
 class DataSejahteraKeluargaSeeder extends Seeder
 {
+    /**
+     * Jalankan seeder untuk tabel data_sejahterakeluarga.
+     */
     public function run(): void
     {
-        $data = [
-            [
-                'no_kk' => '3374123400000001',
-                'sejahterakeluarga_61' => '1 bungkus',
-                'sejahterakeluarga_62' => '3 kali',
-                'sejahterakeluarga_63' => '2 jam',
-                'sejahterakeluarga_64' => '20000',
-                'sejahterakeluarga_65' => '3500000',
-                'sejahterakeluarga_66' => '2500000',
-                'sejahterakeluarga_67' => '1500000',
-                'sejahterakeluarga_68' => '1 motor',
-            ],
-            [
-                'no_kk' => '3374123400000002',
-                'sejahterakeluarga_61' => '2 bungkus',
-                'sejahterakeluarga_62' => '5 kali',
-                'sejahterakeluarga_63' => '3 jam',
-                'sejahterakeluarga_64' => '30000',
-                'sejahterakeluarga_65' => '4000000',
-                'sejahterakeluarga_66' => '2800000',
-                'sejahterakeluarga_67' => '2000000',
-                'sejahterakeluarga_68' => '2 motor',
-            ],
-            [
-                'no_kk' => '3374123400000003',
-                'sejahterakeluarga_61' => '1 bungkus',
-                'sejahterakeluarga_62' => '2 kali',
-                'sejahterakeluarga_63' => '1 jam',
-                'sejahterakeluarga_64' => '15000',
-                'sejahterakeluarga_65' => '2500000',
-                'sejahterakeluarga_66' => '1800000',
-                'sejahterakeluarga_67' => '1000000',
-                'sejahterakeluarga_68' => '1 sepeda',
-            ],
-            [
-                'no_kk' => '3374123400000004',
-                'sejahterakeluarga_61' => '3 bungkus',
-                'sejahterakeluarga_62' => '6 kali',
-                'sejahterakeluarga_63' => '4 jam',
-                'sejahterakeluarga_64' => '50000',
-                'sejahterakeluarga_65' => '5500000',
-                'sejahterakeluarga_66' => '3500000',
-                'sejahterakeluarga_67' => '2500000',
-                'sejahterakeluarga_68' => '1 mobil',
-            ],
-            [
-                'no_kk' => '3374123400000005',
-                'sejahterakeluarga_61' => '2 bungkus',
-                'sejahterakeluarga_62' => '4 kali',
-                'sejahterakeluarga_63' => '2 jam',
-                'sejahterakeluarga_64' => '25000',
-                'sejahterakeluarga_65' => '3200000',
-                'sejahterakeluarga_66' => '2000000',
-                'sejahterakeluarga_67' => '1200000',
-                'sejahterakeluarga_68' => '1 motor',
-            ],
-            [
-                'no_kk' => '3374123400000006',
-                'sejahterakeluarga_61' => '1 bungkus',
-                'sejahterakeluarga_62' => '3 kali',
-                'sejahterakeluarga_63' => '1.5 jam',
-                'sejahterakeluarga_64' => '18000',
-                'sejahterakeluarga_65' => '2700000',
-                'sejahterakeluarga_66' => '2000000',
-                'sejahterakeluarga_67' => '1000000',
-                'sejahterakeluarga_68' => '1 motor',
-            ],
-            [
-                'no_kk' => '3374123400000007',
-                'sejahterakeluarga_61' => '1 bungkus',
-                'sejahterakeluarga_62' => '3 kali',
-                'sejahterakeluarga_63' => '2 jam',
-                'sejahterakeluarga_64' => '20000',
-                'sejahterakeluarga_65' => '3000000',
-                'sejahterakeluarga_66' => '2200000',
-                'sejahterakeluarga_67' => '1300000',
-                'sejahterakeluarga_68' => '1 motor',
-            ],
-            [
-                'no_kk' => '3374123400000008',
-                'sejahterakeluarga_61' => '2 bungkus',
-                'sejahterakeluarga_62' => '5 kali',
-                'sejahterakeluarga_63' => '3 jam',
-                'sejahterakeluarga_64' => '35000',
-                'sejahterakeluarga_65' => '4200000',
-                'sejahterakeluarga_66' => '2800000',
-                'sejahterakeluarga_67' => '2000000',
-                'sejahterakeluarga_68' => '2 motor',
-            ],
-            [
-                'no_kk' => '3374123400000009',
-                'sejahterakeluarga_61' => '1 bungkus',
-                'sejahterakeluarga_62' => '2 kali',
-                'sejahterakeluarga_63' => '1 jam',
-                'sejahterakeluarga_64' => '10000',
-                'sejahterakeluarga_65' => '2400000',
-                'sejahterakeluarga_66' => '1700000',
-                'sejahterakeluarga_67' => '900000',
-                'sejahterakeluarga_68' => '1 sepeda',
-            ],
-            [
-                'no_kk' => '3374123400000010',
-                'sejahterakeluarga_61' => '3 bungkus',
-                'sejahterakeluarga_62' => '6 kali',
-                'sejahterakeluarga_63' => '4 jam',
-                'sejahterakeluarga_64' => '40000',
-                'sejahterakeluarga_65' => '6000000',
-                'sejahterakeluarga_66' => '3500000',
-                'sejahterakeluarga_67' => '3000000',
-                'sejahterakeluarga_68' => '1 mobil',
-            ],
-            [
-                'no_kk' => '3374123400000011',
-                'sejahterakeluarga_61' => '2 bungkus',
-                'sejahterakeluarga_62' => '4 kali',
-                'sejahterakeluarga_63' => '2 jam',
-                'sejahterakeluarga_64' => '25000',
-                'sejahterakeluarga_65' => '3400000',
-                'sejahterakeluarga_66' => '2300000',
-                'sejahterakeluarga_67' => '1500000',
-                'sejahterakeluarga_68' => '1 motor',
-            ],
-            [
-                'no_kk' => '3374123400000012',
-                'sejahterakeluarga_61' => '1 bungkus',
-                'sejahterakeluarga_62' => '2 kali',
-                'sejahterakeluarga_63' => '1 jam',
-                'sejahterakeluarga_64' => '12000',
-                'sejahterakeluarga_65' => '2600000',
-                'sejahterakeluarga_66' => '1900000',
-                'sejahterakeluarga_67' => '1100000',
-                'sejahterakeluarga_68' => '1 sepeda',
-            ],
-            [
-                'no_kk' => '3374123400000013',
-                'sejahterakeluarga_61' => '3 bungkus',
-                'sejahterakeluarga_62' => '5 kali',
-                'sejahterakeluarga_63' => '3 jam',
-                'sejahterakeluarga_64' => '35000',
-                'sejahterakeluarga_65' => '4500000',
-                'sejahterakeluarga_66' => '3000000',
-                'sejahterakeluarga_67' => '2200000',
-                'sejahterakeluarga_68' => '2 motor',
-            ],
-            [
-                'no_kk' => '3374123400000014',
-                'sejahterakeluarga_61' => '1 bungkus',
-                'sejahterakeluarga_62' => '3 kali',
-                'sejahterakeluarga_63' => '1.5 jam',
-                'sejahterakeluarga_64' => '20000',
-                'sejahterakeluarga_65' => '3100000',
-                'sejahterakeluarga_66' => '2200000',
-                'sejahterakeluarga_67' => '1300000',
-                'sejahterakeluarga_68' => '1 motor',
-            ],
-            [
-                'no_kk' => '3374123400000015',
-                'sejahterakeluarga_61' => '2 bungkus',
-                'sejahterakeluarga_62' => '4 kali',
-                'sejahterakeluarga_63' => '2 jam',
-                'sejahterakeluarga_64' => '25000',
-                'sejahterakeluarga_65' => '3600000',
-                'sejahterakeluarga_66' => '2400000',
-                'sejahterakeluarga_67' => '1500000',
-                'sejahterakeluarga_68' => '1 motor',
-            ],
-        ];
+        $data = [];
+
+        // Helper untuk buat angka kelipatan 500.000 agar terlihat realistis
+        $randRupiah = function ($min, $max) {
+            $kelipatan = 500000;
+            $nilai = rand($min / $kelipatan, $max / $kelipatan) * $kelipatan;
+            return (int) $nilai;
+        };
+
+        $randRupiahsaku = function ($min, $max) {
+            $kelipatansaku = 5000;
+            $nilaisaku = rand($min / $kelipatansaku, $max / $kelipatansaku) * $kelipatansaku;
+            return (int) $nilaisaku;
+        };
+
+        for ($i = 1; $i <= 15; $i++) {
+            $data[] = [
+                'no_kk' => '33741234000000' . str_pad($i, 2, '0', STR_PAD_LEFT),
+
+                // Nilai lebih masuk akal dan seragam
+                'sejahterakeluarga_61' => $randRupiahsaku(10000, 50000),              // uang saku per hari
+                'sejahterakeluarga_62' => rand(1, 3) . ' bungkus',                // rokok per hari
+                'sejahterakeluarga_63' => rand(1, 5) . ' kali',                   // minum kopi kali
+                'sejahterakeluarga_64' => rand(1, 4) . ' jam',                    // minum kopi jam
+                'sejahterakeluarga_65' => $randRupiah(2000000, 6000000),          // pulsa per minggu
+                'sejahterakeluarga_66' => $randRupiah(1500000, 3500000),          // pendapatan per bulan
+                'sejahterakeluarga_67' => $randRupiah(800000, 2000000),           // pengeluaran per bulan
+                'sejahterakeluarga_68' => $randRupiah(500000, 5000000),           // uang belanja per bulan
+            ];
+        }
 
         DB::table('data_sejahterakeluarga')->insert($data);
     }
