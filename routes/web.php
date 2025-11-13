@@ -73,7 +73,7 @@ Route::middleware('auth')->group(function () {
 Route::prefix('export')->group(function () {
     Route::get('aset-keluarga', fn() => DataAsetKeluargaExport::export())->name('export.asetkeluarga');
     Route::get('data-keluarga', fn() => DataKeluargaExport::export())->name('export.datakeluarga');
-    Route::get('data-keluarga-pdf', fn() => DataKeluargaPdfExport::export())->name('datakeluarga.export.pdf');
+    Route::get('data-keluarga-pdf', fn() => DataKeluargaExport::export())->name('datakeluarga.export.pdf');
     Route::get('data-prasarana', fn() => DataPrasaranaExport::export())->name('export.dataprasarana');
     Route::get('sejahtera-keluarga', fn() => DataSejahteraKeluargaExport::export())->name('export.sejahterakeluarga');
     Route::get('konflik-sosial', fn() => DataKonflikSosialExport::export())->name('export.konfliksosial');
