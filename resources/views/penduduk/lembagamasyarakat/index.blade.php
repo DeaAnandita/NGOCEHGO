@@ -39,7 +39,7 @@
                         </div>
                     </div>
 
-                        <form method="GET" action="{{ route('penduduk.lembagamasyarakat.index') }}" class="flex items-center gap-2">
+                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" class="flex items-center gap-2">
                             <label for="per_page" class="text-sm text-gray-600">Tampilkan</label>
                             <select name="per_page" onchange="this.form.submit()"
                                 class="border border-gray-300 rounded-md px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-20 sm:w-24">
@@ -53,7 +53,7 @@
                             @endif
                         </form>
 
-                        <form method="GET" action="{{ route('penduduk.lembagamasyarakat.index') }}" class="flex items-center">
+                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" class="flex items-center">
                             <input type="text" name="search" value="{{ $search ?? '' }}"
                                 placeholder="Cari Disini.."
                                 class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
@@ -63,7 +63,7 @@
                             </button>
                         </form>
 
-                        <a href="{{ route('penduduk.lembagamasyarakat.create') }}"
+                        <a href="{{ route('penduduk.lemmas.create') }}"
                            class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm">
                             + Tambah Data
                         </a>
@@ -117,11 +117,11 @@
 
                                         <td class="border border-gray-200 px-2 py-2 text-center w-[80px]">
                                             <div class="flex justify-center gap-1">
-                                                <a href="{{ route('penduduk.lembagamasyarakat.edit', $data->nik) }}"
+                                                <a href="{{ route('penduduk.lemmas.edit', $data->nik) }}"
                                                     class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg flex items-center justify-center">
                                                     <x-heroicon-o-pencil-square class="w-4 h-4" />
                                                 </a>
-                                                <form action="{{ route('penduduk.lembagamasyarakat.destroy', $data->nik) }}" method="POST"
+                                                <form action="{{ route('penduduk.lemmas.destroy', $data->nik) }}" method="POST"
                                                     onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                     @csrf @method('DELETE')
                                                     <button type="submit"
