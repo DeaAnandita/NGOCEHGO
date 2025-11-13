@@ -24,41 +24,45 @@
                             <!-- Dropdown Menu -->
                             <div x-show="open" @click.away="open = false"
                                 x-transition
-                                class="absolute mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                class="absolute mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                <!-- Export Excel -->
                                 <a href="{{ route('export.asetternak') }}"
                                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">
                                     <x-heroicon-o-document-arrow-down class="w-4 h-4 text-green-600" />
                                     Export Excel
                                 </a>
+
+                                <!-- Export PDF -->
                                 <a href="{{ route('asetternak.export.pdf') }}"
-                                   class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg">
-                                    <x-heroicon-o-document-text class="w-4 h-4 text-red-600" />
-                                    Export PDF
+   class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg">
+   <x-heroicon-o-document-text class="w-4 h-4 text-red-600" />
+   Export PDF
+</a>
+
                                 </a>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Filter & Search -->
                     <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                        <!-- Dropdown Per Page -->
+                        <!-- Per Page -->
                         <form method="GET" action="{{ route('keluarga.asetternak.index') }}"
                               class="flex items-center gap-2">
                             <label for="per_page" class="text-sm text-gray-600 whitespace-nowrap">Tampilkan</label>
                             <select name="per_page" onchange="this.form.submit()"
                                 class="border border-gray-300 rounded-md px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-20 sm:w-24">
-                                <option value="5" {{ $perPage == 5 ? 'selected' : '' }}>5</option>
                                 <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                                <option value="15" {{ $perPage == 15 ? 'selected' : '' }}>15</option>
-                                <option value="20" {{ $perPage == 20 ? 'selected' : '' }}>20</option>
+                                <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
+                                <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
                             </select>
-
-                            <!-- Hidden search agar tetap nyantol -->
                             @if(!empty($search))
                                 <input type="hidden" name="search" value="{{ $search }}">
                             @endif
                         </form>
 
-                        <!-- Form Search -->
+                        <!-- Pencarian -->
                         <form method="GET" action="{{ route('keluarga.asetternak.index') }}"
                               class="flex items-center w-full sm:w-auto">
                             <input type="text" name="search" value="{{ $search ?? '' }}"
@@ -70,9 +74,9 @@
                             </button>
                         </form>
 
-                        <!-- Tombol Tambah -->
+                        <!-- Tambah Data -->
                         <a href="{{ route('keluarga.asetternak.create') }}"
-                            class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm text-center">
+                           class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm text-center">
                             + Tambah Data
                         </a>
                     </div>
@@ -84,17 +88,17 @@
                         <table id="asetTernakTable" class="min-w-full table-fixed border-collapse text-sm">
                             <thead class="bg-blue-50 text-gray-600 uppercase text-xs font-semibold sticky top-0 z-10">
                                 <tr>
-                                    <th class="border border-gray-200 px-4 py-3 text-left text-xs text-gray-600">No</th>
+                                    <th class="border border-gray-200 px-4 py-3 text-left">No</th>
                                     <th class="border border-gray-200 px-4 py-3 w-36 text-left">No KK</th>
                                     <th class="border border-gray-200 px-4 py-3 w-44 text-left">Kepala Keluarga</th>
                                     @for ($i = 1; $i <= 24; $i++)
-                                        <th class="border border-gray-200 px-4 py-3 w-[80px] text-left">
+                                        <th class="border border-gray-200 px-4 py-3 w-[100px] text-left">
                                             <span title="{{ $masterAset[$i] ?? '' }}">
-                                                {{ Str::limit(Str::replace('Jumlah ', '', $masterAset[$i] ?? '')) }}
+                                                {{ Str::limit(Str::replace('Jumlah ', '', $masterAset[$i] ?? ''), 20) }}
                                             </span>
                                         </th>
                                     @endfor
-                                    <th class="border border-gray-200 px-4 py-3 w-auto text-center">Aksi</th>
+                                    <th class="border border-gray-200 px-4 py-3 text-center w-auto">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
@@ -110,12 +114,15 @@
                                         @endfor
                                         <td class="border border-gray-200 px-2 py-2 text-center w-[80px]">
                                             <div class="flex justify-center gap-1">
+                                                <!-- Edit -->
                                                 <a href="{{ route('keluarga.asetternak.edit', $aset->no_kk) }}"
-                                                class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg flex items-center justify-center">
+                                                   class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg flex items-center justify-center">
                                                     <x-heroicon-o-pencil-square class="w-4 h-4" />
                                                 </a>
+
+                                                <!-- Hapus -->
                                                 <form action="{{ route('keluarga.asetternak.destroy', $aset->no_kk) }}" method="POST"
-                                                    onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                      onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                     @csrf @method('DELETE')
                                                     <button type="submit"
                                                         class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg flex items-center justify-center">

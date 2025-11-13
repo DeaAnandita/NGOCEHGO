@@ -10,10 +10,7 @@ use App\Http\Controllers\{
     LembagaDesaController, LembagaMasyarakatController, LembagaEkonomiController
 };
 use App\Http\Controllers\{
-    VoiceKeluargaController,
-    VoicePrasaranaController,
-    VoicePendudukController,
-    VoiceValidationController
+    VoiceKeluargaController, WilayahController
 };
 use App\Exports\{
     DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,

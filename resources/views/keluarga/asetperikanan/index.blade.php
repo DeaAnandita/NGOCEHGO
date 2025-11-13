@@ -24,14 +24,14 @@
                             <!-- Dropdown Menu -->
                             <div x-show="open" @click.away="open = false"
                                 x-transition
-                                class="absolute mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                class="absolute mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                                 <a href="{{ route('export.asetperikanan') }}"
                                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">
                                     <x-heroicon-o-document-arrow-down class="w-4 h-4 text-green-600" />
                                     Export Excel
                                 </a>
                                 <a href="{{ route('asetperikanan.export.pdf') }}"
-                                   class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg">
+                                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg">
                                     <x-heroicon-o-document-text class="w-4 h-4 text-red-600" />
                                     Export PDF
                                 </a>
@@ -39,7 +39,7 @@
                         </div>
                     </div>
 
-                    <!-- Filter, Search, Tambah -->
+                    <!-- Filter dan Pencarian -->
                     <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                         <!-- Dropdown Per Page -->
                         <form method="GET" action="{{ route('keluarga.asetperikanan.index') }}" class="flex items-center gap-2">
@@ -82,7 +82,7 @@
                         <table id="asetPerikananTable" class="min-w-full table-fixed border-collapse text-sm">
                             <thead class="bg-blue-50 text-gray-600 uppercase text-xs font-semibold sticky top-0 z-10">
                                 <tr>
-                                    <th class="border border-gray-200 px-4 py-3 text-left text-xs text-gray-600">No</th>
+                                    <th class="border border-gray-200 px-4 py-3 text-left">No</th>
                                     <th class="border border-gray-200 px-4 py-3 w-36 text-left">No KK</th>
                                     <th class="border border-gray-200 px-4 py-3 w-44 text-left">Kepala Keluarga</th>
                                     @for ($i = 1; $i <= 6; $i++)
@@ -108,10 +108,13 @@
                                         @endfor
                                         <td class="border border-gray-200 px-2 py-2 text-center w-[80px]">
                                             <div class="flex justify-center gap-1">
+                                                <!-- Tombol Edit -->
                                                 <a href="{{ route('keluarga.asetperikanan.edit', $aset->no_kk) }}"
                                                    class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg flex items-center justify-center">
                                                     <x-heroicon-o-pencil-square class="w-4 h-4" />
                                                 </a>
+
+                                                <!-- Tombol Hapus -->
                                                 <form action="{{ route('keluarga.asetperikanan.destroy', $aset->no_kk) }}" method="POST"
                                                       onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                     @csrf @method('DELETE')
@@ -144,7 +147,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
