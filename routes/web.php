@@ -178,6 +178,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/asetperikanan/export/pdf', [AsetPerikananController::class, 'exportPdf'])->name('asetperikanan.export.pdf');
     Route::get('/asetternak/export/pdf', [AsetTernakController::class, 'exportPdf'])->name('asetternak.export.pdf');
     Route::get('laporan/asetkeluarga/pdf', [AsetKeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('laporan/asetkeluarga/pdf', [KeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
 });
 
 // ===============================

@@ -20,6 +20,9 @@ use App\Models\MasterKabupaten;
 use App\Models\MasterKecamatan;
 use App\Models\MasterDesa;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 class PendudukController extends Controller
@@ -219,5 +222,125 @@ class PendudukController extends Controller
         $penduduk->delete();
 
         return redirect()->route('dasar-penduduk.index')->with('success', 'Data penduduk berhasil dihapus.');
+    }
+
+     /**
+     * Export Laporan Lengkap Penduduk & Intervensi Kemiskinan ke PDF
+     */
+    public function exportPdf()
+    {
+        $totalPenduduk = DB::table('data_penduduk')->count();
+        if ($totalPenduduk === 0) {
+            return back()->with('error', 'Tidak ada data penduduk untuk dianalisis.');
+        }
+
+        // ==========================
+        // Jenis Kelamin
+        // ==========================
+        $laki = DB::table('data_penduduk')->where('kdjeniskelamin', 1)->count();
+        $perempuan = DB::table('data_penduduk')->where('kdjeniskelamin', 2)->count();
+        $persenLaki = round(($laki / $totalPenduduk) * 100, 1);
+        $persenPerempuan = round(($perempuan / $totalPenduduk) * 100, 1);
+
+        // ==========================
+        // Pekerjaan
+        // ==========================
+        $tidakBekerja = DB::table('data_penduduk')->where('kdpekerjaan', 1)->count();
+        $lakiTidakBekerja = DB::table('data_penduduk')
+            ->where('kdpekerjaan', 1)
+            ->where('kdjeniskelamin', 1)
+            ->count();
+        $perempuanTidakBekerja = DB::table('data_penduduk')
+            ->where('kdpekerjaan', 1)
+            ->where('kdjeniskelamin', 2)
+            ->count();
+        $persenTidakBekerja = round(($tidakBekerja / $totalPenduduk) * 100, 1);
+        $persenLakiTidakBekerja = round(($lakiTidakBekerja / $laki) * 100, 1);
+        $persenPerempuanTidakBekerja = round(($perempuanTidakBekerja / $perempuan) * 100, 1);
+
+        // ==========================
+        // Mutasi
+        // ==========================
+        $dataMutasi = DB::table('master_mutasimasuk')->pluck('mutasimasuk', 'kdmutasimasuk');
+        $mutasiStat = [];
+        foreach ($dataMutasi as $kode => $nama) {
+            $jumlah = DB::table('data_penduduk')->where('kdmutasimasuk', $kode)->count();
+            $mutasiStat[] = [
+                'nama' => $nama,
+                'jumlah' => $jumlah,
+                'persen' => round(($jumlah / $totalPenduduk) * 100, 1),
+            ];
+        }
+
+        // ==========================
+        // Agama
+        // ==========================
+        $dataAgama = DB::table('master_agama')->pluck('agama', 'kdagama');
+        $agamaStat = [];
+        foreach ($dataAgama as $kode => $nama) {
+            $jumlah = DB::table('data_penduduk')->where('kdagama', $kode)->count();
+            $agamaStat[] = [
+                'nama' => $nama,
+                'jumlah' => $jumlah,
+                'persen' => round(($jumlah / $totalPenduduk) * 100, 1),
+            ];
+        }
+
+        // ==========================
+        // Hubungan Dalam Keluarga
+        // ==========================
+        $dataHubungan = DB::table('master_hubungankeluarga')->pluck('hubungankeluarga', 'kdhubungankeluarga');
+        $hubunganStat = [];
+        foreach ($dataHubungan as $kode => $nama) {
+            $jumlah = DB::table('data_penduduk')->where('kdhubungankeluarga', $kode)->count();
+            $hubunganStat[] = ['hubungan' => $nama, 'jumlah' => $jumlah];
+        }
+
+        // ==========================
+        // Sebaran Keluarga per Desa
+        // ==========================
+        $dataKK = DB::table('data_keluarga')
+            ->join('master_desa', 'data_keluarga.kddesa', '=', 'master_desa.kddesa')
+            ->join('master_kecamatan', 'master_desa.kdkecamatan', '=', 'master_kecamatan.kdkecamatan')
+            ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
+            ->select(
+                'master_desa.desa',
+                'master_kecamatan.kecamatan',
+                DB::raw('COUNT(DISTINCT data_keluarga.no_kk) as keluarga'),
+                DB::raw('COUNT(data_penduduk.nik) as penduduk')
+            )
+            ->groupBy('master_desa.desa', 'master_kecamatan.kecamatan')
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'wilayah' => "{$row->desa}, {$row->kecamatan}",
+                    'keluarga' => $row->keluarga,
+                    'penduduk' => $row->penduduk,
+                    'rata' => $row->keluarga > 0 ? round($row->penduduk / $row->keluarga, 1) : 0,
+                ];
+            })
+            ->toArray();
+
+        // ==========================
+        // Buat PDF
+        // ==========================
+        $pdf = Pdf::loadView('laporan.penduduk', [
+            'periode' => Carbon::now()->translatedFormat('F Y'),
+            'tanggal' => Carbon::now()->translatedFormat('d F Y'),
+            'totalPenduduk' => $totalPenduduk,
+            'laki' => $laki,
+            'perempuan' => $perempuan,
+            'persenLaki' => $persenLaki,
+            'persenPerempuan' => $persenPerempuan,
+            'persenTidakBekerja' => $persenTidakBekerja,
+            'persenLakiTidakBekerja' => $persenLakiTidakBekerja,
+            'persenPerempuanTidakBekerja' => $persenPerempuanTidakBekerja,
+            'mutasiStat' => $mutasiStat,
+            'agamaStat' => $agamaStat,
+            'hubunganStat' => $hubunganStat,
+            'dataKK' => $dataKK,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Laporan-Analisis-Data-Penduduk.pdf');
     }
 }
