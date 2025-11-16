@@ -9,8 +9,8 @@ use App\Http\Controllers\{
     KelahiranController, SosialEkonomiController, UsahaArtController, ProgramSertaController,
     LembagaDesaController, LembagaMasyarakatController, LembagaEkonomiController
 };
-use App\Http\Controllers\{
-    VoiceKeluargaController, WilayahController
+use App\Http\Controllers\Voice\{
+    VoiceKeluargaController, WilayahController, VoicePrasaranaController, MenuVoiceController, VoiceController
 };
 use App\Exports\{
     DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,
@@ -24,14 +24,9 @@ use App\Exports\{
 Route::get('/admin/voice', [VoiceKeluargaController::class, 'index'])->name('voice.menu');
 
 Route::prefix('admin/voice')->name('voice.')->group(function () {
-    Route::get('/', [VoiceKeluargaController::class, 'index'])->name('menu');
-    Route::get('/keluarga', [VoiceKeluargaController::class, 'keluarga'])->name('keluarga');
-
-    Route::post('/keluarga/cek-no-kk', [VoiceKeluargaController::class, 'cekNoKk'])
-        ->name('keluarga.cek-no-kk');
-
-    Route::post('/keluarga/store', [VoiceKeluargaController::class, 'store'])
-        ->name('keluarga.store');
+    Route::get('/', [MenuVoiceController::class, 'index'])->name('menu');
+    Route::get('/keluarga', [VoiceKeluargaController::class, 'index'])->name('index');
+    Route::post('/store-all', [VoiceKeluargaController::class, 'storeAll'])->name('store-all');
 });
 
 // Wilayah API (tidak perlu prefix admin)
@@ -175,11 +170,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/kualitasibuhamil/pdf', [App\Http\Controllers\KualitasIbuHamilController::class, 'exportPdf'])->name('kualitasibuhamil.exportAnalisisPDF');
     Route::get('/laporan/sosialekonomi/pdf', [App\Http\Controllers\SosialEkonomiController::class, 'exportPdf'])->name('sosialekonomi.exportAnalisisPDF');
     Route::get('/laporan/usahaart/pdf', [App\Http\Controllers\UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
-    Route::get('/asetperikanan/export/pdf', [AsetPerikananController::class, 'exportPdf'])->name('asetperikanan.export.pdf');
-    Route::get('/asetternak/export/pdf', [AsetTernakController::class, 'exportPdf'])->name('asetternak.export.pdf');
-    Route::get('laporan/asetkeluarga/pdf', [AsetKeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
     Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
-    Route::get('laporan/asetkeluarga/pdf', [KeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('laporan/kelahiran/pdf', [Kelahiran::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
 });
 
 // ===============================

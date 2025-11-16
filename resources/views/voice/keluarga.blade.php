@@ -1,18 +1,51 @@
 <x-app-layout>
 <div class="flex gap-6 max-w-7xl mx-auto py-8">
-    {{-- SIDEBAR --}}
-    <div id="sidebar" class="flex flex-col items-center w-20 h-fit py-6 space-y-6 bg-white rounded-2xl shadow-md p-4">
-        <div id="modul1" class="flex flex-col items-center bg-green-100 text-green-800 rounded-lg px-2 py-1 transition-all">
-            <x-heroicon-o-user-group class="w-7 h-7" />
-            <span class="text-[10px] mt-1 text-center font-semibold">Keluarga</span>
-        </div>
-        <div id="modul2" class="flex flex-col items-center bg-gray-100 text-gray-500 rounded-lg px-2 py-1 transition-all">
-            <x-heroicon-o-home-modern class="w-7 h-7" />
-            <span class="text-[10px] mt-1 text-center">Prasarana</span>
-        </div>
-        <div id="modul3" class="flex flex-col items-center bg-gray-100 text-gray-500 rounded-lg px-2 py-1 transition-all">
-            <x-heroicon-o-tv class="w-7 h-7" />
-            <span class="text-[10px] mt-1 text-center">Aset Keluarga</span>
+    {{-- PROGRESS STEP BAR ATAS - HORIZONTAL SCROLL --}}
+    <div class="sticky top-0 z-20 bg-white shadow-lg border-b z-50">
+        <div class="max-w-full overflow-x-auto scrollbar-hide">
+            <div class="flex items-center space-x-8 px-6 py-6 min-w-max">
+                @php
+                    $modules = [
+                        1 => ['name' => 'Data Keluarga',     'route' => '/admin/voice/keluarga',     'status' => 'done',   'color' => 'blue'],
+                        2 => ['name' => 'Prasarana Dasar',  'route' => '/admin/voice/prasarana',    'status' => 'active', 'color' => 'green'],
+                        3 => ['name' => 'Aset Keluarga',    'route' => '/admin/voice/aset',         'status' => 'todo',   'color' => 'gray'],
+                        4 => ['name' => 'Aset Lahan Tanah', 'route' => '/admin/voice/lahan',        'status' => 'todo',   'color' => 'gray'],
+                        5 => ['name' => 'Aset Ternak',      'route' => '/admin/voice/ternak',       'status' => 'todo',   'color' => 'gray'],
+                        6 => ['name' => 'Aset Perikanan',   'route' => '/admin/voice/perikanan',    'status' => 'todo',   'color' => 'gray'],
+                        7 => ['name' => 'Sarpras Kerja',    'route' => '/admin/voice/sarpras',      'status' => 'todo',   'color' => 'gray'],
+                        8 => ['name' => 'Bangun Keluarga',  'route' => '/admin/voice/bangun',       'status' => 'todo',   'color' => 'gray'],
+                        9 => ['name' => 'Sejahtera Keluarga','route' => '/admin/voice/sejahtera',   'status' => 'todo',   'color' => 'gray'],
+                        10=> ['name' => 'Konflik Sosial',   'route' => '/admin/voice/konflik',      'status' => 'todo',   'color' => 'gray'],
+                        11=> ['name' => 'Kualitas Ibu Hamil','route' => '/admin/voice/hamil',       'status' => 'todo',   'color' => 'gray'],
+                        12=> ['name' => 'Kualitas Bayi',    'route' => '/admin/voice/bayi',         'status' => 'todo',   'color' => 'gray'],
+                    ];
+                @endphp
+
+                @foreach($modules as $i => $mod)
+                    @php
+                        $isActive = $mod['status'] === 'active';
+                        $isDone = $mod['status'] === 'done';
+                        $bg = $isDone ? 'bg-blue-600' : ($isActive ? 'bg-green-600' : 'bg-gray-300');
+                        $text = $isDone ? 'text-white' : ($isActive ? 'text-white' : 'text-gray-600');
+                        $labelColor = $isDone ? 'text-blue-800' : ($isActive ? 'text-green-700' : 'text-gray-600');
+                        $subColor = $isDone ? 'text-blue-600' : ($isActive ? 'text-green-600' : 'text-gray-500');
+                    @endphp
+
+                    @if(!$loop->first)
+                        <div class="h-1 w-20 {{ $isDone ? 'bg-green-500' : 'bg-gray-300' }} self-center rounded-full"></div>
+                    @endif
+
+                    <a href="{{ $mod['route'] }}" class="flex items-center {{ !$isActive && !$isDone ? 'opacity-50' : '' }}">
+                        <div class="w-12 h-12 {{ $bg }} rounded-full flex items-center justify-center font-bold {{ $text }}">{{ $i }}</div>
+                        <div class="ml-3 min-w-max">
+                            <div class="font-semibold {{ $labelColor }}">{{ $mod['name'] }}</div>
+                            <div class="text-xs {{ $subColor }}">
+                                {{ $isDone ? 'Selesai' : ($isActive ? 'Sedang diisi' : 'Belum') }}
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
         </div>
     </div>
 
