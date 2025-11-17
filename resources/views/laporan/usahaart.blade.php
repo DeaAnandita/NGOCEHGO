@@ -133,11 +133,12 @@
             margin: 0;
             line-height: 1.4;
         }
+        
     </style>
 </head>
 <body>
-
 <div class="container">
+    
 
     <!-- PAGE 1 -->
     <h1>LAPORAN ANALISIS USAHA RUMAH TANGGA</h1>
@@ -203,10 +204,9 @@
             </li>
             <li>{{ $summary['place_percentage'] ?? 0 }}% usaha memiliki tempat produksi atau jualan tetap.</li>
             <li><strong>Omzet terbanyak:</strong> {{ $summary['top_omzet'] ?? '-' }}.</li>
-            <li><strong>Rata-rata pekerja:</strong> {{ $summary['avg_pekerja'] ?? 0 }} orang.</li>
+            <li><strong>Rata-rata jumlah pekerja:</strong> {{ $summary['avg_pekerja'] ?? 0 }} orang.</li>
         </ul>
         <p style="margin-top:10px;">
-            <strong>Interpretasi Umum:</strong> 
            <p><strong>Interpretasi Umum:</strong> {{ $summary['general_interpretation'] }}</p>
         </p>
     </div>
@@ -254,7 +254,7 @@
 
 <!-- FOOTER + TANGGAL CETAK (BERDEKATAN, SATU HALAMAN) -->
     <div class="footer">
-        Laporan ini dihasilkan otomatis oleh Sistem Pembangunan Warga (Modul: Usaha ART)
+        Laporan ini dihasilkan otomatis oleh Sistem Ngoceh Go (Modul: Usaha ART)
     </div>
     <div class="print-date">
         Tanggal Cetak: {{ $tanggal_cetak }}
