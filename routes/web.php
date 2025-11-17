@@ -7,10 +7,11 @@ use App\Http\Controllers\{
     AsetPerikananController, AsetTernakController, SarprasKerjaController, BangunKeluargaController,
     SejahteraKeluargaController, KonflikSosialController, KualitasIbuHamilController, KualitasBayiController,
     KelahiranController, SosialEkonomiController, UsahaArtController, ProgramSertaController,
-    LembagaDesaController, LembagaMasyarakatController, LembagaEkonomiController, VoicePendudukController
+    LembagaDesaController, LembagaMasyarakatController, LembagaEkonomiController
 };
 use App\Http\Controllers\Voice\{
-    VoiceKeluargaController, WilayahController, VoicePrasaranaController, MenuVoiceController, VoiceController
+    VoiceKeluargaController, WilayahController, VoicePrasaranaController, MenuVoiceController, VoiceController,
+    VoicePendudukController
 
 };
 use App\Exports\{
