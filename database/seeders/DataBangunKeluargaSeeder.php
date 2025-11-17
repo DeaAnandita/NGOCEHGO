@@ -18,7 +18,7 @@ class DataBangunKeluargaSeeder extends Seeder
         foreach ($kkList as $no_kk) {
             $bangunkeluarga = ['no_kk' => $no_kk];
             for ($i = 1; $i <= 51; $i++) {
-                $bangunkeluarga["bangunkeluarga_$i"] = rand(0, 3);
+                $bangunkeluarga["bangunkeluarga_$i"] = rand(1, 2);
             }
 
             DB::table('data_bangunkeluarga')->insert($bangunkeluarga);

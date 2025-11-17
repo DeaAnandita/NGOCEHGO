@@ -9,7 +9,9 @@ use App\Models\DataPrasaranaDasar;
 use App\Models\DataAsetKeluarga;
 use App\Models\DataAsetLahan;
 use App\Models\DataAsetTernak;
-use App\Models\DataAsetPerikanan;           // BARU
+use App\Models\DataAsetPerikanan;
+use App\Models\DataSarprasKerja;
+use App\Models\DataBangunKeluarga; // BARU
 use App\Models\MasterMutasiMasuk;
 use App\Models\MasterDusun;
 use App\Models\MasterProvinsi;
@@ -37,7 +39,11 @@ use App\Models\MasterManfaatMataAir;
 use App\Models\MasterAsetLahan;
 use App\Models\MasterJawabLahan;
 use App\Models\MasterAsetTernak;
-use App\Models\MasterAsetPerikanan;         // BARU
+use App\Models\MasterAsetPerikanan;
+use App\Models\MasterSarpraskerja;
+use App\Models\MasterJawabSarpras;
+use App\Models\MasterPembangunanKeluarga; // BARU
+use App\Models\MasterJawabBangun; // BARU
 
 class VoiceKeluargaController extends Controller
 {
@@ -51,7 +57,11 @@ class VoiceKeluargaController extends Controller
         $lahan = MasterAsetLahan::orderBy('kdasetlahan')->pluck('asetlahan', 'kdasetlahan');
         $jawabLahan = MasterJawabLahan::pluck('jawablahan', 'kdjawablahan');
         $asetTernak = MasterAsetTernak::orderBy('kdasetternak')->pluck('asetternak', 'kdasetternak');
-        $asetPerikanan = MasterAsetPerikanan::orderBy('kdasetperikanan')->pluck('asetperikanan', 'kdasetperikanan'); // BARU
+        $asetPerikanan = MasterAsetPerikanan::orderBy('kdasetperikanan')->pluck('asetperikanan', 'kdasetperikanan');
+        $sarprasOptions = MasterSarpraskerja::orderBy('kdsarpraskerja')->pluck('sarpraskerja', 'kdsarpraskerja');
+        $jawabSarprasOptions = MasterJawabSarpras::pluck('jawabsarpras', 'kdjawabsarpras');
+        $bangunKeluarga = MasterPembangunanKeluarga::orderBy('kdpembangunankeluarga')->pluck('pembangunankeluarga', 'kdpembangunankeluarga'); // BARU
+        $jawabBangunOptions = MasterJawabBangun::pluck('jawabbangun', 'kdjawabbangun'); // BARU
 
         $masters = [
             'status_pemilik_bangunan' => MasterStatusPemilikBangunan::pluck('statuspemilikbangunan', 'kdstatuspemilikbangunan'),
@@ -76,7 +86,7 @@ class VoiceKeluargaController extends Controller
         ];
 
         return view('voice.index', compact(
-            'mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan', 'asetTernak', 'asetPerikanan'
+            'mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan', 'asetTernak', 'asetPerikanan', 'sarprasOptions', 'jawabSarprasOptions', 'bangunKeluarga', 'jawabBangunOptions'
         ) + ['masters' => $masters]);
     }
 
@@ -174,7 +184,6 @@ class VoiceKeluargaController extends Controller
             }
             DataAsetTernak::create($asetTernakData);
 
-            // BARU: SIMPAN ASET PERIKANAN
             $asetPerikananData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 6; $i++) {
                 $field = "asetperikanan_$i";
@@ -182,6 +191,21 @@ class VoiceKeluargaController extends Controller
                 $asetPerikananData[$field] = is_numeric($value) ? $value : '0';
             }
             DataAsetPerikanan::create($asetPerikananData);
+
+            $asetSarprasData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 1; $i <= 25; $i++) {
+                $field = "sarpraskerja_$i";
+                $asetSarprasData[$field] = $data[$field] ?? 0;
+            }
+            DataSarprasKerja::create($asetSarprasData);
+
+            // BARU: SIMPAN BANGUN KELUARGA
+            $bangunData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 1; $i <= 51; $i++) {
+                $field = "bangunkeluarga_$i";
+                $bangunData[$field] = $data[$field] ?? 0;
+            }
+            DataBangunKeluarga::create($bangunData);
 
             return response()->json(['success' => true]);
 

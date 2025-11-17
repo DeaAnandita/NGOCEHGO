@@ -29,7 +29,7 @@
                 <div id="progressBar" class="bg-green-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
             </div>
             <div class="text-center text-sm text-gray-600 mb-4">
-                Pertanyaan <span id="currentQ">1</span> dari <span id="totalQ">7</span>
+                Pertanyaan <span id="currentQ">1</span> dari <span id="totalQ">8</span>
             </div>
 
             <div id="voice-status" class="text-center text-lg font-medium text-gray-700 mb-6">
@@ -87,9 +87,19 @@
         }
         .option-card:hover { background-color: #f0fdfa; border-color: #14b8a6; }
         .option-card.selected { background-color: #ccfbf1 !important; border-color: #14b8a6 !important; box-shadow: 0 0 0 3px rgba(20,184,166,.2); }
+        /* TAMBAHAN: Untuk modul Bangun Keluarga (8), buat lebar fixed & teks wrap agar panjang sama */
+        .bangun .option-card {
+            width: 150px; /* Lebar fixed agar 2 card sama panjang */
+            flex: 1; /* Merata di grid */
+            min-height: 80px; /* Tinggi minimal sama */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: normal; /* Teks wrap jika panjang */
+            word-wrap: break-word;
+        }
         #startBtn.listening { background: linear-gradient(to bottom right, #ef4444, #dc2626) !important; transform: scale(1.15); }
     </style>
-
     <script>
         const masters = @json($masters);
         const mutasiOptions = @json($mutasi);
@@ -100,12 +110,16 @@
         const lahanOptions = @json($lahan);
         const jawabLahanOptions = @json($jawabLahan);
         const asetTernakOptions = @json($asetTernak);
-        const asetPerikananOptions = @json($asetPerikanan); // MODUL BARU
+        const asetPerikananOptions = @json($asetPerikanan);
+        const sarprasOptions = @json($sarprasOptions);
+        const jawabSarprasOptions = @json($jawabSarprasOptions);
+        const bangunKeluargaOptions = @json($bangunKeluarga); // BARU
+        const jawabBangunOptions = @json($jawabBangunOptions); // BARU
 
         let currentModul = 1;
         let step = 0;
         let answers = { keluarga_tanggalmutasi: new Date().toISOString().split('T')[0] };
-        let modulStatus = {1: 'active', 2: 'pending', 3: 'pending', 4: 'pending', 5: 'pending', 6: 'pending'}; // +6
+        let modulStatus = {1: 'active', 2: 'pending', 3: 'pending', 4: 'pending', 5: 'pending', 6: 'pending', 7: 'pending', 8: 'pending'}; // +8
         let recognition = null;
         let isListening = false;
         let audioContext = null, analyser = null, dataArray = null, canvas = null, ctx = null;
@@ -118,7 +132,9 @@
             {id: 3, name: "Aset Keluarga"},
             {id: 4, name: "Aset Lahan Tanah"},
             {id: 5, name: "Aset Ternak"},
-            {id: 6, name: "Aset Perikanan"} // MODUL BARU
+            {id: 6, name: "Aset Perikanan"},
+            {id: 7, name: "Sarpras Kerja"},
+            {id: 8, name: "Bangun Keluarga"} // BARU
         ];
 
         const questions = {
@@ -157,7 +173,9 @@
             3: [],
             4: [],
             5: [],
-            6: [] // MODUL BARU: ASET PERIKANAN
+            6: [],
+            7: [],
+            8: [] // BARU: BANGUN KELUARGA
         };
 
         // TAMBAH ASET KELUARGA
@@ -198,6 +216,28 @@
                 field: `asetperikanan_${kd}`,
                 isPerikanan: true
             });
+        });
+
+        // TAMBAH SARPRAS KERJA
+        Object.entries(sarprasOptions).forEach(([kd, label]) => {
+            questions[7].push({
+                type: "select",
+                label: `Memiliki ${label.toLowerCase()} :`,
+                field: `sarpraskerja_${kd}`,
+                options: jawabSarprasOptions
+            });
+        });
+
+        // TAMBAH BANGUN KELUARGA (HANYA 51 FIELD PILIHAN, KDTYPEJAWAB=1)
+        Object.entries(bangunKeluargaOptions).slice(0, 51).forEach(([kd, label]) => {  // Slice untuk batasi 51 field
+            if (kd <= 51) {  // Pastikan hanya field pilihan
+                questions[8].push({
+                    type: "select",
+                    label: label + " :",
+                    field: `bangunkeluarga_${kd}`,
+                    options: jawabBangunOptions
+                });
+            }
         });
 
         const wilayahQuestions = [
@@ -260,7 +300,7 @@
             currentModul = 1;
             step = 0;
             answers = { keluarga_tanggalmutasi: new Date().toISOString().split('T')[0] };
-            modulStatus = {1: 'active', 2: 'pending', 3: 'pending', 4: 'pending', 5: 'pending', 6: 'pending'};
+            modulStatus = {1: 'active', 2: 'pending', 3: 'pending', 4: 'pending', 5: 'pending', 6: 'pending', 7: 'pending', 8: 'pending'};
             isReviewMode = false;
 
             document.getElementById('reviewForm').classList.add('hidden');
@@ -421,11 +461,30 @@
                 </div>`;
             }
 
+            if (currentModul === 7 && step === 0) {
+                html += `<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
+                    Jawab dengan huruf a sampai f sesuai pilihan berikut:<br>
+                    a. MILIK SENDIRI(BAGUS/ KONDISI BAIK)<br>
+                    b. MILIK SENDIRI(JELEK/ KONDISI TIDAK BAIK)<br>
+                    c. MILIK KELOMPOK(SEWA TIDAK BAYAR)<br>
+                    d. MILIK ORANG LAIN(SEWA BAYAR)<br>
+                    e. MILIK ORANG LAIN(SEWA TIDAK BAYAR)<br>
+                    f. TIDAK MEMILIKI
+                </div>`;
+            }
+
+            if (currentModul === 8 && step === 0) {
+                html += `<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
+                    Jawab: <strong class="mx-2">YA</strong> / <strong class="mx-2">TIDAK</strong>
+                </div>`;
+            }
+
             html += `<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
 
             if (q.type === "select") {
-                const cols = currentModul === 3 ? 3 : 4;
-                html += `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto">`;
+                let cols = currentModul === 3 ? 3 : (currentModul === 7 ? 3 : (currentModul === 8 ? 2 : 4));
+                let gridClass = currentModul === 8 ? 'bangun grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3 max-w-md mx-auto justify-items-center' : `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto`;
+                html += `<div class="${gridClass}">`;
                 Object.entries(q.options).forEach(([id, nama]) => {
                     const selected = answers[q.field] == id ? 'selected' : '';
                     html += `<div class="option-card ${selected}" data-value="${id}" data-text="${nama}">
@@ -489,9 +548,26 @@
                 await new Promise(r => setTimeout(r, 800));
             }
 
+            if (currentModul === 7 && step === 0) {
+                await speak("Modul Sarpras Kerja dimulai. Jawab sesuai pilihan berikut.");
+                const sarprasOpts = Object.entries(jawabSarprasOptions).slice(1); // skip index 0 (key 1)
+                const letters = ['a', 'b', 'c', 'd', 'e', 'f'];
+                for (let i = 0; i < sarprasOpts.length; i++) {
+                    const [id, name] = sarprasOpts[i];
+                    await speak(`${letters[i]}. ${cleanOptionText(name)}`);
+                    await new Promise(r => setTimeout(r, 500));
+                }
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            if (currentModul === 8 && step === 0) {
+                await speak("Modul Bangun Keluarga dimulai. Jawab setiap pertanyaan dengan: YA atau TIDAK.");
+                await new Promise(r => setTimeout(r, 800));
+            }
+
             await speak(q.label);
 
-            if (currentModul !== 3 && currentModul !== 4 && currentModul !== 5 && currentModul !== 6 && q.type === "select") {
+            if (q.type === "select" && currentModul !== 3 && currentModul !== 7 && currentModul !== 8) {
                 const options = Object.values(q.options);
                 for (let i = 0; i < options.length; i++) {
                     const cleanText = cleanOptionText(options[i]);
@@ -532,12 +608,34 @@
                 }
                 answers[q.field] = value;
                 document.getElementById('inputAnswer').value = value;
-            } else if (q.type === "select" && currentModul === 3) {
+            } else if (q.type === "select" && (currentModul === 3 || currentModul === 8)) {
                 const norm = normalize(text);
                 if (norm.includes('ya') || norm.includes('punya') || norm.includes('memiliki') || norm.includes('ada')) value = '1';
                 else if (norm.includes('tidak') || norm.includes('ga') || norm.includes('nggak') || norm.includes('belum')) value = '2';
-                else if (norm.includes('kosong') || norm.includes('skip') || norm.includes('tidak diisi')) value = '0';
-                else { await speak("Jawab ya, tidak, atau kosong."); return; }
+                else { await speak("Jawab ya atau tidak."); return; }
+                answers[q.field] = value;
+            } else if (q.type === "select" && currentModul === 7) {
+                const norm = normalize(text);
+                const letterMap = {
+                    'a': '2', 'satu': '2',
+                    'b': '3', 'dua': '3',
+                    'c': '4', 'tiga': '4',
+                    'd': '5', 'empat': '5',
+                    'e': '6', 'lima': '6',
+                    'f': '7', 'enam': '7'
+                };
+                value = null;
+                for (let [key, id] of Object.entries(letterMap)) {
+                    if (norm.includes(key)) {
+                        value = id;
+                        break;
+                    }
+                }
+                if (!value) {
+                    const match = findBestMatch(text, q.options);
+                    if (!match) { await speak("Maaf, tidak dikenali. Ulangi dengan huruf a sampai f."); return; }
+                    value = match[0];
+                }
                 answers[q.field] = value;
             } else if (q.type === "select") {
                 const match = findBestMatch(text, q.options);
@@ -565,6 +663,15 @@
                 value = num.join('');
                 answers[q.field] = value;
                 document.getElementById('inputAnswer').value = value;
+            }
+
+            // Select the card visually for select types
+            if (q.type === "select") {
+                const card = document.querySelector(`.option-card[data-value="${value}"]`);
+                if (card) {
+                    document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                }
             }
 
             if (currentModul === 1 && q.field === "kdmutasimasuk" && normalize(text).includes("datang")) {
