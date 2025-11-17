@@ -1,18 +1,19 @@
 <x-app-layout>
-<meta name="csrf-token" content="{{ csrf_token() }}">
 
-<div class="min-w-full bg-gradient-to-b from-green-50 to-white min-h-screen">
-
-    {{-- PROGRESS STEP BAR - STICKY --}}
-    <div class="sticky top-0 z-50 bg-white shadow-md border-b">
-        <div class="max-w-7xl mx-auto overflow-x-auto scrollbar-hide">
-            <div id="progressSteps" class="flex items-center space-x-6 px-6 py-4 min-w-max">
-                <!-- JS generate -->
+   {{-- PASS PROGRESS BAR KE SLOT --}}
+    @slot('progresskeluarga')
+        <div class="sticky top-16 left-0 right-0 z-40 bg-white shadow-md border-b">
+            <div class="max-w-7xl mx-auto overflow-x-auto scrollbar-hide">
+                <div id="progressSteps" class="flex items-center space-x-6 px-6 py-4 min-w-max">
+                    <!-- JS generate -->
+                </div>
             </div>
         </div>
-    </div>
+    @endslot
 
-    <div class="max-w-4xl mx-auto py-8 px-6 space-y-6">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <div class="max-w-7xl mx-auto py-8 px-6 space-y-6">
 
         {{-- TOMBOL SIMPAN SEMUA --}}
         <div class="flex justify-center">
@@ -79,7 +80,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    
 </div>
 
 <style>
@@ -99,11 +100,15 @@ const masters = @json($masters);
 const mutasiOptions = @json($mutasi);
 const dusunOptions = @json($dusun);
 const provinsiOptions = @json($provinsi);
+const asetKeluargaOptions = @json($asetKeluarga);
+const jawabOptions = @json($jawab);
+const lahanOptions = @json($lahan);
+const jawabLahanOptions = @json($jawabLahan);
 
 let currentModul = 1;
 let step = 0;
 let answers = { keluarga_tanggalmutasi: new Date().toISOString().split('T')[0] };
-let modulStatus = {1: 'active', 2: 'pending'};
+let modulStatus = {1: 'active', 2: 'pending', 3: 'pending', 4: 'pending'};
 let recognition = null;
 let isListening = false;
 let audioContext = null, analyser = null, dataArray = null, canvas = null, ctx = null;
@@ -112,7 +117,9 @@ let isReviewMode = false;
 
 const modules = [
     {id: 1, name: "Data Keluarga"},
-    {id: 2, name: "Prasarana Dasar"}
+    {id: 2, name: "Prasarana Dasar"},
+    {id: 3, name: "Aset Keluarga"},
+    {id: 4, name: "Aset Lahan Tanah"}
 ];
 
 const questions = {
@@ -126,29 +133,51 @@ const questions = {
         { type: "text", label: "Sebutkan alamat lengkapnya", field: "keluarga_alamatlengkap" }
     ],
     2: [
-        { type: "select", label: "Status kepemilikan bangunan ini?", field: "kdstatuspemilikbangunan", options: masters.status_pemilik_bangunan },
-        { type: "select", label: "Tanah tempat bangunan ini berdiri?", field: "kdstatuspemiliklahan", options: masters.status_pemilik_lahan },
-        { type: "select", label: "Bangunan ini termasuk?", field: "kdjenisfisikbangunan", options: masters.jenis_fisik_bangunan },
-        { type: "select", label: "Lantai di rumah ini terbuat dari?", field: "kdjenislantaibangunan", options: masters.jenis_lantai },
-        { type: "select", label: "Kondisi lantai saat ini?", field: "kdkondisilantaibangunan", options: masters.kondisi_lantai },
-        { type: "select", label: "Dinding rumah ini dari?", field: "kdjenisdindingbangunan", options: masters.jenis_dinding },
-        { type: "select", label: "Dindingnya masih bagus?", field: "kdkondisidindingbangunan", options: masters.kondisi_dinding },
-        { type: "select", label: "Atap rumah ini dari?", field: "kdjenisatapbangunan", options: masters.jenis_atap },
-        { type: "select", label: "Atapnya masih rapat?", field: "kdkondisiatapbangunan", options: masters.kondisi_atap },
-        { type: "select", label: "Air minum sehari-hari dari?", field: "kdsumberairminum", options: masters.sumber_air_minum },
-        { type: "select", label: "Air minumnya jernih?", field: "kdkondisisumberair", options: masters.kondisi_sumber_air },
-        { type: "select", label: "Air minum diambil dengan cara?", field: "kdcaraperolehanair", options: masters.cara_perolehan_air },
-        { type: "select", label: "Penerangan utama di rumah ini?", field: "kdsumberpeneranganutama", options: masters.sumber_penerangan },
-        { type: "select", label: "Daya listrik yang terpasang?", field: "kdsumberdayaterpasang", options: masters.daya_terpasang },
-        { type: "select", label: "Memasak sehari-hari pakai?", field: "kdbahanbakarmemasak", options: masters.bahan_bakar },
-        { type: "select", label: "Toilet atau jamban di rumah ini?", field: "kdfasilitastempatbab", options: masters.fasilitas_bab },
-        { type: "select", label: "Limbah tinja dibuang ke?", field: "kdpembuanganakhirtinja", options: masters.pembuangan_tinja },
-        { type: "select", label: "Sampah rumah tangga dibuang ke?", field: "kdcarapembuangansampah", options: masters.pembuangan_sampah },
-        { type: "select", label: "Apakah memanfaatkan sungai atau mata air?", field: "kdmanfaatmataair", options: masters.manfaat_mataair },
-        { type: "number", label: "Berapa luas lantai rumah ini dalam meter persegi?", field: "prasdas_luaslantai" },
+        { type: "select", label: "Status pemilik bangunan?", field: "kdstatuspemilikbangunan", options: masters.status_pemilik_bangunan },
+        { type: "select", label: "Tanah pemilik lahan bangunan?", field: "kdstatuspemiliklahan", options: masters.status_pemilik_lahan },
+        { type: "select", label: "Jenis Fisik Bangunan?", field: "kdjenisfisikbangunan", options: masters.jenis_fisik_bangunan },
+        { type: "select", label: "Jenis Lantai Bangunan?", field: "kdjenislantaibangunan", options: masters.jenis_lantai },
+        { type: "select", label: "Kondisi Lantai Bangunan?", field: "kdkondisilantaibangunan", options: masters.kondisi_lantai },
+        { type: "select", label: "Jenis Dinding Bangunan?", field: "kdjenisdindingbangunan", options: masters.jenis_dinding },
+        { type: "select", label: "Kondisi Dinding Bangunan?", field: "kdkondisidindingbangunan", options: masters.kondisi_dinding },
+        { type: "select", label: "Jenis Atap Bangunan?", field: "kdjenisatapbangunan", options: masters.jenis_atap },
+        { type: "select", label: "Kondisi Atap Bangunan?", field: "kdkondisiatapbangunan", options: masters.kondisi_atap },
+        { type: "select", label: "Sumber Air Minum?", field: "kdsumberairminum", options: masters.sumber_air_minum },
+        { type: "select", label: "Kondisi Sumber Air Minum?", field: "kdkondisisumberair", options: masters.kondisi_sumber_air },
+        { type: "select", label: "Cara Memperoleh Air Minum?", field: "kdcaraperolehanair", options: masters.cara_perolehan_air },
+        { type: "select", label: "Sumber Penerangan Utama?", field: "kdsumberpeneranganutama", options: masters.sumber_penerangan },
+        { type: "select", label: "Sumber Daya terpasang?", field: "kdsumberdayaterpasang", options: masters.daya_terpasang },
+        { type: "select", label: "Bahan Bakar Memasak?", field: "kdbahanbakarmemasak", options: masters.bahan_bakar },
+        { type: "select", label: "Penggunaan Fasilitas Tempat BAB?", field: "kdfasilitastempatbab", options: masters.fasilitas_bab },
+        { type: "select", label: "Tempat Pembuangan Akhir Tinja?", field: "kdpembuanganakhirtinja", options: masters.pembuangan_tinja },
+        { type: "select", label: "Cara Pembuangan Akhir Sampah?", field: "kdcarapembuangansampah", options: masters.pembuangan_sampah },
+        { type: "select", label: "Manfaat Mata Air?", field: "kdmanfaatmataair", options: masters.manfaat_mataair },
+        { type: "number", label: "Luas Lantai Rumah ini dalam meter persegi?", field: "prasdas_luaslantai" },
         { type: "number", label: "Ada berapa kamar tidur di rumah ini?", field: "prasdas_jumlahkamar" }
-    ]
+    ],
+    3: [],
+    4: []
 };
+
+// TAMBAH ASET KELUARGA
+Object.entries(asetKeluargaOptions).forEach(([kd, label]) => {
+    questions[3].push({
+        type: "select",
+        label: label + "?",
+        field: `asetkeluarga_${kd}`,
+        options: jawabOptions
+    });
+});
+
+// TAMBAH ASET LAHAN TANAH
+Object.entries(lahanOptions).forEach(([kd, label]) => {
+    questions[4].push({
+        type: "text",
+        label: `${label}? Berapa hektar?`,
+        field: `asetlahan_${kd}`,
+        isLahan: true
+    });
+});
 
 const wilayahQuestions = [
     { type: "select", label: "Provinsi asalnya apa?", field: "kdprovinsi", options: provinsiOptions },
@@ -177,6 +206,21 @@ function findBestMatch(text, options) {
     return score > 3 ? best : null;
 }
 
+function mapLahanToCode(ha) {
+    if (ha <= 0) return '0';
+    if (ha <= 0.2) return '1';
+    if (ha <= 0.3) return '2';
+    if (ha <= 0.4) return '3';
+    if (ha <= 0.5) return '4';
+    if (ha <= 0.6) return '5';
+    if (ha <= 0.7) return '6';
+    if (ha <= 0.8) return '7';
+    if (ha <= 0.9) return '8';
+    if (ha <= 1.0) return '9';
+    if (ha <= 5.0) return '10';
+    return '11';
+}
+
 function speak(text) {
     return new Promise(r => {
         if (isSpeaking) return r();
@@ -195,7 +239,7 @@ function initFresh() {
     currentModul = 1;
     step = 0;
     answers = { keluarga_tanggalmutasi: new Date().toISOString().split('T')[0] };
-    modulStatus = {1: 'active', 2: 'pending'};
+    modulStatus = {1: 'active', 2: 'pending', 3: 'pending', 4: 'pending'};
     isReviewMode = false;
 
     document.getElementById('reviewForm').classList.add('hidden');
@@ -229,7 +273,6 @@ function loadModulData(modId) {
     if (savedAnswers) answers = JSON.parse(savedAnswers);
     if (savedStatus) modulStatus = JSON.parse(savedStatus);
 
-    // Reset step & review jika modul belum selesai
     if (modulStatus[modId] !== 'completed') {
         step = savedStep !== null ? parseInt(savedStep) : 0;
         isReviewMode = false;
@@ -240,7 +283,6 @@ function loadModulData(modId) {
 
     currentModul = modId;
 
-    // Update status aktif
     Object.keys(modulStatus).forEach(k => {
         if (k == modId) modulStatus[k] = 'active';
         else if (modulStatus[k] !== 'completed') modulStatus[k] = 'pending';
@@ -283,13 +325,12 @@ function updateProgressSteps() {
     });
 }
 
-// === GANTI MODUL — RESET SEMUA JIKA BELUM SELESAI ===
+// === GANTI MODUL ===
 function switchModul(modId) {
     stopListening();
     saveData();
     loadModulData(modId);
 
-    // Reset tampilan
     document.getElementById('reviewForm').classList.add('hidden');
     document.getElementById('quizArea').innerHTML = '';
     document.getElementById('voice-status').innerText = 'Tekan mic untuk mulai merekam...';
@@ -300,24 +341,17 @@ function switchModul(modId) {
     updateProgressSteps();
     checkAllCompletedAndShowSimpanBtn();
 
-    // Hanya tampilkan review jika sudah selesai
     if (modulStatus[modId] === 'completed' && isReviewMode) {
         showReviewForm();
     } else {
-        renderQuestion(); // Mulai dari pertanyaan 1
+        renderQuestion();
     }
 }
 
 // === STOP LISTENING ===
 function stopListening() {
-    if (recognition) {
-        recognition.stop();
-        recognition = null;
-    }
-    if (audioContext) {
-        audioContext.close().catch(() => {});
-        audioContext = null;
-    }
+    if (recognition) { recognition.stop(); recognition = null; }
+    if (audioContext) { audioContext.close().catch(() => {}); audioContext = null; }
     analyser = null;
     isListening = false;
     document.getElementById('startBtn').classList.remove('listening');
@@ -340,10 +374,25 @@ function checkAllCompletedAndShowSimpanBtn() {
 // === RENDER QUESTION ===
 function renderQuestion() {
     const q = questions[currentModul][step];
-    let html = `<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
+    let html = '';
+
+    if (currentModul === 3 && step === 0) {
+        html += `<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
+            Jawab: <strong class="mx-2">YA</strong> / <strong class="mx-2">TIDAK</strong> / <strong class="mx-2">KOSONG</strong>
+        </div>`;
+    }
+
+    if (currentModul === 4 && step === 0) {
+        html += `<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
+            Jawab: <strong>"tidak punya"</strong> atau <strong>angka hektar</strong> (contoh: "3 hektar")
+        </div>`;
+    }
+
+    html += `<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
 
     if (q.type === "select") {
-        html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+        const cols = currentModul === 3 ? 3 : 4;
+        html += `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto">`;
         Object.entries(q.options).forEach(([id, nama]) => {
             const selected = answers[q.field] == id ? 'selected' : '';
             html += `<div class="option-card ${selected}" data-value="${id}" data-text="${nama}">
@@ -352,7 +401,7 @@ function renderQuestion() {
         });
         html += '</div>';
     } else {
-        const val = answers[q.field] || '';
+        const val = q.isLahan ? (jawabLahanOptions[answers[q.field]] || '') : (answers[q.field] || '');
         html += `<div class="max-w-md mx-auto">
             <input type="text" id="inputAnswer" class="w-full border border-gray-300 rounded-xl p-3 text-center text-lg" readonly value="${val}" placeholder="Jawaban muncul di sini...">
         </div>`;
@@ -386,9 +435,20 @@ function attachCardListeners() {
 // === BICARA PERTANYAAN + PILIHAN ===
 async function speakQuestionAndOptions() {
     const q = questions[currentModul][step];
+
+    if (currentModul === 3 && step === 0) {
+        await speak("Modul Aset Keluarga dimulai. Jawab setiap pertanyaan dengan: YA, TIDAK, atau KOSONG.");
+        await new Promise(r => setTimeout(r, 800));
+    }
+
+    if (currentModul === 4 && step === 0) {
+        await speak("Modul Aset Lahan Tanah. Jawab dengan 'tidak punya' atau angka hektar.");
+        await new Promise(r => setTimeout(r, 800));
+    }
+
     await speak(q.label);
 
-    if (q.type === "select") {
+    if (currentModul !== 3 && currentModul !== 4 && q.type === "select") {
         const options = Object.values(q.options);
         for (let i = 0; i < options.length; i++) {
             const cleanText = cleanOptionText(options[i]);
@@ -396,6 +456,7 @@ async function speakQuestionAndOptions() {
             if (i < options.length - 1) await new Promise(r => setTimeout(r, 100));
         }
     }
+
     document.getElementById('voice-status').innerText = 'Mendengarkan...';
 }
 
@@ -405,14 +466,30 @@ async function processVoiceAnswer(text) {
     const q = questions[currentModul][step];
     let value = text;
 
-    if (q.type === "select") {
+    if (q.isLahan) {
+        const norm = normalize(text);
+        if (norm.includes('tidak') || norm.includes('ga') || norm.includes('nggak')) {
+            value = '0';
+        } else {
+            const numMatch = text.match(/[\d.,]+/);
+            if (!numMatch) { await speak("Ulangi dengan angka hektar atau 'tidak punya'"); return; }
+            const ha = parseFloat(numMatch[0].replace(',', '.'));
+            value = mapLahanToCode(ha);
+        }
+        answers[q.field] = value;
+        document.getElementById('inputAnswer').value = jawabLahanOptions[value] || value;
+    } else if (q.type === "select" && currentModul === 3) {
+        const norm = normalize(text);
+        if (norm.includes('ya') || norm.includes('punya') || norm.includes('memiliki') || norm.includes('ada')) value = '1';
+        else if (norm.includes('tidak') || norm.includes('ga') || norm.includes('nggak') || norm.includes('belum')) value = '2';
+        else if (norm.includes('kosong') || norm.includes('skip') || norm.includes('tidak diisi')) value = '0';
+        else { await speak("Jawab ya, tidak, atau kosong."); return; }
+        answers[q.field] = value;
+    } else if (q.type === "select") {
         const match = findBestMatch(text, q.options);
         if (!match) { await speak("Maaf, tidak dikenali. Ulangi."); return; }
         value = match[0];
         answers[q.field] = value;
-        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-        const card = document.querySelector(`[data-value="${value}"]`);
-        if (card) card.classList.add('selected');
     } else if (q.field === "no_kk") {
         value = text.replace(/\D/g, '').slice(0,16);
         if (value.length !== 16) { await speak("Harus 16 digit."); return; }
@@ -459,7 +536,7 @@ async function processVoiceAnswer(text) {
     }, 1200);
 }
 
-// === SHOW REVIEW FORM → HANYA JIKA SELESAI ===
+// === SHOW REVIEW FORM ===
 function showReviewForm() {
     stopListening();
     document.getElementById('quizArea').innerHTML = '';
@@ -475,11 +552,17 @@ function showReviewForm() {
         </div>`;
     }
 
-    const currentQuestions = currentModul === 1 ? questions[1] : questions[2];
+    const currentQuestions = questions[currentModul];
     currentQuestions.forEach(q => {
         if (!answers[q.field]) return;
         let input = '';
-        if (q.type === "select") {
+        if (q.isLahan) {
+            input = `<select name="${q.field}" class="w-full border rounded-lg p-2 text-sm"><option value="">-- Pilih --</option>`;
+            Object.entries(jawabLahanOptions).forEach(([k, v]) => {
+                input += `<option value="${k}" ${answers[q.field] == k ? 'selected' : ''}>${v}</option>`;
+            });
+            input += `</select>`;
+        } else if (q.type === "select") {
             input = `<select name="${q.field}" class="w-full border rounded-lg p-2 text-sm"><option value="">-- Pilih --</option>`;
             Object.entries(q.options).forEach(([k, v]) => {
                 input += `<option value="${k}" ${answers[q.field] == k ? 'selected' : ''}>${v}</option>`;
@@ -488,7 +571,7 @@ function showReviewForm() {
         } else {
             input = `<input type="${q.type === 'number' ? 'number' : 'text'}" name="${q.field}" value="${answers[q.field] || ''}" class="w-full border rounded-lg p-2 text-sm">`;
         }
-        container.innerHTML += `<div><label class="block text-xs font-medium mb-1">${q.label}</label>${input}</div>`;
+        container.innerHTML += `<div><label class="block text-xs font-medium mb-1">${q.label.split('?')[0]}</label>${input}</div>`;
     });
 
     Object.keys(answers).forEach(key => {
@@ -497,7 +580,7 @@ function showReviewForm() {
     });
 }
 
-// === MIC CLICK — HANYA JIKA BUKAN REVIEW ===
+// === MIC CLICK ===
 document.getElementById('startBtn').addEventListener('click', async () => {
     if (isListening || isReviewMode) return;
 
@@ -614,7 +697,7 @@ document.getElementById('voiceForm').addEventListener('submit', async function(e
 
 // === CHAINED SELECT ===
 ['kdprovinsi', 'kdkabupaten', 'kdkecamatan'].forEach(id => {
-    document.getElementById(id).addEventListener('change', async function() {
+    document.getElementById(id)?.addEventListener('change', async function() {
         const val = this.value;
         const nextMap = { kdprovinsi: 'kdkabupaten', kdkabupaten: 'kdkecamatan', kdkecamatan: 'kddesa' };
         const nextId = nextMap[id];

@@ -149,6 +149,9 @@
             </div>
         @endisset
 
+            <!-- PROGRESS BAR (HANYA DI VOICE) -->
+            {{ $progresskeluarga ?? '' }}
+
         <main class="flex-1 overflow-y-auto">
             {{ $slot }}
         </main>
