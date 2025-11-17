@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Voice;
 
 use Illuminate\Http\Request;
@@ -12,6 +11,8 @@ use App\Models\DataAsetTernak;
 use App\Models\DataAsetPerikanan;
 use App\Models\DataSarprasKerja;
 use App\Models\DataBangunKeluarga; // BARU
+use App\Models\DataSejahteraKeluarga; // BARU: SEJAHTERA KELUARGA
+use App\Models\DataKonflikSosial; // BARU: KONFLIK SOSIAL
 use App\Models\MasterMutasiMasuk;
 use App\Models\MasterDusun;
 use App\Models\MasterProvinsi;
@@ -44,13 +45,15 @@ use App\Models\MasterSarpraskerja;
 use App\Models\MasterJawabSarpras;
 use App\Models\MasterPembangunanKeluarga; // BARU
 use App\Models\MasterJawabBangun; // BARU
+use App\Models\MasterKonflikSosial; // BARU
+use App\Models\MasterJawabKonflik; // BARU
 
 class VoiceKeluargaController extends Controller
 {
     public function index(Request $request)
     {
-        $mutasi   = MasterMutasiMasuk::pluck('mutasimasuk', 'kdmutasimasuk');
-        $dusun    = MasterDusun::pluck('dusun', 'kddusun');
+        $mutasi = MasterMutasiMasuk::pluck('mutasimasuk', 'kdmutasimasuk');
+        $dusun = MasterDusun::pluck('dusun', 'kddusun');
         $provinsi = MasterProvinsi::pluck('provinsi', 'kdprovinsi');
         $asetKeluarga = MasterAsetKeluarga::orderBy('kdasetkeluarga')->pluck('asetkeluarga', 'kdasetkeluarga');
         $jawab = MasterJawab::pluck('jawab', 'kdjawab');
@@ -60,33 +63,36 @@ class VoiceKeluargaController extends Controller
         $asetPerikanan = MasterAsetPerikanan::orderBy('kdasetperikanan')->pluck('asetperikanan', 'kdasetperikanan');
         $sarprasOptions = MasterSarpraskerja::orderBy('kdsarpraskerja')->pluck('sarpraskerja', 'kdsarpraskerja');
         $jawabSarprasOptions = MasterJawabSarpras::pluck('jawabsarpras', 'kdjawabsarpras');
-        $bangunKeluarga = MasterPembangunanKeluarga::orderBy('kdpembangunankeluarga')->pluck('pembangunankeluarga', 'kdpembangunankeluarga'); // BARU
+        $bangunKeluarga = MasterPembangunanKeluarga::where('kdtypejawab', 1)->orderBy('kdpembangunankeluarga')->limit(51)->pluck('pembangunankeluarga', 'kdpembangunankeluarga'); // BARU: Hanya field pilihan (1-51)
         $jawabBangunOptions = MasterJawabBangun::pluck('jawabbangun', 'kdjawabbangun'); // BARU
-
+        // BARU: SEJAHTERA KELUARGA (61-68, kdtypejawab=2)
+        $sejahteraKeluarga = MasterPembangunanKeluarga::where('kdtypejawab', 2)->whereBetween('kdpembangunankeluarga', [61, 68])->orderBy('kdpembangunankeluarga')->pluck('pembangunankeluarga', 'kdpembangunankeluarga');
+        // BARU: KONFLIK SOSIAL
+        $konflikSosialOptions = MasterKonflikSosial::orderBy('kdkonfliksosial')->pluck('konfliksosial', 'kdkonfliksosial');
+        $jawabKonflikOptions = MasterJawabKonflik::pluck('jawabkonflik', 'kdjawabkonflik');
         $masters = [
             'status_pemilik_bangunan' => MasterStatusPemilikBangunan::pluck('statuspemilikbangunan', 'kdstatuspemilikbangunan'),
-            'status_pemilik_lahan'    => MasterStatusPemilikLahan::pluck('statuspemiliklahan', 'kdstatuspemiliklahan'),
-            'jenis_fisik_bangunan'    => MasterJenisFisikBangunan::pluck('jenisfisikbangunan', 'kdjenisfisikbangunan'),
-            'jenis_lantai'            => MasterJenisLantaiBangunan::pluck('jenislantaibangunan', 'kdjenislantaibangunan'),
-            'kondisi_lantai'          => MasterKondisiLantaiBangunan::pluck('kondisilantaibangunan', 'kdkondisilantaibangunan'),
-            'jenis_dinding'           => MasterJenisDindingBangunan::pluck('jenisdindingbangunan', 'kdjenisdindingbangunan'),
-            'kondisi_dinding'         => MasterKondisiDindingBangunan::pluck('kondisidindingbangunan', 'kdkondisidindingbangunan'),
-            'jenis_atap'              => MasterJenisAtapBangunan::pluck('jenisatapbangunan', 'kdjenisatapbangunan'),
-            'kondisi_atap'            => MasterKondisiAtapBangunan::pluck('kondisiatapbangunan', 'kdkondisiatapbangunan'),
-            'sumber_air_minum'        => MasterSumberAirMinum::pluck('sumberairminum', 'kdsumberairminum'),
-            'kondisi_sumber_air'      => MasterKondisiSumberAir::pluck('kondisisumberair', 'kdkondisisumberair'),
-            'cara_perolehan_air'      => MasterCaraPerolehanAir::pluck('caraperolehanair', 'kdcaraperolehanair'),
-            'sumber_penerangan'       => MasterSumberPeneranganUtama::pluck('sumberpeneranganutama', 'kdsumberpeneranganutama'),
-            'daya_terpasang'          => MasterSumberDayaTerpasang::pluck('sumberdayaterpasang', 'kdsumberdayaterpasang'),
-            'bahan_bakar'             => MasterBahanBakarMemasak::pluck('bahanbakarmemasak', 'kdbahanbakarmemasak'),
-            'fasilitas_bab'           => MasterFasilitasTempatBab::pluck('fasilitastempatbab', 'kdfasilitastempatbab'),
-            'pembuangan_tinja'        => MasterPembuanganAkhirTinja::pluck('pembuanganakhirtinja', 'kdpembuanganakhirtinja'),
-            'pembuangan_sampah'       => MasterCaraPembuanganSampah::pluck('carapembuangansampah', 'kdcarapembuangansampah'),
-            'manfaat_mataair'         => MasterManfaatMataAir::pluck('manfaatmataair', 'kdmanfaatmataair'),
+            'status_pemilik_lahan' => MasterStatusPemilikLahan::pluck('statuspemiliklahan', 'kdstatuspemiliklahan'),
+            'jenis_fisik_bangunan' => MasterJenisFisikBangunan::pluck('jenisfisikbangunan', 'kdjenisfisikbangunan'),
+            'jenis_lantai' => MasterJenisLantaiBangunan::pluck('jenislantaibangunan', 'kdjenislantaibangunan'),
+            'kondisi_lantai' => MasterKondisiLantaiBangunan::pluck('kondisilantaibangunan', 'kdkondisilantaibangunan'),
+            'jenis_dinding' => MasterJenisDindingBangunan::pluck('jenisdindingbangunan', 'kdjenisdindingbangunan'),
+            'kondisi_dinding' => MasterKondisiDindingBangunan::pluck('kondisidindingbangunan', 'kdkondisidindingbangunan'),
+            'jenis_atap' => MasterJenisAtapBangunan::pluck('jenisatapbangunan', 'kdjenisatapbangunan'),
+            'kondisi_atap' => MasterKondisiAtapBangunan::pluck('kondisiatapbangunan', 'kdkondisiatapbangunan'),
+            'sumber_air_minum' => MasterSumberAirMinum::pluck('sumberairminum', 'kdsumberairminum'),
+            'kondisi_sumber_air' => MasterKondisiSumberAir::pluck('kondisisumberair', 'kdkondisisumberair'),
+            'cara_perolehan_air' => MasterCaraPerolehanAir::pluck('caraperolehanair', 'kdcaraperolehanair'),
+            'sumber_penerangan' => MasterSumberPeneranganUtama::pluck('sumberpeneranganutama', 'kdsumberpeneranganutama'),
+            'daya_terpasang' => MasterSumberDayaTerpasang::pluck('sumberdayaterpasang', 'kdsumberdayaterpasang'),
+            'bahan_bakar' => MasterBahanBakarMemasak::pluck('bahanbakarmemasak', 'kdbahanbakarmemasak'),
+            'fasilitas_bab' => MasterFasilitasTempatBab::pluck('fasilitastempatbab', 'kdfasilitastempatbab'),
+            'pembuangan_tinja' => MasterPembuanganAkhirTinja::pluck('pembuanganakhirtinja', 'kdpembuanganakhirtinja'),
+            'pembuangan_sampah' => MasterCaraPembuanganSampah::pluck('carapembuangansampah', 'kdcarapembuangansampah'),
+            'manfaat_mataair' => MasterManfaatMataAir::pluck('manfaatmataair', 'kdmanfaatmataair'),
         ];
-
         return view('voice.index', compact(
-            'mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan', 'asetTernak', 'asetPerikanan', 'sarprasOptions', 'jawabSarprasOptions', 'bangunKeluarga', 'jawabBangunOptions'
+            'mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan', 'asetTernak', 'asetPerikanan', 'sarprasOptions', 'jawabSarprasOptions', 'bangunKeluarga', 'jawabBangunOptions', 'sejahteraKeluarga', 'konflikSosialOptions', 'jawabKonflikOptions'
         ) + ['masters' => $masters]);
     }
 
@@ -106,22 +112,17 @@ class VoiceKeluargaController extends Controller
                 'prasdas_luaslantai' => 'required|numeric',
                 'prasdas_jumlahkamar' => 'required|integer',
             ]);
-
             $data = $request->all();
-
             $noKk = $data['no_kk'];
             if (strlen($noKk) !== 16) {
                 return response()->json(['success' => false, 'error' => 'No KK harus 16 digit!'], 422);
             }
-
             if (DataKeluarga::where('no_kk', $noKk)->exists()) {
                 return response()->json(['success' => false, 'error' => 'No KK sudah terdaftar!'], 422);
             }
-
             if (empty($data['kdprovinsi'])) {
                 unset($data['kdprovinsi'], $data['kdkabupaten'], $data['kdkecamatan'], $data['kddesa']);
             }
-
             $keluarga = DataKeluarga::create([
                 'no_kk' => $noKk,
                 'kdmutasimasuk' => $data['kdmutasimasuk'],
@@ -136,7 +137,6 @@ class VoiceKeluargaController extends Controller
                 'kdkecamatan' => $data['kdkecamatan'] ?? null,
                 'kddesa' => $data['kddesa'] ?? null,
             ]);
-
             DataPrasaranaDasar::create([
                 'no_kk' => $keluarga->no_kk,
                 'kdstatuspemilikbangunan' => $data['kdstatuspemilikbangunan'],
@@ -161,21 +161,18 @@ class VoiceKeluargaController extends Controller
                 'prasdas_luaslantai' => $data['prasdas_luaslantai'],
                 'prasdas_jumlahkamar' => $data['prasdas_jumlahkamar'],
             ]);
-
             $asetData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 42; $i++) {
                 $field = "asetkeluarga_$i";
                 $asetData[$field] = $data[$field] ?? 0;
             }
             DataAsetKeluarga::create($asetData);
-
             $asetLahanData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 10; $i++) {
                 $field = "asetlahan_$i";
                 $asetLahanData[$field] = $data[$field] ?? 0;
             }
             DataAsetLahan::create($asetLahanData);
-
             $asetTernakData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 24; $i++) {
                 $field = "asetternak_$i";
@@ -183,7 +180,6 @@ class VoiceKeluargaController extends Controller
                 $asetTernakData[$field] = is_numeric($value) ? $value : '0';
             }
             DataAsetTernak::create($asetTernakData);
-
             $asetPerikananData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 6; $i++) {
                 $field = "asetperikanan_$i";
@@ -191,24 +187,34 @@ class VoiceKeluargaController extends Controller
                 $asetPerikananData[$field] = is_numeric($value) ? $value : '0';
             }
             DataAsetPerikanan::create($asetPerikananData);
-
             $asetSarprasData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 25; $i++) {
                 $field = "sarpraskerja_$i";
                 $asetSarprasData[$field] = $data[$field] ?? 0;
             }
             DataSarprasKerja::create($asetSarprasData);
-
-            // BARU: SIMPAN BANGUN KELUARGA
+            // BARU: SIMPAN BANGUN KELUARGA (HANYA 51 FIELD)
             $bangunData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 51; $i++) {
                 $field = "bangunkeluarga_$i";
                 $bangunData[$field] = $data[$field] ?? 0;
             }
             DataBangunKeluarga::create($bangunData);
-
+            // BARU: SIMPAN SEJAHTERA KELUARGA (61-68, URAIAN)
+            $sejahteraData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 61; $i <= 68; $i++) {
+                $field = "sejahterakeluarga_$i";
+                $sejahteraData[$field] = $data[$field] ?? '';
+            }
+            DataSejahteraKeluarga::create($sejahteraData);
+            // BARU: SIMPAN KONFLIK SOSIAL (1-32 FIELDS)
+            $konflikData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 1; $i <= 32; $i++) {
+                $field = "konfliksosial_$i";
+                $konflikData[$field] = $data[$field] ?? 0;
+            }
+            DataKonflikSosial::create($konflikData);
             return response()->json(['success' => true]);
-
         } catch (\Illuminate\Validation\ValidationException $e) {
             $msg = '';
             foreach ($e->errors() as $field => $err) {
