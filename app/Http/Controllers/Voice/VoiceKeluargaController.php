@@ -8,6 +8,8 @@ use App\Models\DataKeluarga;
 use App\Models\DataPrasaranaDasar;
 use App\Models\DataAsetKeluarga;
 use App\Models\DataAsetLahan;
+use App\Models\DataAsetTernak;
+use App\Models\DataAsetPerikanan;           // BARU
 use App\Models\MasterMutasiMasuk;
 use App\Models\MasterDusun;
 use App\Models\MasterProvinsi;
@@ -34,6 +36,8 @@ use App\Models\MasterCaraPembuanganSampah;
 use App\Models\MasterManfaatMataAir;
 use App\Models\MasterAsetLahan;
 use App\Models\MasterJawabLahan;
+use App\Models\MasterAsetTernak;
+use App\Models\MasterAsetPerikanan;         // BARU
 
 class VoiceKeluargaController extends Controller
 {
@@ -46,6 +50,8 @@ class VoiceKeluargaController extends Controller
         $jawab = MasterJawab::pluck('jawab', 'kdjawab');
         $lahan = MasterAsetLahan::orderBy('kdasetlahan')->pluck('asetlahan', 'kdasetlahan');
         $jawabLahan = MasterJawabLahan::pluck('jawablahan', 'kdjawablahan');
+        $asetTernak = MasterAsetTernak::orderBy('kdasetternak')->pluck('asetternak', 'kdasetternak');
+        $asetPerikanan = MasterAsetPerikanan::orderBy('kdasetperikanan')->pluck('asetperikanan', 'kdasetperikanan'); // BARU
 
         $masters = [
             'status_pemilik_bangunan' => MasterStatusPemilikBangunan::pluck('statuspemilikbangunan', 'kdstatuspemilikbangunan'),
@@ -69,7 +75,9 @@ class VoiceKeluargaController extends Controller
             'manfaat_mataair'         => MasterManfaatMataAir::pluck('manfaatmataair', 'kdmanfaatmataair'),
         ];
 
-        return view('voice.index', compact('mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan') + ['masters' => $masters]);
+        return view('voice.index', compact(
+            'mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan', 'asetTernak', 'asetPerikanan'
+        ) + ['masters' => $masters]);
     }
 
     public function storeAll(Request $request)
@@ -151,13 +159,29 @@ class VoiceKeluargaController extends Controller
             }
             DataAsetKeluarga::create($asetData);
 
-            // storeAll() → TAMBAHKAN SETELAH DataAsetKeluarga
             $asetLahanData = ['no_kk' => $keluarga->no_kk];
             for ($i = 1; $i <= 10; $i++) {
                 $field = "asetlahan_$i";
                 $asetLahanData[$field] = $data[$field] ?? 0;
             }
             DataAsetLahan::create($asetLahanData);
+
+            $asetTernakData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 1; $i <= 24; $i++) {
+                $field = "asetternak_$i";
+                $value = $data[$field] ?? '0';
+                $asetTernakData[$field] = is_numeric($value) ? $value : '0';
+            }
+            DataAsetTernak::create($asetTernakData);
+
+            // BARU: SIMPAN ASET PERIKANAN
+            $asetPerikananData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 1; $i <= 6; $i++) {
+                $field = "asetperikanan_$i";
+                $value = $data[$field] ?? '0';
+                $asetPerikananData[$field] = is_numeric($value) ? $value : '0';
+            }
+            DataAsetPerikanan::create($asetPerikananData);
 
             return response()->json(['success' => true]);
 
