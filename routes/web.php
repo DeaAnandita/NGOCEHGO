@@ -11,6 +11,7 @@ use App\Http\Controllers\{
 };
 use App\Http\Controllers\Voice\{
     VoiceKeluargaController, WilayahController, VoicePrasaranaController, MenuVoiceController, VoiceController
+
 };
 use App\Exports\{
     DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,
@@ -27,6 +28,24 @@ Route::prefix('admin/voice')->name('voice.')->group(function () {
     Route::get('/', [MenuVoiceController::class, 'index'])->name('menu');
     Route::get('/keluarga', [VoiceKeluargaController::class, 'index'])->name('index');
     Route::post('/store-all', [VoiceKeluargaController::class, 'storeAll'])->name('store-all');
+});
+
+// ================== VOICE PENDUDUK ==================
+Route::prefix('voice')->group(function () {
+
+    Route::get('admin/voice', [VoicePendudukController::class, 'index'])->name('voice.menu');
+
+    // halaman penduduk
+    Route::get('/penduduk', [VoicePendudukController::class, 'penduduk'])->name('voice.penduduk');
+
+    // cek nik
+    Route::post('/penduduk/cek-nik', [VoicePendudukController::class, 'cekNik'])->name('voice.penduduk.cekNik');
+
+    // cek no kk
+    Route::post('/penduduk/cek-kk', [VoicePendudukController::class, 'cekNoKk'])->name('voice.penduduk.cekKK');
+
+    // store
+    Route::post('/penduduk/store', [VoicePendudukController::class, 'store'])->name('voice.penduduk.store');
 });
 
 // Wilayah API (tidak perlu prefix admin)
@@ -169,10 +188,19 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/kualitasibuhamil/pdf', [App\Http\Controllers\KualitasIbuHamilController::class, 'exportPdf'])->name('kualitasibuhamil.exportAnalisisPDF');
     Route::get('/laporan/sosialekonomi/pdf', [App\Http\Controllers\SosialEkonomiController::class, 'exportPdf'])->name('sosialekonomi.exportAnalisisPDF');
     Route::get('/laporan/usahaart/pdf', [App\Http\Controllers\UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
+<<<<<<< HEAD
     Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
     Route::get('laporan/kelahiran/pdf', [KelahiranController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
     Route::get('/laporan/lembagadesa/pdf', [App\Http\Controllers\LembagaDesaController::class, 'exportPdf'])->name('lembagadesa.exportAnalisisPDF');
 
+=======
+    Route::get('/asetperikanan/export/pdf', [AsetPerikananController::class, 'exportPdf'])->name('asetperikanan.export.pdf');
+    Route::get('/asetternak/export/pdf', [AsetTernakController::class, 'exportPdf'])->name('asetternak.export.pdf');
+    Route::get('laporan/asetkeluarga/pdf', [AsetKeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('penduduk.exportAnalisisPDF');
+    Route::get('laporan/keluarga/pdf', [KeluargaController::class, 'exportPdf'])->name('keluarga.exportAnalisisPDF');
+    Route::get('laporan/kelahiran/pdf', [KelahiranController::class, 'exportPdf'])->name('kelahiran.exportAnalisisPDF');
+>>>>>>> d755047 (voice penduduk)
 });
 
 // ===============================
