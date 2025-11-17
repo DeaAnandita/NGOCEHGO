@@ -163,7 +163,6 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/sejahterakeluarga/pdf', [App\Http\Controllers\SejahteraKeluargaController::class, 'exportPdf'])->name('sejahterakeluarga.export.pdf');
     Route::get('/laporan/konfliksosial/pdf', [App\Http\Controllers\KonflikSosialController::class, 'exportPdf'])->name('konfliksosial.export.pdf');
     Route::get('/laporan/programserta/pdf', [App\Http\Controllers\ProgramSertaController::class, 'exportPdf'])->name('programserta.exportAnalisisPDF');
-    Route::get('/laporan/programserta/pdf', [App\Http\Controllers\ProgramSertaController::class, 'exportPdf'])->name('programserta.exportAnalisisPDF');
     Route::get('/laporan/lembagaekonomi/pdf', [App\Http\Controllers\LembagaEkonomiController::class, 'exportPdf'])->name('lembagaekonomi.exportAnalisisPDF');
     Route::get('/laporan/lembagamasyarakat/pdf', [App\Http\Controllers\LembagaMasyarakatController::class, 'exportPdf'])->name('lembagamasyarakat.exportAnalisisPDF');
     Route::get('/laporan/kualitasbayi/pdf', [App\Http\Controllers\KualitasBayiController::class, 'exportPdf'])->name('kualitasbayi.exportAnalisisPDF');
@@ -171,7 +170,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/sosialekonomi/pdf', [App\Http\Controllers\SosialEkonomiController::class, 'exportPdf'])->name('sosialekonomi.exportAnalisisPDF');
     Route::get('/laporan/usahaart/pdf', [App\Http\Controllers\UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
     Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
-    Route::get('laporan/kelahiran/pdf', [Kelahiran::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('laporan/kelahiran/pdf', [KelahiranController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('/laporan/lembagadesa/pdf', [App\Http\Controllers\LembagaDesaController::class, 'exportPdf'])->name('lembagadesa.exportAnalisisPDF');
+
 });
 
 // ===============================
