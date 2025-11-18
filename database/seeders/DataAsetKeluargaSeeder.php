@@ -18,7 +18,7 @@ class DataAsetKeluargaSeeder extends Seeder
         foreach ($kkList as $no_kk) {
             $asetkeluarga = ['no_kk' => $no_kk];
             for ($i = 1; $i <= 42; $i++) {
-                $asetkeluarga["asetkeluarga_$i"] = rand(0, 2);
+                $asetkeluarga["asetkeluarga_$i"] = rand(1, 2);
             }
 
             DB::table('data_asetkeluarga')->insert($asetkeluarga);

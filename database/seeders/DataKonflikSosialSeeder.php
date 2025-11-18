@@ -19,7 +19,7 @@ class DataKonflikSosialSeeder extends Seeder
         foreach ($kkList as $no_kk) {
             $konfliksosial = ['no_kk' => $no_kk];
             for ($i = 1; $i <= 32; $i++) {
-                $konfliksosial["konfliksosial_$i"] = rand(0, 2);
+                $konfliksosial["konfliksosial_$i"] = rand(1, 2);
             }
 
             DB::table('data_konfliksosial')->insert($konfliksosial);

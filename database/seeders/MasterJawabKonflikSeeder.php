@@ -13,7 +13,6 @@ class MasterJawabKonflikSeeder extends Seeder
     public function run(): void
     {
         DB::table('master_jawabkonflik')->insert([
-            ['kdjawabkonflik' => 0, 'jawabkonflik' => 'TIDAK DIISI'],
             ['kdjawabkonflik' => 1, 'jawabkonflik' => 'ADA'],
             ['kdjawabkonflik' => 2, 'jawabkonflik' => 'TIDAK ADA']
         ]);

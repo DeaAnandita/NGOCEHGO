@@ -14,7 +14,6 @@ class MasterJawabSeeder extends Seeder
 
         // Insert data master
         DB::table('master_jawab')->insert([
-            ['kdjawab' => 0, 'jawab' => 'TIDAK DIISI'],
             ['kdjawab' => 1, 'jawab' => 'YA'],
             ['kdjawab' => 2, 'jawab' => 'TIDAK'],
         ]);
