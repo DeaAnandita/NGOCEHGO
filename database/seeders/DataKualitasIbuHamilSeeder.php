@@ -18,7 +18,7 @@ class DataKualitasIbuHamilSeeder extends Seeder
         foreach ($kkList as $no_kk) {
             $kualitasibuhamil = ['no_kk' => $no_kk];
             for ($i = 1; $i <= 13; $i++) {
-                $kualitasibuhamil["kualitasibuhamil_$i"] = rand(1, 4);
+                $kualitasibuhamil["kualitasibuhamil_$i"] = rand(1, 3);
             }
 
             DB::table('data_kualitasibuhamil')->insert($kualitasibuhamil);

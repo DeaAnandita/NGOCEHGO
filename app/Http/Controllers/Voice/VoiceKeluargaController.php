@@ -13,6 +13,7 @@ use App\Models\DataSarprasKerja;
 use App\Models\DataBangunKeluarga; // BARU
 use App\Models\DataSejahteraKeluarga; // BARU: SEJAHTERA KELUARGA
 use App\Models\DataKonflikSosial; // BARU: KONFLIK SOSIAL
+use App\Models\DataKualitasIbuHamil; // <<< BARU
 use App\Models\MasterMutasiMasuk;
 use App\Models\MasterDusun;
 use App\Models\MasterProvinsi;
@@ -47,6 +48,11 @@ use App\Models\MasterPembangunanKeluarga; // BARU
 use App\Models\MasterJawabBangun; // BARU
 use App\Models\MasterKonflikSosial; // BARU
 use App\Models\MasterJawabKonflik; // BARU
+use App\Models\MasterKualitasIbuHamil;             // <<< BARU
+use App\Models\MasterJawabKualitasIbuHamil;      // <<< BARU
+use App\Models\MasterKualitasBayi;
+use App\Models\MasterJawabKualitasBayi;
+use App\Models\DataKualitasBayi;
 
 class VoiceKeluargaController extends Controller
 {
@@ -64,12 +70,15 @@ class VoiceKeluargaController extends Controller
         $sarprasOptions = MasterSarpraskerja::orderBy('kdsarpraskerja')->pluck('sarpraskerja', 'kdsarpraskerja');
         $jawabSarprasOptions = MasterJawabSarpras::pluck('jawabsarpras', 'kdjawabsarpras');
         $bangunKeluarga = MasterPembangunanKeluarga::where('kdtypejawab', 1)->orderBy('kdpembangunankeluarga')->limit(51)->pluck('pembangunankeluarga', 'kdpembangunankeluarga'); // BARU: Hanya field pilihan (1-51)
-        $jawabBangunOptions = MasterJawabBangun::pluck('jawabbangun', 'kdjawabbangun'); // BARU
-        // BARU: SEJAHTERA KELUARGA (61-68, kdtypejawab=2)
+        $jawabBangunOptions = MasterJawabBangun::pluck('jawabbangun', 'kdjawabbangun'); 
         $sejahteraKeluarga = MasterPembangunanKeluarga::where('kdtypejawab', 2)->whereBetween('kdpembangunankeluarga', [61, 68])->orderBy('kdpembangunankeluarga')->pluck('pembangunankeluarga', 'kdpembangunankeluarga');
-        // BARU: KONFLIK SOSIAL
         $konflikSosialOptions = MasterKonflikSosial::orderBy('kdkonfliksosial')->pluck('konfliksosial', 'kdkonfliksosial');
         $jawabKonflikOptions = MasterJawabKonflik::pluck('jawabkonflik', 'kdjawabkonflik');
+        $kualitasIbuHamilOptions = MasterKualitasIbuHamil::orderBy('kdkualitasibuhamil')->pluck('kualitasibuhamil', 'kdkualitasibuhamil');
+        $jawabKualitasIbuHamilOptions = MasterJawabKualitasIbuHamil::pluck('jawabkualitasibuhamil', 'kdjawabkualitasibuhamil');
+        $kualitasBayiOptions = MasterKualitasBayi::orderBy('kdkualitasbayi')->pluck('kualitasbayi', 'kdkualitasbayi');
+        $jawabKualitasBayiOptions = MasterJawabKualitasBayi::pluck('jawabkualitasbayi', 'kdjawabkualitasbayi');
+
         $masters = [
             'status_pemilik_bangunan' => MasterStatusPemilikBangunan::pluck('statuspemilikbangunan', 'kdstatuspemilikbangunan'),
             'status_pemilik_lahan' => MasterStatusPemilikLahan::pluck('statuspemiliklahan', 'kdstatuspemiliklahan'),
@@ -91,8 +100,9 @@ class VoiceKeluargaController extends Controller
             'pembuangan_sampah' => MasterCaraPembuanganSampah::pluck('carapembuangansampah', 'kdcarapembuangansampah'),
             'manfaat_mataair' => MasterManfaatMataAir::pluck('manfaatmataair', 'kdmanfaatmataair'),
         ];
+
         return view('voice.index', compact(
-            'mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan', 'asetTernak', 'asetPerikanan', 'sarprasOptions', 'jawabSarprasOptions', 'bangunKeluarga', 'jawabBangunOptions', 'sejahteraKeluarga', 'konflikSosialOptions', 'jawabKonflikOptions'
+            'mutasi', 'dusun', 'provinsi', 'asetKeluarga', 'jawab', 'lahan', 'jawabLahan', 'asetTernak', 'asetPerikanan', 'sarprasOptions', 'jawabSarprasOptions', 'bangunKeluarga', 'jawabBangunOptions', 'sejahteraKeluarga', 'konflikSosialOptions', 'jawabKonflikOptions', 'kualitasIbuHamilOptions', 'jawabKualitasIbuHamilOptions', 'kualitasBayiOptions', 'jawabKualitasBayiOptions'
         ) + ['masters' => $masters]);
     }
 
@@ -214,6 +224,18 @@ class VoiceKeluargaController extends Controller
                 $konflikData[$field] = $data[$field] ?? 0;
             }
             DataKonflikSosial::create($konflikData);
+            $kualitasData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 1; $i <= 13; $i++) {
+                $field = "kualitasibuhamil_$i";
+                $kualitasData[$field] = $data[$field] ?? 0;
+            }
+            DataKualitasIbuHamil::create($kualitasData);
+            $kualitasBayiData = ['no_kk' => $keluarga->no_kk];
+            for ($i = 1; $i <= 7; $i++) {
+                $field = "kualitasbayi_$i";
+                $kualitasBayiData[$field] = $data[$field] ?? 0;
+            }
+            DataKualitasBayi::create($kualitasBayiData);
             return response()->json(['success' => true]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             $msg = '';

@@ -106,12 +106,16 @@
         const jawabBangunOptions = @json($jawabBangunOptions);
         const konflikSosialOptions = @json($konflikSosialOptions);
         const jawabKonflikOptions = @json($jawabKonflikOptions);
+        const kualitasIbuHamilOptions = @json($kualitasIbuHamilOptions);
+        const jawabKualitasIbuHamilOptions = @json($jawabKualitasIbuHamilOptions);
+        const kualitasBayiOptions = @json($kualitasBayiOptions);
+        const jawabKualitasBayiOptions = @json($jawabKualitasBayiOptions);
 
         // ==================== STATE ====================
         let currentModul = 1;
         let step = 0;
         let answers = { keluarga_tanggalmutasi: new Date().toISOString().split('T')[0] };
-        let modulStatus = {1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending',9:'pending',10:'pending'};
+        let modulStatus = {1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending',9:'pending',10:'pending',11:'pending',12:'pending'};
         let recognition = null;
         let isListening = false;
         let audioContext = null, analyser = null, dataArray = null, canvas = null, ctx = null;
@@ -122,10 +126,11 @@
             {id:1,name:"Data Keluarga"},{id:2,name:"Prasarana Dasar"},{id:3,name:"Aset Keluarga"},
             {id:4,name:"Aset Lahan Tanah"},{id:5,name:"Aset Ternak"},{id:6,name:"Aset Perikanan"},
             {id:7,name:"Sarpras Kerja"},{id:8,name:"Bangun Keluarga"},{id:9,name:"Sejahtera Keluarga"},
-            {id:10,name:"Konflik Sosial"}
+            {id:10,name:"Konflik Sosial"},{id:11,name:"Kualitas Ibu Hamil"},
+            {id:12,name:"Kualitas Bayi"}
         ];
 
-        const questions = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[]};
+        const questions = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[],12:[]};
 
         // ==================== BUILD QUESTIONS ====================
         questions[1] = [
@@ -179,7 +184,22 @@
             {field:"sejahterakeluarga_68",label:"Rata-rata uang belanja keluarga sebulan?"}
         ].forEach(q=>questions[9].push({type:"text",label:q.label,field:q.field,isUraian:true}));
         Object.entries(konflikSosialOptions).forEach(([kd,label])=>questions[10].push({type:"select",label:`${label} ?`,field:`konfliksosial_${kd}`,options:jawabKonflikOptions}));
-
+        Object.entries(kualitasIbuHamilOptions).forEach(([kd,label])=>{
+            questions[11].push({
+                type:"select",
+                label: label + " :",
+                field: `kualitasibuhamil_${kd}`,
+                options: jawabKualitasIbuHamilOptions
+            });
+        });
+        Object.entries(kualitasBayiOptions).forEach(([kd,label])=>{
+            questions[12].push({
+                type:"select",
+                label: label + " :",
+                field: `kualitasbayi_${kd}`,
+                options: jawabKualitasBayiOptions
+            });
+        });
         const wilayahQuestions = [
             {type:"select",label:"Provinsi asalnya apa?",field:"kdprovinsi",options:provinsiOptions},
             {type:"select",label:"Kabupaten atau kota asalnya apa?",field:"kdkabupaten",dynamic:true,dynamicUrl:"/get-kabupaten/"},
@@ -311,6 +331,14 @@
             if(currentModul===8&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">YA</strong> / <strong class="mx-2">TIDAK</strong></div>`;
             if(currentModul===9&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka saja atau "tidak ada"</div>`;
             if(currentModul===10&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">A</strong> untuk ADA / <strong class="mx-2">B</strong> untuk TIDAK ADA</div>`;
+            if(currentModul===11&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">1</strong> ADA / <strong class="mx-2">2</strong> PERNAH ADA / <strong class="mx-2">3</strong> TIDAK ADA</div>`;
+            if(currentModul===12 && step===0){
+                html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
+                        Jawab: <strong class="mx-2">1</strong> ADA / 
+                            <strong class="mx-2">2</strong> PERNAH ADA / 
+                            <strong class="mx-2">3</strong> TIDAK ADA
+                    </div>`;
+            }
 
             html+=`<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
 
@@ -368,11 +396,27 @@
             if(currentModul===8&&step===0){await speak("Modul Bangun Keluarga. Jawab YA atau TIDAK.");}
             if(currentModul===9&&step===0){await speak("Modul Sejahtera Keluarga. Jawab dengan angka atau 'tidak ada'.");}
             if(currentModul===10&&step===0){await speak("Modul Konflik Sosial. Jawab A jika ADA, B jika TIDAK ADA.");}
-
+            // === HANYA SEKALI DI AWAL MODUL 11: Jelaskan pilihan jawaban ===
+            if(currentModul === 11 && step === 0){
+                await speak("Modul Kualitas Ibu Hamil dimulai.");
+                await speak("Untuk setiap pertanyaan, jawab dengan salah satu dari pilihan berikut:");
+                await speak("Satu. ADA");
+                await speak("Dua. PERNAH ADA");
+                await speak("Tiga. TIDAK ADA");
+                await new Promise(r => setTimeout(r, 2000));
+            }
+            if(currentModul === 12 && step === 0){
+                await speak("Modul Kualitas Bayi dimulai.");
+                await speak("Untuk setiap pertanyaan, jawab dengan salah satu dari pilihan berikut:");
+                await speak("Satu. ADA");
+                await speak("Dua. PERNAH ADA");
+                await speak("Tiga. TIDAK ADA");
+                await new Promise(r => setTimeout(r, 2000));
+            }
             await speak(q.label);
 
             // Baca pilihan hanya untuk modul yang butuh (kecuali modul 7)
-            if(q.type==="select" && currentModul !== 7 && ![3,8,10].includes(currentModul)){
+            if(q.type==="select" && currentModul !== 7 && ![3,8,10,11].includes(currentModul)){
                 const opts=Object.values(q.options);
                 for(let i=0;i<opts.length;i++){
                     await speak(`${i+1}. ${cleanOptionText(opts[i])}`);
@@ -482,6 +526,61 @@
                 questions[1].push(...wilayahQuestions);
                 document.getElementById('wilayahDatangReview').classList.remove('hidden');
             }
+
+            // === KHUSUS MODUL 11: KUALITAS IBU HAMIL ===
+        if(currentModul === 11){
+            const n = normalize(text);
+
+            if(n.includes('ada') && !n.includes('pernah') && !n.includes('tidak')){
+                value = '1'; // ADA
+            }
+            else if(n.includes('pernah')){
+                value = '2'; // PERNAH ADA
+            }
+            else if(n.includes('tidak ada') || n.includes('nggak') || n.includes('ga ada') || n.includes('ga') || n.includes('tidak')){
+                value = '3'; // TIDAK ADA
+            }
+            else if(n.includes('satu') || n.match(/^\s*1\s*$/)){
+                value = '1';
+            }
+            else if(n.includes('dua') || n.match(/^\s*2\s*$/)){
+                value = '2';
+            }
+            else if(n.includes('tiga') || n.match(/^\s*3\s*$/)){
+                value = '3';
+            }
+            else {
+                await speak("Maaf, tidak dikenali. Ulangi dengan: ADA, PERNAH ADA, atau TIDAK ADA");
+                return;
+            }
+        }
+
+        if(currentModul === 11 || currentModul === 12){
+            const n = normalize(text);
+
+            if(n.includes('ada') && !n.includes('pernah') && !n.includes('tidak')){
+                value = '1'; // ADA
+            }
+            else if(n.includes('pernah')){
+                value = '2'; // PERNAH ADA
+            }
+            else if(n.includes('tidak ada') || n.includes('nggak') || n.includes('ga ada') || n.includes('ga') || n.includes('tidak')){
+                value = '3'; // TIDAK ADA
+            }
+            else if(n.includes('satu') || n.includes('1')){
+                value = '1';
+            }
+            else if(n.includes('dua') || n.includes('2')){
+                value = '2';
+            }
+            else if(n.includes('tiga') || n.includes('3')){
+                value = '3';
+            }
+            else {
+                await speak("Maaf, tidak dikenali. Ulangi dengan: ADA, PERNAH ADA, atau TIDAK ADA");
+                return;
+            }
+        }
 
             saveData();
             setTimeout(async()=>{

@@ -13,10 +13,9 @@ class MasterJawabKualitasIbuHamilSeeder extends Seeder
     public function run(): void
     {
         DB::table('master_jawabkualitasibuhamil')->insert([
-            ['kdjawabkualitasibuhamil' => 1, 'jawabkualitasibuhamil' => 'TIDAK DIISI'],
-            ['kdjawabkualitasibuhamil' => 2, 'jawabkualitasibuhamil' => 'ADA'],
-            ['kdjawabkualitasibuhamil' => 3, 'jawabkualitasibuhamil' => 'PERNAH ADA'],
-            ['kdjawabkualitasibuhamil' => 4, 'jawabkualitasibuhamil' => 'TIDAK ADA'],
+            ['kdjawabkualitasibuhamil' => 1, 'jawabkualitasibuhamil' => 'ADA'],
+            ['kdjawabkualitasibuhamil' => 2, 'jawabkualitasibuhamil' => 'PERNAH ADA'],
+            ['kdjawabkualitasibuhamil' => 3, 'jawabkualitasibuhamil' => 'TIDAK ADA'],
         ]);
     }
 }
