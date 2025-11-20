@@ -184,65 +184,6 @@
                             </div>
                         </div>
                     </div> --}}
-                    {{-- Wilayah Datang --}}
-                <div>
-                    <h3 class="text-gray-700 font-semibold mb-2">Wilayah Datang</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
-                            <select name="kdprovinsi" required
-                                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">-- Pilih Provinsi --</option>
-                                @foreach($provinsis as $d)
-                                    <option value="{{ $d->kdprovinsi }}">{{ $d->provinsi }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten</label>
-                            <select name="kdkabupaten" required
-                                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">-- Pilih Provinsi Dahulu --</option>
-                                @foreach($kabupatens as $d)
-                                    <option value="{{ $d->kdkabupaten }}">{{ $d->kabupaten }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
-                            <select name="kdkecamatan" required
-                                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">-- Pilih Kabupaten Dahulu --</option>
-                                @foreach($kecamatans as $d)
-                                    <option value="{{ $d->kdkecamatan }}">{{ $d->kecamatan }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan</label>
-                            <select name="kddesa" required
-                                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">-- Pilih Kecamatan Dahulu --</option>
-                                @foreach($desas as $d)
-                                    <option value="{{ $d->kddesa }}">{{ $d->desa }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                                <label class="block text-sm font-medium text-gray-700">RW</label>
-                                <input type="text" name="kelahiran_rw" value="{{ old('kelahiran_rw') }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" maxlength="3">
-                                @error('kelahiran_rw')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">RT</label>
-                                <input type="text" name="kelahiran_rt" value="{{ old('kelahiran_rt') }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" maxlength="3">
-                                @error('kelahiran_rt')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                    </div>
 
                     <!-- Submit Button -->
                     <div class="mt-6 flex space-x-4 justify-end">

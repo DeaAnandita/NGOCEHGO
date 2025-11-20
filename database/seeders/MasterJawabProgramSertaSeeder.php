@@ -13,10 +13,9 @@ class MasterJawabProgramSertaSeeder extends Seeder
 
         DB::table('master_jawabprogramserta')->insert([
 
-	    ['kdjawabprogramserta' => 1, 'jawabprogramserta' => 'Tidak Diisi'],
-            ['kdjawabprogramserta' => 2, 'jawabprogramserta' => 'Ya'],
-            ['kdjawabprogramserta' => 3, 'jawabprogramserta' => 'Pernah Mendapatkan'],
-            ['kdjawabprogramserta' => 4, 'jawabprogramserta' => 'Tidak'],
+            ['kdjawabprogramserta' => 1, 'jawabprogramserta' => 'Ya'],
+            ['kdjawabprogramserta' => 2, 'jawabprogramserta' => 'Pernah Mendapatkan'],
+            ['kdjawabprogramserta' => 3, 'jawabprogramserta' => 'Tidak'],
   	]);
     }
 }

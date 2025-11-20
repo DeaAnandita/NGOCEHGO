@@ -18,7 +18,7 @@ class DataLembagaMasyarakatSeeder extends Seeder
         foreach ($nikList as $nik) {
             $lembagamasyarakat = ['nik' => $nik];
             for ($i = 1; $i <= 48; $i++) {
-                $lembagamasyarakat["lemmas_$i"] = rand(1, 4);
+                $lembagamasyarakat["lemmas_$i"] = rand(1, 3);
             }
 
             DB::table('data_lembagamasyarakat')->insert($lembagamasyarakat);

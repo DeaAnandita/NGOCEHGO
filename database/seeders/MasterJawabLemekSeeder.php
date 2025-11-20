@@ -13,10 +13,9 @@ class MasterJawabLemekSeeder extends Seeder
 
         DB::table('master_jawablemek')->insert([
 
-	    ['kdjawablemek' => 1, 'jawablemek' => 'Tidak Diisi'],
-            ['kdjawablemek' => 2, 'jawablemek' => 'Ya'],
-            ['kdjawablemek' => 3, 'jawablemek' => 'Pernah'],
-            ['kdjawablemek' => 4, 'jawablemek' => 'Tidak'],
+            ['kdjawablemek' => 1, 'jawablemek' => 'Ya'],
+            ['kdjawablemek' => 2, 'jawablemek' => 'Pernah'],
+            ['kdjawablemek' => 3, 'jawablemek' => 'Tidak'],
         ]);
     }
 }

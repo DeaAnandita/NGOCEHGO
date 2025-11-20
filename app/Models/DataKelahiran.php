@@ -26,12 +26,6 @@ class DataKelahiran extends Model
         'kelahiran_panjang',
         'kelahiran_nikibu',
         'kelahiran_nikayah',
-		'kelahiran_rw',
-		'kelahiran_rt',
-		'kdprovinsi',
-		'kdkabupaten',
-		'kdkecamatan',
-		'kddesa',
     ];
 
 

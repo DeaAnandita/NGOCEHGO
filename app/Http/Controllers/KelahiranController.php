@@ -101,12 +101,6 @@ class KelahiranController extends Controller
             'kelahiran_panjang' => 'nullable|integer|min:0',
             'kelahiran_nikibu' => 'nullable|string|size:16|exists:data_penduduk,nik',
             'kelahiran_nikayah' => 'nullable|string|size:16|exists:data_penduduk,nik',
-            'kelahiran_rw' => 'nullable|string|max:3',
-            'kelahiran_rt' => 'nullable|string|max:3',
-            'kdprovinsi' => 'nullable|integer|exists:master_provinsi,kdprovinsi',
-            'kdkabupaten' => 'nullable|integer|exists:master_kabupaten,kdkabupaten',
-            'kdkecamatan' => 'nullable|integer|exists:master_kecamatan,kdkecamatan',
-            'kddesa' => 'nullable|integer|exists:master_desa,kddesa',
         ]);
 
         if ($validator->fails()) {
@@ -129,10 +123,6 @@ class KelahiranController extends Controller
             'tempat_persalinans' => MasterTempatPersalinan::all(),
             'jenis_kelahirans' => MasterJenisKelahiran::all(),
             'pertolongan_persalinans' => MasterPertolonganPersalinan::all(),
-            'provinsis' => MasterProvinsi::all(),
-            'kabupatens' => MasterKabupaten::all(),
-            'kecamatans' => MasterKecamatan::all(),
-            'desas' => MasterDesa::all(),
         ]);
     }
 
@@ -149,12 +139,6 @@ class KelahiranController extends Controller
             'kelahiran_panjang' => 'nullable|integer|min:0',
             'kelahiran_nikibu' => 'nullable|string|size:16|exists:data_penduduk,nik',
             'kelahiran_nikayah' => 'nullable|string|size:16|exists:data_penduduk,nik',
-            'kelahiran_rw' => 'nullable|string|max:3',
-            'kelahiran_rt' => 'nullable|string|max:3',
-            'kdprovinsi' => 'nullable|integer|exists:master_provinsi,kdprovinsi',
-            'kdkabupaten' => 'nullable|integer|exists:master_kabupaten,kdkabupaten',
-            'kdkecamatan' => 'nullable|integer|exists:master_kecamatan,kdkecamatan',
-            'kddesa' => 'nullable|integer|exists:master_desa,kddesa',
         ]);
 
         if ($validator->fails()) {
@@ -184,9 +168,6 @@ class KelahiranController extends Controller
             'tanggal_lahir' => $penduduk->penduduk_tanggallahir ? \Carbon\Carbon::parse($penduduk->penduduk_tanggallahir)->format('d/m/Y') : '-',
             'pekerjaan' => $penduduk->pekerjaan->pekerjaan ?? '-',
             'kewarganegaraan' => $penduduk->penduduk_kewarganegaraan ?? '-',
-            'alamat' => ($penduduk->provinsi->provinsi ?? '-') . ', ' . ($penduduk->kabupaten->kabupaten ?? '-') . ', ' . ($penduduk->kecamatan->kecamatan ?? '-') . ', ' . ($penduduk->desa->desa ?? '-'),
-            'rw' => $penduduk->rw ?? '-',
-            'rt' => $penduduk->rt ?? '-',
         ]);
     }
         /**

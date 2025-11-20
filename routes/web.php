@@ -189,7 +189,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/laporan/kualitasibuhamil/pdf', [App\Http\Controllers\KualitasIbuHamilController::class, 'exportPdf'])->name('kualitasibuhamil.exportAnalisisPDF');
     Route::get('/laporan/sosialekonomi/pdf', [App\Http\Controllers\SosialEkonomiController::class, 'exportPdf'])->name('sosialekonomi.exportAnalisisPDF');
     Route::get('/laporan/usahaart/pdf', [App\Http\Controllers\UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
-    Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('penduduk.exportAnalisisPDF');
     Route::get('laporan/kelahiran/pdf', [KelahiranController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
     Route::get('/laporan/lembagadesa/pdf', [App\Http\Controllers\LembagaDesaController::class, 'exportPdf'])->name('lembagadesa.exportAnalisisPDF');
     Route::get('laporan/keluarga/pdf', [KeluargaController::class, 'exportPdf'])->name('keluarga.exportAnalisisPDF');

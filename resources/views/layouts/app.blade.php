@@ -151,6 +151,7 @@
 
             <!-- PROGRESS BAR (HANYA DI VOICE) -->
             {{ $progresskeluarga ?? '' }}
+            {{ $progresspenduduk ?? '' }}
 
         <main class="flex-1 overflow-y-auto">
             {{ $slot }}

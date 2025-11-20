@@ -18,7 +18,7 @@ class DataLembagaDesaSeeder extends Seeder
         foreach ($nikList as $nik) {
             $lembagadesa = ['nik' => $nik];
             for ($i = 1; $i <= 9; $i++) {
-                $lembagadesa["lemdes_$i"] = rand(1, 4);
+                $lembagadesa["lemdes_$i"] = rand(1, 3);
             }
 
             DB::table('data_lembagadesa')->insert($lembagadesa);

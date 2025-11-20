@@ -18,7 +18,7 @@ class DataLembagaEkonomiSeeder extends Seeder
         foreach ($nikList as $nik) {
             $lembagaekonomi = ['nik' => $nik];
             for ($i = 1; $i <= 75; $i++) {
-                $lembagaekonomi["lemek_$i"] = rand(1, 4);
+                $lembagaekonomi["lemek_$i"] = rand(1, 3);
             }
 
             DB::table('data_lembagaekonomi')->insert($lembagaekonomi);

@@ -18,7 +18,7 @@ class DataProgramSertaSeeder extends Seeder
         foreach ($nikList as $nik) {
             $programserta = ['nik' => $nik];
             for ($i = 1; $i <= 8; $i++) {
-                $programserta["programserta_$i"] = rand(1, 4);
+                $programserta["programserta_$i"] = rand(1, 3);
             }
 
             DB::table('data_programserta')->insert($programserta);

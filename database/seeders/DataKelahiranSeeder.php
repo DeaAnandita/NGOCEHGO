@@ -31,12 +31,6 @@ class DataKelahiranSeeder extends Seeder
                 'kelahiran_panjang' => fake()->numberBetween(45, 55),   // cm
                 'kelahiran_nikibu' => DB::table('data_penduduk')->inRandomOrder()->value('nik'),
                 'kelahiran_nikayah' => DB::table('data_penduduk')->inRandomOrder()->value('nik'),
-                'kelahiran_rw' => str_pad(fake()->numberBetween(1, 5), 2, '0', STR_PAD_LEFT),
-                'kelahiran_rt' => str_pad(fake()->numberBetween(1, 5), 2, '0', STR_PAD_LEFT),
-                'kdprovinsi' => 1,
-                'kdkabupaten' => 1,
-                'kdkecamatan' => fake()->numberBetween(1, 3),
-                'kddesa' => fake()->numberBetween(1, 5),
                 'created_by' => 1,
             ];
         }

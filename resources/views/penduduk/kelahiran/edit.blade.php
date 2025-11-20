@@ -143,59 +143,6 @@
                         </div>
                     </div>
 
-                    <!-- Wilayah Datang -->
-                    <div>
-                        <h3 class="text-gray-700 font-semibold mb-2">Wilayah Datang</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
-                                <select name="kdprovinsi" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Provinsi --</option>
-                                    @foreach($provinsis as $d)
-                                        <option value="{{ $d->kdprovinsi }}" {{ $kelahiran->kdprovinsi == $d->kdprovinsi ? 'selected' : '' }}>{{ $d->provinsi }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten</label>
-                                <select name="kdkabupaten" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Kabupaten --</option>
-                                    @foreach($kabupatens as $d)
-                                        <option value="{{ $d->kdkabupaten }}" {{ $kelahiran->kdkabupaten == $d->kdkabupaten ? 'selected' : '' }}>{{ $d->kabupaten }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
-                                <select name="kdkecamatan" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Kecamatan --</option>
-                                    @foreach($kecamatans as $d)
-                                        <option value="{{ $d->kdkecamatan }}" {{ $kelahiran->kdkecamatan == $d->kdkecamatan ? 'selected' : '' }}>{{ $d->kecamatan }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan</label>
-                                <select name="kddesa" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Desa --</option>
-                                    @foreach($desas as $d)
-                                        <option value="{{ $d->kddesa }}" {{ $kelahiran->kddesa == $d->kddesa ? 'selected' : '' }}>{{ $d->desa }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">RW</label>
-                                <input type="text" name="kelahiran_rw" value="{{ old('kelahiran_rw', $kelahiran->kelahiran_rw) }}"
-                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" maxlength="3">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">RT</label>
-                                <input type="text" name="kelahiran_rt" value="{{ old('kelahiran_rt', $kelahiran->kelahiran_rt) }}"
-                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" maxlength="3">
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Tombol -->
                     <div class="mt-6 flex space-x-4 justify-end">
                         <button type="submit"
