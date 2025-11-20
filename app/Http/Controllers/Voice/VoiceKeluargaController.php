@@ -158,7 +158,13 @@ class VoiceKeluargaController extends Controller
                     // 'kdkecamatan' => $data['kdkecamatan'] ?? null,
                     // 'kddesa' => $data['kddesa'] ?? null,
                 ]);
-
+                $keluarga->update([
+                    'wilayah_datang_required' => $data['wilayah_datang_required'] ?? null,
+                    'kdprovinsi' => $data['kdprovinsi'] ?? null,
+                    'kdkabupaten' => $data['kdkabupaten'] ?? null,
+                    'kdkecamatan' => $data['kdkecamatan'] ?? null,
+                    'kddesa' => $data['kddesa'] ?? null,
+                ]);
                 // Simpan Prasarana Dasar
                 DataPrasaranaDasar::create([
                     'no_kk' => $keluarga->no_kk,
@@ -283,5 +289,36 @@ class VoiceKeluargaController extends Controller
                 'error' => 'Gagal menyimpan data: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    // Wilayah Datang
+    public function getKabupaten($kdprovinsi)
+    {
+        $kabupaten = DB::table('master_kabupaten')
+            ->where('kdprovinsi', $kdprovinsi)
+            ->orderBy('kabupaten')
+            ->pluck('kabupaten', 'kdkabupaten');
+
+        return response()->json($kabupaten);
+    }
+
+    public function getKecamatan($kdkabupaten)
+    {
+        $kecamatan = DB::table('master_kecamatan')
+            ->where('kdkabupaten', $kdkabupaten)
+            ->orderBy('kecamatan')
+            ->pluck('kecamatan', 'kdkecamatan');
+
+        return response()->json($kecamatan);
+    }
+
+    public function getDesa($kdkecamatan)
+    {
+        $desa = DB::table('master_desa')
+            ->where('kdkecamatan', $kdkecamatan)
+            ->orderBy('desa')
+            ->pluck('desa', 'kddesa');
+
+        return response()->json($desa);
     }
 }

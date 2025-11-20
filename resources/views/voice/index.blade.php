@@ -329,7 +329,7 @@
             if(currentModul===7&&step===0) html+=`<div class="bg-orange-50 border border-orange-300 text-orange-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan huruf <strong>a</strong> sampai <strong>f</strong> saja</div>`;
             if(currentModul===8&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">YA</strong> / <strong class="mx-2">TIDAK</strong></div>`;
             if(currentModul===9&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka saja atau "tidak ada"</div>`;
-            if(currentModul===10&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">A</strong> untuk ADA / <strong class="mx-2">B</strong> untuk TIDAK ADA</div>`;
+            if(currentModul===10&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2"></strong>ADA <strong class="mx-2">atau</strong> TIDAK ADA</div>`;
             if(currentModul===11&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">1</strong> ADA / <strong class="mx-2">2</strong> PERNAH ADA / <strong class="mx-2">3</strong> TIDAK ADA</div>`;
             if(currentModul===12 && step===0){
                 html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
@@ -342,8 +342,8 @@
             html+=`<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
 
             if(q.type==="select"){
-                let cols = currentModul===3?3:(currentModul===7?3:(currentModul===8?2:(currentModul===10?3:4)));
-                let gridClass = currentModul===8?'bangun grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-3 max-w-md mx-auto justify-items-center':`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto`;
+                let cols = currentModul===3?2:(currentModul===7?3:(currentModul===8?3:(currentModul===10?2:4)));
+                let gridClass = `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto`;
                 html+=`<div class="${gridClass}">`;
                 Object.entries(q.options).forEach(([id,nama])=>{
                     const sel=answers[q.field]==id?'selected':'';
@@ -394,7 +394,7 @@
             if(currentModul===6&&step===0){await speak("Modul Aset Perikanan. Jawab jumlah atau 'tidak ada'.");}
             if(currentModul===8&&step===0){await speak("Modul Bangun Keluarga. Jawab YA atau TIDAK.");}
             if(currentModul===9&&step===0){await speak("Modul Sejahtera Keluarga. Jawab dengan angka atau 'tidak ada'.");}
-            if(currentModul===10&&step===0){await speak("Modul Konflik Sosial. Jawab A jika ADA, B jika TIDAK ADA.");}
+            if(currentModul===10&&step===0){await speak("Modul Konflik Sosial. Jawab ADA, atau TIDAK ADA.");}
             // === HANYA SEKALI DI AWAL MODUL 11: Jelaskan pilihan jawaban ===
             if(currentModul === 11 && step === 0){
                 await speak("Modul Kualitas Ibu Hamil dimulai.");
@@ -412,7 +412,15 @@
                 await speak("Tiga untuk TIDAK ADA");
                 await new Promise(r => setTimeout(r, 2500));
             }
-            await speak(q.label);
+            let pertanyaanDibaca = q.label
+                .replace(/\//g, ' atau ')
+                .replace(/\&/g, ' dan ')
+                .replace(/SARA/g, 'sara')
+                .replace(/HIV\/AIDS/g, 'HIV AIDS')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            await speak(pertanyaanDibaca);
 
             // Baca pilihan hanya untuk modul yang butuh (kecuali modul 7)
             if(q.type==="select" && currentModul !== 7 && ![3,8,10,11].includes(currentModul)){
@@ -422,19 +430,63 @@
                     if(i<opts.length-1)await new Promise(r=>setTimeout(r,100));
                 }
             }
-            if(currentModul===10){
-                await speak("A. ADA"); await new Promise(r=>setTimeout(r,400)); await speak("B. TIDAK ADA");
-            }
 
             document.getElementById('voice-status').innerText='Mendengarkan...';
         }
 
         async function processVoiceAnswer(text){
-            if(isSpeaking)return;
-            const q=questions[currentModul][step];
+            if(isSpeaking) return;
+            const q = questions[currentModul][step];
             let value = text;
 
-            // KHUSUS SARPRAS KERJA (MODUL 7) — HANYA MENERIMA HURUF a-f
+            // === KHUSUS WILAYAH DATANG (provinsi, kab, kec, desa) ===
+            if(["kdprovinsi", "kdkabupaten", "kdkecamatan", "kddesa"].includes(q.field)){
+                const match = findBestMatch(text, q.options);
+                if(!match){
+                    await speak("Maaf, nama wilayah tidak dikenali. Ulangi dengan jelas.");
+                    return;
+                }
+                value = match[0];
+                answers[q.field] = value;
+
+                const card = document.querySelector(`.option-card[data-value="${value}"]`);
+                if(card){
+                    document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
+                    card.classList.add('selected');
+                }
+
+                saveData();
+                setTimeout(async()=>{
+                    step++;
+                    if(step < questions[currentModul].length){
+                        renderQuestion();
+                        if(isListening) await speakQuestionAndOptions();
+                    }else{
+                        isReviewMode=true; 
+                        modulStatus[currentModul]='completed'; 
+                        saveData();
+                        updateProgressSteps();
+                        checkAllCompletedAndShowSimpanBtn();
+                        showReviewForm();
+                    }
+                },1200);
+                return;
+            }
+
+            // === DETEKSI MUTASI "DATANG" → TAMBAH 4 PERTANYAAN WILAYAH ===
+            if(currentModul === 1 && q.field === "kdmutasimasuk" && normalize(text).includes('datang')){
+                questions[1].splice(2, 0, ...wilayahQuestions); // insert setelah mutasi
+                answers.wilayah_datang_required = true;
+                
+                saveData();
+                setTimeout(async () => {
+                    step = 2; // langsung ke provinsi
+                    renderQuestion();
+                    if(isListening) await speakQuestionAndOptions();
+                }, 1200);
+                return;
+            }
+
             if(currentModul === 7){
                 const n = normalize(text);
                 const map = {
@@ -489,7 +541,25 @@
                 if(!['1','2'].includes(value)){await speak("Jawab ya atau tidak");return;}
             }
             else if(q.type==="select" && currentModul===10){
-                value = normalize(text).includes('a')||normalize(text).includes('ada') ? '1' : '2';
+                const n = normalize(text);
+                
+                // Prioritas: "tidak ada" harus menang atas "ada"
+                if(n.includes('tidak ada') || n.includes('nggak ada') || n.includes('ga ada') || n.includes('belum pernah') || n.includes('tidak pernah')){
+                    value = '2'; // TIDAK ADA
+                }
+                else if(n.includes('ada') || n.includes('pernah') || n.includes('iya') || n.includes('ya')){
+                    value = '1'; // ADA
+                }
+                else if(n.includes('b') || n.includes('dua')){
+                    value = '2';
+                }
+                else if(n.includes('a') || n.includes('satu')){
+                    value = '1';
+                }
+                else {
+                    await speak("Maaf, jawab dengan ADA atau TIDAK ADA");
+                    return;
+                }
             }
             else if(q.type==="select"){
                 const m=findBestMatch(text,q.options);
@@ -577,8 +647,67 @@
             document.getElementById('voice-status').innerText='Review data. Selesaikan semua modul untuk simpan.';
             document.getElementById('reviewForm').classList.remove('hidden');
             const container=document.getElementById('reviewFields'); container.innerHTML='';
-            if(currentModul===1){
-                container.innerHTML+=`<div><label class="block text-xs font-medium mb-1">Tanggal Mutasi</label><input type="date" name="keluarga_tanggalmutasi" value="${answers.keluarga_tanggalmutasi}" class="w-full border rounded-lg p-2 text-sm"></div>`;
+            if(currentModul===1 && q.field==="kdmutasimasuk" && normalize(text).includes('datang')){
+                questions[1].push(...wilayahQuestions);
+                document.getElementById('wilayahDatangReview').classList.remove('hidden');
+                answers.wilayah_datang_required = true;  // TAMBAHKAN BARIS INI
+            }
+            if(answers.wilayah_datang_required){
+                container.innerHTML += `
+                    <div class="col-span-1 md:col-span-2 bg-teal-50 p-4 rounded-xl">
+                        <h4 class="font-bold text-sm mb-3">Wilayah Asal (Datang dari Luar)</h4>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div><label>Provinsi</label>
+                                <select name="kdprovinsi" id="review_kdprovinsi" class="w-full border rounded-lg p-2">
+                                    <option value="">-- Pilih --</option>
+                                    ${Object.entries(provinsiOptions).map(([k,v])=>`<option value="${k}" ${answers.kdprovinsi==k?'selected':''}>${v}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div><label>Kabupaten/Kota</label>
+                                <select name="kdkabupaten" id="review_kdkabupaten" class="w-full border rounded-lg p-2">
+                                    <option value="">-- Pilih Provinsi Dulu --</option>
+                                </select>
+                            </div>
+                            <div><label>Kecamatan</label>
+                                <select name="kdkecamatan" id="review_kdkecamatan" class="w-full border rounded-lg p-2">
+                                    <option value="">-- Pilih Kab/Kota Dulu --</option>
+                                </select>
+                            </div>
+                            <div><label>Desa/Kelurahan</label>
+                                <select name="kddesa" id="review_kddesa" class="w-full border rounded-lg p-2">
+                                    <option value="">-- Pilih Kecamatan Dulu --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Auto-load kabupaten jika provinsi sudah dipilih
+                if(answers.kdprovinsi){
+                    setTimeout(() => {
+                        window.getWilayah('kabupaten', answers.kdprovinsi, 'review_kdkabupaten');
+                        if(answers.kdkabupaten){
+                            setTimeout(() => window.getWilayah('kecamatan', answers.kdkabupaten, 'review_kdkecamatan'), 500);
+                            if(answers.kdkecamatan){
+                                setTimeout(() => window.getWilayah('desa', answers.kdkecamatan, 'review_kddesa'), 1000);
+                            }
+                        }
+                    }, 300);
+                }
+
+                // Event listener untuk review
+                document.getElementById('review_kdprovinsi')?.addEventListener('change', function(){
+                    window.getWilayah('kabupaten', this.value, 'review_kdkabupaten');
+                    document.getElementById('review_kdkecamatan').innerHTML = '<option>-- Pilih Kab/Kota Dulu --</option>';
+                    document.getElementById('review_kddesa').innerHTML = '<option>-- Pilih Kecamatan Dulu --</option>';
+                });
+                document.getElementById('review_kdkabupaten')?.addEventListener('change', function(){
+                    window.getWilayah('kecamatan', this.value, 'review_kdkecamatan');
+                    document.getElementById('review_kddesa').innerHTML = '<option>-- Pilih Kecamatan Dulu --</option>';
+                });
+                document.getElementById('review_kdkecamatan')?.addEventListener('change', function(){
+                    window.getWilayah('desa', this.value, 'review_kddesa');
+                });
             }
             questions[currentModul].forEach(q=>{
                 if(!answers[q.field])return;
@@ -680,6 +809,38 @@
                 }
             });
         });
+
+        // GANTI fungsi window.getWilayah jadi ini:
+        window.getWilayah = async function(tipe, parentId, targetId) {
+            if (!parentId) {
+                document.getElementById(targetId).innerHTML = '<option value="">-- Pilih Dulu --</option>';
+                return;
+            }
+
+            const select = document.getElementById(targetId);
+            select.innerHTML = '<option>-- Memuat... --</option>';
+            select.disabled = true;
+
+            try {
+                let url;
+                if (tipe === 'kabupaten') url = `/get-kabupaten/${parentId}`;
+                if (tipe === 'kecamatan') url = `/get-kecamatan/${parentId}`;
+                if (tipe === 'desa') url = `/get-desa/${parentId}`;
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                select.innerHTML = '<option value="">-- Pilih --</option>';
+                Object.entries(data).forEach(([id, nama]) => {
+                    select.innerHTML += `<option value="${id}">${nama}</option>`;
+                });
+            } catch (err) {
+                console.error(err);
+                select.innerHTML = '<option value="">Gagal memuat data</option>';
+            } finally {
+                select.disabled = false;
+            }
+        };
 
         initFresh();
     </script>

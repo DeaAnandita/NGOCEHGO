@@ -50,9 +50,9 @@ Route::prefix('voice')->group(function () {
 });
 
 // Wilayah API (tidak perlu prefix admin)
-Route::get('/get-kabupaten/{kdprovinsi}', [WilayahController::class, 'getKabupaten']);
-Route::get('/get-kecamatan/{kdkabupaten}', [WilayahController::class, 'getKecamatan']);
-Route::get('/get-desa/{kdkecamatan}', [WilayahController::class, 'getDesa']);
+Route::get('/get-kabupaten/{kdprovinsi}', [VoiceKeluargaController::class, 'getKabupaten']);
+Route::get('/get-kecamatan/{kdkabupaten}', [VoiceKeluargaController::class, 'getKecamatan']);
+Route::get('/get-desa/{kdkecamatan}', [VoiceKeluargaController::class, 'getDesa']);
 
 // ===============================
 // HALAMAN AWAL
