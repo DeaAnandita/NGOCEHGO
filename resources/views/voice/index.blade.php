@@ -126,8 +126,7 @@
             {id:1,name:"Data Keluarga"},{id:2,name:"Prasarana Dasar"},{id:3,name:"Aset Keluarga"},
             {id:4,name:"Aset Lahan Tanah"},{id:5,name:"Aset Ternak"},{id:6,name:"Aset Perikanan"},
             {id:7,name:"Sarpras Kerja"},{id:8,name:"Bangun Keluarga"},{id:9,name:"Sejahtera Keluarga"},
-            {id:10,name:"Konflik Sosial"},{id:11,name:"Kualitas Ibu Hamil"},
-            {id:12,name:"Kualitas Bayi"}
+            {id:10,name:"Konflik Sosial"},{id:11,name:"Kualitas Ibu Hamil"},{id:12,name:"Kualitas Bayi"}
         ];
 
         const questions = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[],12:[]};
@@ -250,7 +249,7 @@
         function initFresh(){
             localStorage.clear(); currentModul=1; step=0;
             answers={keluarga_tanggalmutasi:new Date().toISOString().split('T')[0]};
-            modulStatus={1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending',9:'pending',10:'pending'};
+            modulStatus={1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending',9:'pending',10:'pending',11:'pending',12:'pending'};
             isReviewMode=false;
             document.getElementById('reviewForm').classList.add('hidden');
             document.getElementById('simpanBtn').style.backgroundColor='#9ca3af'; document.getElementById('simpanBtn').disabled=true;
@@ -399,19 +398,19 @@
             // === HANYA SEKALI DI AWAL MODUL 11: Jelaskan pilihan jawaban ===
             if(currentModul === 11 && step === 0){
                 await speak("Modul Kualitas Ibu Hamil dimulai.");
-                await speak("Untuk setiap pertanyaan, jawab dengan salah satu dari pilihan berikut:");
-                await speak("Satu. ADA");
-                await speak("Dua. PERNAH ADA");
-                await speak("Tiga. TIDAK ADA");
-                await new Promise(r => setTimeout(r, 2000));
+                await speak("Untuk setiap pertanyaan, jawab dengan:");
+                await speak("Satu untuk ADA");
+                await speak("Dua untuk PERNAH ADA");
+                await speak("Tiga untuk TIDAK ADA");
+                await new Promise(r => setTimeout(r, 2500));
             }
             if(currentModul === 12 && step === 0){
                 await speak("Modul Kualitas Bayi dimulai.");
-                await speak("Untuk setiap pertanyaan, jawab dengan salah satu dari pilihan berikut:");
-                await speak("Satu. ADA");
-                await speak("Dua. PERNAH ADA");
-                await speak("Tiga. TIDAK ADA");
-                await new Promise(r => setTimeout(r, 2000));
+                await speak("Untuk setiap pertanyaan, jawab dengan:");
+                await speak("Satu untuk ADA");
+                await speak("Dua untuk PERNAH ADA");
+                await speak("Tiga untuk TIDAK ADA");
+                await new Promise(r => setTimeout(r, 2500));
             }
             await speak(q.label);
 
@@ -462,15 +461,19 @@
                 }
                 document.getElementById('inputAnswer').value=jawabLahanOptions[value]||value;
             }
-            else if(q.isTernak||q.isPerikanan){
-                const n=normalize(text);
-                if(n.includes('tidak')||n.includes('ga')||n.includes('nol')||n.includes('kosong'))value='0';
-                else{
-                    const m=text.match(/[\d]+/);
-                    if(!m){await speak("Ulangi dengan angka atau 'tidak ada'");return;}
-                    value=m[0];
+            else if(q.isTernak || q.isPerikanan){
+                const n = normalize(text);
+                if(n.includes('tidak') || n.includes('ga') || n.includes('nggak') || n.includes('nol') || n.includes('kosong') || n.includes('ada')){
+                    value = '0';
+                } else {
+                    const m = text.match(/\d+/);
+                    if(!m){
+                        await speak("Ulangi dengan angka jumlah atau 'tidak ada'");
+                        return;
+                    }
+                    value = m[0];
                 }
-                document.getElementById('inputAnswer').value=value;
+                document.getElementById('inputAnswer').value = value;
             }
             else if(q.isUraian){
                 const n=normalize(text);
@@ -528,33 +531,6 @@
             }
 
             // === KHUSUS MODUL 11: KUALITAS IBU HAMIL ===
-        if(currentModul === 11){
-            const n = normalize(text);
-
-            if(n.includes('ada') && !n.includes('pernah') && !n.includes('tidak')){
-                value = '1'; // ADA
-            }
-            else if(n.includes('pernah')){
-                value = '2'; // PERNAH ADA
-            }
-            else if(n.includes('tidak ada') || n.includes('nggak') || n.includes('ga ada') || n.includes('ga') || n.includes('tidak')){
-                value = '3'; // TIDAK ADA
-            }
-            else if(n.includes('satu') || n.match(/^\s*1\s*$/)){
-                value = '1';
-            }
-            else if(n.includes('dua') || n.match(/^\s*2\s*$/)){
-                value = '2';
-            }
-            else if(n.includes('tiga') || n.match(/^\s*3\s*$/)){
-                value = '3';
-            }
-            else {
-                await speak("Maaf, tidak dikenali. Ulangi dengan: ADA, PERNAH ADA, atau TIDAK ADA");
-                return;
-            }
-        }
-
         if(currentModul === 11 || currentModul === 12){
             const n = normalize(text);
 
@@ -577,7 +553,7 @@
                 value = '3';
             }
             else {
-                await speak("Maaf, tidak dikenali. Ulangi dengan: ADA, PERNAH ADA, atau TIDAK ADA");
+                await speak("Maaf tidak dikenali. Ulangi: ADA, PERNAH ADA, atau TIDAK ADA");
                 return;
             }
         }

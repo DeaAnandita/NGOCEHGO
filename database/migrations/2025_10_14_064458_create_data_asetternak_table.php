@@ -13,7 +13,7 @@ return new class extends Migration
 
             // 40 kolom aseternak (hasil jawaban, 0/1)
             for ($i = 1; $i <= 24; $i++) {
-                $table->tinyInteger("asetternak_$i")->nullable()->default(0);
+                $table->Integer("asetternak_$i")->nullable()->default(0);
             }
 
             // relasi foreign key

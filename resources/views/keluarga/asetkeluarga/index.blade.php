@@ -106,8 +106,9 @@
                                         <td class="border border-gray-200 px-4 py-2 truncate">{{ $aset->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
                                         @for ($i = 1; $i <= 41; $i++)
                                             <td class="border border-gray-200 px-2 py-2 text-left truncate">
-                                                <span class="text-xs px-2 py-1 rounded-full inline-block max-w-[100%]" title="{{ $masterJawab[$aset->{"asetkeluarga_$i"}] }}">
-                                                    {{ $masterJawab[$aset->{"asetkeluarga_$i"}] }}
+                                                <span class="text-xs px-2 py-1 rounded-full 
+                                                    ">
+                                                    {{ $masterJawab[$aset->{"asetkeluarga_$i"}] ?? ($aset->{"asetkeluarga_$i"} == 1 ? 'Ya' : 'Tidak') }}
                                                 </span>
                                             </td>
                                         @endfor
