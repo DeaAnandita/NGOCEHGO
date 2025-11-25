@@ -72,6 +72,16 @@
         </div>
     </div>
 
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all duration-300 scale-100">
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
+                <div id="loadingBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-300" style="width:0%"></div>
+            </div>
+            <p id="loadingText" class="text-lg font-semibold text-gray-800 mb-2">Menyimpan data...</p>
+            <p class="text-sm text-gray-500">Proses penyimpanan 12 modul data keluarga</p>
+        </div>
+    </div>
+
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
@@ -268,10 +278,21 @@
             const a=localStorage.getItem('voiceAnswers'); if(a)answers=JSON.parse(a);
             const s=localStorage.getItem('modulStatus'); if(s)modulStatus=JSON.parse(s);
             const st=localStorage.getItem(`step_${id}`); const rv=localStorage.getItem(`review_${id}`);
-            step = (modulStatus[id]==='completed'&&rv==='true') ? (st?parseInt(st):0) : (st?parseInt(st):0);
-            isReviewMode = (modulStatus[id]==='completed'&&rv==='true');
+            if(modulStatus[id] === 'completed') {
+                isReviewMode = true;
+                step = questions[id].length;
+            } else {
+                isReviewMode = false;
+                step = st ? parseInt(st) : 0;
+            }
             currentModul=id;
-            Object.keys(modulStatus).forEach(k=>{modulStatus[k]=(k==id?'active':(modulStatus[k]==='completed'?'completed':'pending'));});
+            Object.keys(modulStatus).forEach(k => {
+                if (k == id) {
+                    modulStatus[k] = modulStatus[k] === 'completed' ? 'completed' : 'active';
+                } else {
+                    modulStatus[k] = modulStatus[k] === 'completed' ? 'completed' : 'pending';
+                }
+            });
         }
 
         function updateProgressSteps(){
@@ -293,7 +314,11 @@
             document.getElementById('quizArea').innerHTML=''; document.getElementById('voice-status').innerText='Tekan mic untuk mulai merekam...';
             document.getElementById('modulTitle').textContent=modules.find(m=>m.id===id).name;
             updateProgressSteps(); checkAllCompletedAndShowSimpanBtn();
-            modulStatus[id]==='completed'&&isReviewMode?showReviewForm():renderQuestion();
+            if(modulStatus[id] === 'completed') {
+                showReviewForm();
+            } else {
+                renderQuestion();
+            }
         }
 
         function stopListening(){
@@ -331,7 +356,7 @@
             if(currentModul===9&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka saja atau "tidak ada"</div>`;
             if(currentModul===10&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2"></strong>ADA <strong class="mx-2">atau</strong> TIDAK ADA</div>`;
             if(currentModul===11&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">1</strong> ADA / <strong class="mx-2">2</strong> PERNAH ADA / <strong class="mx-2">3</strong> TIDAK ADA</div>`;
-            if(currentModul===12 && step===0){
+            if(currentModul === 12 && step===0){
                 html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
                         Jawab: <strong class="mx-2">1</strong> ADA / 
                             <strong class="mx-2">2</strong> PERNAH ADA / 
@@ -647,11 +672,6 @@
             document.getElementById('voice-status').innerText='Review data. Selesaikan semua modul untuk simpan.';
             document.getElementById('reviewForm').classList.remove('hidden');
             const container=document.getElementById('reviewFields'); container.innerHTML='';
-            if(currentModul===1 && q.field==="kdmutasimasuk" && normalize(text).includes('datang')){
-                questions[1].push(...wilayahQuestions);
-                document.getElementById('wilayahDatangReview').classList.remove('hidden');
-                answers.wilayah_datang_required = true;  // TAMBAHKAN BARIS INI
-            }
             if(answers.wilayah_datang_required){
                 container.innerHTML += `
                     <div class="col-span-1 md:col-span-2 bg-teal-50 p-4 rounded-xl">
@@ -784,14 +804,32 @@
             });
             const fd=new FormData(this);
             const token=document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 1;
+                if(progress > 95) progress = 95;
+                document.getElementById('loadingBar').style.width = progress + '%';
+                document.getElementById('loadingText').innerText = `Menyimpan data... ${progress}%`;
+            }, 100);
             try{
                 const res=await fetch("{{ route('voice.store-all') }}",{
                     method:"POST", headers:{"X-CSRF-TOKEN":token,"Accept":"application/json"}, body:fd
                 });
                 const data=await res.json();
+                clearInterval(interval);
+                document.getElementById('loadingBar').style.width = '100%';
+                document.getElementById('loadingText').innerText = 'Data tersimpan! 100%';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                }, 1000);
                 if(data.success){localStorage.clear();alert("SEMUA DATA BERHASIL DISIMPAN!");location.reload();}
                 else alert("Gagal: "+(data.error||JSON.stringify(data)));
-            }catch(err){alert("Error: "+err.message);}
+            }catch(err){
+                clearInterval(interval);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                alert("Error: "+err.message);
+            }
             finally{btn.disabled=false;btn.innerText="Simpan Semua Data";}
         });
 

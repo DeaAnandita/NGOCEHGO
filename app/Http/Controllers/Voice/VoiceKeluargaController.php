@@ -158,13 +158,13 @@ class VoiceKeluargaController extends Controller
                     // 'kdkecamatan' => $data['kdkecamatan'] ?? null,
                     // 'kddesa' => $data['kddesa'] ?? null,
                 ]);
-                $keluarga->update([
-                    'wilayah_datang_required' => $data['wilayah_datang_required'] ?? null,
-                    'kdprovinsi' => $data['kdprovinsi'] ?? null,
-                    'kdkabupaten' => $data['kdkabupaten'] ?? null,
-                    'kdkecamatan' => $data['kdkecamatan'] ?? null,
-                    'kddesa' => $data['kddesa'] ?? null,
-                ]);
+                // $keluarga->update([
+                //     'wilayah_datang_required' => $data['wilayah_datang_required'] ?? null,
+                //     'kdprovinsi' => $data['kdprovinsi'] ?? null,
+                //     'kdkabupaten' => $data['kdkabupaten'] ?? null,
+                //     'kdkecamatan' => $data['kdkecamatan'] ?? null,
+                //     'kddesa' => $data['kddesa'] ?? null,
+                // ]);
                 // Simpan Prasarana Dasar
                 DataPrasaranaDasar::create([
                     'no_kk' => $keluarga->no_kk,
