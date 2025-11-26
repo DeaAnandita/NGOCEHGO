@@ -120,7 +120,7 @@ class VoiceKeluargaController extends Controller
     public function storeAll(Request $request)
     {
         try {
-            // Validasi input
+            // Validasi input dasar
             $request->validate([
                 'no_kk' => 'required|digits:16|unique:data_keluarga,no_kk',
                 'kdmutasimasuk' => 'required|exists:master_mutasimasuk,kdmutasimasuk',
@@ -132,12 +132,18 @@ class VoiceKeluargaController extends Controller
                 'keluarga_alamatlengkap' => 'required|string|max:500',
                 'prasdas_luaslantai' => 'required|numeric|min:0',
                 'prasdas_jumlahkamar' => 'required|integer|min:0',
-                // Validasi wilayah jika ada
-                // 'kdprovinsi' => 'nullable|exists:master_provinsi,kdprovinsi',
-                // 'kdkabupaten' => 'nullable|exists:master_kabupaten,kdkabupaten',
-                // 'kdkecamatan' => 'nullable|exists:master_kecamatan,kdkecamatan',
-                // 'kddesa' => 'nullable|exists:master_desa,kddesa',
             ]);
+
+            // Validasi wilayah datang jika mutasi adalah "datang" (asumsi kdmutasimasuk '2' atau sesuaikan dengan data master Anda)
+            // Catatan: Ganti '2' dengan nilai kdmutasimasuk yang mewakili "datang" berdasarkan data Anda
+            if ($request->kdmutasimasuk == '3') {  // Asumsi '2' adalah mutasi datang, sesuaikan jika berbeda
+                $request->validate([
+                    'kdprovinsi' => 'required|exists:master_provinsi,kdprovinsi',
+                    'kdkabupaten' => 'required|exists:master_kabupaten,kdkabupaten',
+                    'kdkecamatan' => 'required|exists:master_kecamatan,kdkecamatan',
+                    'kddesa' => 'required|exists:master_desa,kddesa',
+                ]);
+            }
 
             $data = $request->all();
 
@@ -153,18 +159,12 @@ class VoiceKeluargaController extends Controller
                     'keluarga_rw' => $data['keluarga_rw'],
                     'keluarga_rt' => $data['keluarga_rt'],
                     'keluarga_alamatlengkap' => $data['keluarga_alamatlengkap'],
-                    // 'kdprovinsi' => $data['kdprovinsi'] ?? null,
-                    // 'kdkabupaten' => $data['kdkabupaten'] ?? null,
-                    // 'kdkecamatan' => $data['kdkecamatan'] ?? null,
-                    // 'kddesa' => $data['kddesa'] ?? null,
+                    'kdprovinsi' => $data['kdprovinsi'] ?? null,
+                    'kdkabupaten' => $data['kdkabupaten'] ?? null,
+                    'kdkecamatan' => $data['kdkecamatan'] ?? null,
+                    'kddesa' => $data['kddesa'] ?? null,
                 ]);
-                // $keluarga->update([
-                //     'wilayah_datang_required' => $data['wilayah_datang_required'] ?? null,
-                //     'kdprovinsi' => $data['kdprovinsi'] ?? null,
-                //     'kdkabupaten' => $data['kdkabupaten'] ?? null,
-                //     'kdkecamatan' => $data['kdkecamatan'] ?? null,
-                //     'kddesa' => $data['kddesa'] ?? null,
-                // ]);
+
                 // Simpan Prasarana Dasar
                 DataPrasaranaDasar::create([
                     'no_kk' => $keluarga->no_kk,
@@ -294,31 +294,31 @@ class VoiceKeluargaController extends Controller
     // Wilayah Datang
     public function getKabupaten($kdprovinsi)
     {
-        $kabupaten = DB::table('master_kabupaten')
-            ->where('kdprovinsi', $kdprovinsi)
-            ->orderBy('kabupaten')
-            ->pluck('kabupaten', 'kdkabupaten');
-
-        return response()->json($kabupaten);
+        return response()->json(
+            \DB::table('master_kabupaten')
+                ->where('kdprovinsi', $kdprovinsi)
+                ->orderBy('kabupaten')
+                ->pluck('kabupaten', 'kdkabupaten')
+        );
     }
 
     public function getKecamatan($kdkabupaten)
     {
-        $kecamatan = DB::table('master_kecamatan')
-            ->where('kdkabupaten', $kdkabupaten)
-            ->orderBy('kecamatan')
-            ->pluck('kecamatan', 'kdkecamatan');
-
-        return response()->json($kecamatan);
+        return response()->json(
+            \DB::table('master_kecamatan')
+                ->where('kdkabupaten', $kdkabupaten)
+                ->orderBy('kecamatan')
+                ->pluck('kecamatan', 'kdkecamatan')
+        );
     }
 
     public function getDesa($kdkecamatan)
     {
-        $desa = DB::table('master_desa')
-            ->where('kdkecamatan', $kdkecamatan)
-            ->orderBy('desa')
-            ->pluck('desa', 'kddesa');
-
-        return response()->json($desa);
+        return response()->json(
+            \DB::table('master_desa')
+                ->where('kdkecamatan', $kdkecamatan)
+                ->orderBy('desa')
+                ->pluck('desa', 'kddesa')
+        );
     }
 }
