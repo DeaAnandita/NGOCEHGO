@@ -46,10 +46,10 @@ return new class extends Migration
 
             // Wilayah datang (jika mutasi datang)
             $table->integer('kdprovinsi')->nullable();
-            $table->integer('kdkabupaten')->nullable();
-            $table->integer('kdkecamatan')->nullable();
-            $table->integer('kddesa')->nullable();
-
+            $table->bigInteger('kdkabupaten')->nullable();
+            $table->bigInteger('kdkecamatan')->nullable();
+            $table->bigInteger('kddesa')->nullable();
+            
             // Foreign key
             $table->foreign('no_kk')->references('no_kk')->on('data_keluarga')->onDelete('cascade');
             $table->foreign('kdmutasimasuk')->references('kdmutasimasuk')->on('master_mutasimasuk')->onDelete('set null');

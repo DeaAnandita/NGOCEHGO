@@ -54,6 +54,11 @@ Route::get('/get-kabupaten/{kdprovinsi}', [VoiceKeluargaController::class, 'getK
 Route::get('/get-kecamatan/{kdkabupaten}', [VoiceKeluargaController::class, 'getKecamatan']);
 Route::get('/get-desa/{kdkecamatan}', [VoiceKeluargaController::class, 'getDesa']);
 
+// routes/web.php (bisa juga api.php kalau mau pakai prefix /api)
+Route::get('/api/wilayah/kabupaten/{kdprovinsi}', [App\Http\Controllers\KeluargaController::class, 'kabupaten']);
+Route::get('/api/wilayah/kecamatan/{kdkabupaten}', [App\Http\Controllers\KeluargaController::class, 'kecamatan']);
+Route::get('/api/wilayah/desa/{kdkecamatan}',     [App\Http\Controllers\KeluargaController::class, 'desa']);
+
 // ===============================
 // HALAMAN AWAL
 // ===============================

@@ -104,44 +104,119 @@
 
                     {{-- Wilayah Datang (muncul saat mutasi datang) --}}
                     <div x-show="isDatang" x-transition>
-                        <h3 class="text-gray-700 font-semibold mb-2 mt-4">Wilayah Datang</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <h3 class="text-gray-700 font-semibold mb-4 mt-6">Wilayah Asal (Datang Dari)</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            x-data="{
+                                provinsi: '{{ old('kdprovinsi') }}',
+                                kabupaten: '{{ old('kdkabupaten') }}',
+                                kecamatan: '{{ old('kdkecamatan') }}',
+                                desa: '{{ old('kddesa') }}',
+
+                                kabupatens: [],
+                                kecamatans: [],
+                                desas: [],
+
+                                async loadKabupaten() {
+                                    if (!this.provinsi) {
+                                        this.kabupatens = []; this.kabupaten = ''; this.resetLower();
+                                        return;
+                                    }
+                                    const res = await fetch(`/api/wilayah/kabupaten/${this.provinsi}`);
+                                    this.kabupatens = await res.json();
+                                    this.kabupaten = '';
+                                    this.resetLower();
+                                },
+                                async loadKecamatan() {
+                                    if (!this.kabupaten) {
+                                        this.kecamatans = []; this.kecamatan = ''; this.desas = []; this.desa = '';
+                                        return;
+                                    }
+                                    const res = await fetch(`/api/wilayah/kecamatan/${this.kabupaten}`);
+                                    this.kecamatans = await res.json();
+                                    this.kecamatan = '';
+                                    this.desas = []; this.desa = '';
+                                },
+                                async loadDesa() {
+                                    if (!this.kecamatan) {
+                                        this.desas = []; this.desa = '';
+                                        return;
+                                    }
+                                    const res = await fetch(`/api/wilayah/desa/${this.kecamatan}`);
+                                    this.desas = await res.json();
+                                },
+                                resetLower() {
+                                    this.kecamatans = []; this.kecamatan = '';
+                                    this.desas = []; this.desa = '';
+                                }
+                            }"
+                            x-init="provinsi && loadKabupaten(); kabupaten && loadKecamatan(); kecamatan && loadDesa();">
+
+                            <!-- Provinsi -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
-                                <select name="kdprovinsi" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <select x-model="provinsi" @change="loadKabupaten()"
+                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                     <option value="">-- Pilih Provinsi --</option>
-                                    @foreach($provinsis as $d)
-                                        <option value="{{ $d->kdprovinsi }}">{{ $d->provinsi }}</option>
+                                    @foreach($provinsis as $p)
+                                        <option value="{{ $p->kdprovinsi }}">{{ $p->provinsi }}</option>
                                     @endforeach
                                 </select>
+                                <input type="hidden" name="kdprovinsi" :value="provinsi">
+                                @error('kdprovinsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
+
+                            {{-- Kabupaten --}}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten</label>
-                                <select name="kdkabupaten" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Provinsi Dahulu --</option>
-                                    @foreach($kabupatens as $d)
-                                        <option value="{{ $d->kdkabupaten }}">{{ $d->kabupaten }}</option>
-                                    @endforeach
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota</label>
+                                <select x-model="kabupaten" @change="loadKecamatan()"
+                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        :disabled="!provinsi">
+                                    <option value="">-- Pilih Kabupaten/Kota --</option>
+                                    <template x-for="kab in kabupatens" :key="kab.kdkabupaten">
+                                        <option :value="kab.kdkabupaten" x-text="kab.kabupaten"></option>
+                                    </template>
                                 </select>
+                                <input type="hidden" name="kdkabupaten" :value="kabupaten">
+                                @error('kdkabupaten')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
+
+                            {{-- Kecamatan --}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
-                                <select name="kdkecamatan" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Kabupaten Dahulu --</option>
-                                    @foreach($kecamatans as $d)
-                                        <option value="{{ $d->kdkecamatan }}">{{ $d->kecamatan }}</option>
-                                    @endforeach
+                                <select x-model="kecamatan" @change="loadDesa()"
+                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        :disabled="!kabupaten">
+                                    <option value="">-- Pilih Kecamatan --</option>
+                                    <template x-for="kec in kecamatans" :key="kec.kdkecamatan">
+                                        <option :value="kec.kdkecamatan" x-text="kec.kecamatan"></option>
+                                    </template>
                                 </select>
+                                <input type="hidden" name="kdkecamatan" :value="kecamatan">
+                                @error('kdkecamatan')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
+
+                            {{-- Desa/Kelurahan --}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan</label>
-                                <select name="kddesa" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Kecamatan Dahulu --</option>
-                                    @foreach($desas as $d)
-                                        <option value="{{ $d->kddesa }}">{{ $d->desa }}</option>
-                                    @endforeach
+                                <select x-model="desa"
+                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        :disabled="!kecamatan">
+                                    <option value="">-- Pilih Desa/Kelurahan --</option>
+                                    <template x-for="d in desas" :key="d.kddesa">
+                                        <option :value="d.kddesa" x-text="d.desa"></option>
+                                    </template>
                                 </select>
+                                <input type="hidden" name="kddesa" :value="desa">
+                                @error('kddesa')
+                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
+
                         </div>
                     </div>
 

@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder {
             MasterBahanBakarMemasakSeeder::class,
             MasterCaraPembuanganSampahSeeder::class,
             MasterCaraPerolehanAirSeeder::class,
-            MasterDesaSeeder::class,
+            MasterWilayahLengkapSeeder::class,
             MasterDusunSeeder::class,
             MasterFasilitasTempatBabSeeder::class,
             MasterHubunganKeluargaSeeder::class,

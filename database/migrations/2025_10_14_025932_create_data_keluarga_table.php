@@ -25,18 +25,18 @@ return new class extends Migration
             $table->text('keluarga_alamatlengkap');
 
             // Wilayah datang (aktif kalau jenis mutasi = datang)
-            $table->integer('kdprovinsi')->nullable();  // relasi ke master_provinsi
-            $table->integer('kdkabupaten')->nullable(); // relasi ke master_kabupaten
-            $table->integer('kdkecamatan')->nullable(); // relasi ke master_kecamatan
-            $table->integer('kddesa')->nullable();      // relasi ke master_desa
+            $table->integer('kdprovinsi')->nullable();
+            $table->bigInteger('kdkabupaten')->nullable();
+            $table->bigInteger('kdkecamatan')->nullable();
+            $table->bigInteger('kddesa')->nullable();
 
             // Foreign key (opsional, bisa diaktifkan nanti)
-            $table->foreign('kdmutasimasuk')->references('kdmutasimasuk')->on('master_mutasimasuk')->onDelete('set null');
-            $table->foreign('kddusun')->references('kddusun')->on('master_dusun')->onDelete('set null');
             $table->foreign('kdprovinsi')->references('kdprovinsi')->on('master_provinsi')->onDelete('set null');
             $table->foreign('kdkabupaten')->references('kdkabupaten')->on('master_kabupaten')->onDelete('set null');
             $table->foreign('kdkecamatan')->references('kdkecamatan')->on('master_kecamatan')->onDelete('set null');
             $table->foreign('kddesa')->references('kddesa')->on('master_desa')->onDelete('set null');
+            $table->foreign('kdmutasimasuk')->references('kdmutasimasuk')->on('master_mutasimasuk')->onDelete('set null');
+            $table->foreign('kddusun')->references('kddusun')->on('master_dusun')->onDelete('set null');
         });
     }
 

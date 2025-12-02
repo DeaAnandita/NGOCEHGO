@@ -102,32 +102,47 @@ return new class extends Migration
             $table->integer('kdcaraperolehanair')->primary();
             $table->string('caraperolehanair');
         });
-        // 1. Migration Provinsi
+        
+        // 1. Provinsi
         Schema::create('master_provinsi', function (Blueprint $table) {
-            $table->integer('kdprovinsi')->primary();
+            $table->integer('kdprovinsi')->primary(); // 11-96 → cukup integer
             $table->string('provinsi');
         });
-        // 2. Migration Kabupaten
+
+        // 2. Kabupaten/Kota → PAKAI bigInteger
         Schema::create('master_kabupaten', function (Blueprint $table) {
-            $table->integer('kdkabupaten')->primary();
+            $table->bigInteger('kdkabupaten')->primary();     // 3301, 3171, 3578, dll
             $table->integer('kdprovinsi');
             $table->string('kabupaten');
-            $table->foreign('kdprovinsi')->references('kdprovinsi')->on('master_provinsi')->onDelete('cascade');
-        });
-        // 3. Migration Kecamatan
-        Schema::create('master_kecamatan', function (Blueprint $table) {
-            $table->integer('kdkecamatan')->primary();
-            $table->integer('kdkabupaten');
-            $table->string('kecamatan');
-            $table->foreign('kdkabupaten')->references('kdkabupaten')->on('master_kabupaten')->onDelete('cascade');
+
+            $table->foreign('kdprovinsi')
+                  ->references('kdprovinsi')
+                  ->on('master_provinsi')
+                  ->onDelete('cascade');
         });
 
-        // 4. Migration Desa
+        // 3. Kecamatan → PAKAI bigInteger
+        Schema::create('master_kecamatan', function (Blueprint $table) {
+            $table->bigInteger('kdkecamatan')->primary();     // 330101, 317101, dll
+            $table->bigInteger('kdkabupaten');
+            $table->string('kecamatan');
+
+            $table->foreign('kdkabupaten')
+                  ->references('kdkabupaten')
+                  ->on('master_kabupaten')
+                  ->onDelete('cascade');
+        });
+
+        // 4. Desa/Kelurahan → PAKAI bigInteger
         Schema::create('master_desa', function (Blueprint $table) {
-            $table->integer('kddesa')->primary();
-            $table->integer('kdkecamatan');
+            $table->bigInteger('kddesa')->primary();          // 3301020001, 3171010001, dll
+            $table->bigInteger('kdkecamatan');
             $table->string('desa');
-            $table->foreign('kdkecamatan')->references('kdkecamatan')->on('master_kecamatan')->onDelete('cascade');
+
+            $table->foreign('kdkecamatan')
+                  ->references('kdkecamatan')
+                  ->on('master_kecamatan')
+                  ->onDelete('cascade');
         });
 
         // master_fasilitastempatbab

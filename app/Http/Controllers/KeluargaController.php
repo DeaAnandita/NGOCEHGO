@@ -33,21 +33,11 @@ class KeluargaController extends Controller
 
     public function create()
     {
-        $mutasis = MasterMutasiMasuk::select('kdmutasimasuk', 'mutasimasuk')->get();
-        $dusuns = MasterDusun::select('kddusun', 'dusun')->get();
-        $provinsis = MasterProvinsi::select('kdprovinsi', 'provinsi')->get();
-        $kabupatens = MasterKabupaten::select('kdkabupaten', 'kabupaten')->get();
-        $kecamatans = MasterKecamatan::select('kdkecamatan', 'kecamatan')->get();
-        $desas = MasterDesa::select('kddesa', 'desa')->get();
+        $mutasis   = MasterMutasiMasuk::select('kdmutasimasuk', 'mutasimasuk')->get();
+        $dusuns    = MasterDusun::select('kddusun', 'dusun')->get();
+        $provinsis = MasterProvinsi::select('kdprovinsi', 'provinsi')->orderBy('provinsi')->get();
 
-        return view('keluarga.create', compact(
-            'mutasis',
-            'dusuns',
-            'provinsis',
-            'kabupatens',
-            'kecamatans',
-            'desas'
-        ));
+        return view('keluarga.create', compact('mutasis', 'dusuns', 'provinsis'));
     }
 
     public function store(Request $request)
@@ -75,23 +65,17 @@ class KeluargaController extends Controller
 
     public function edit($id)
     {
-        $keluarga = DataKeluarga::findOrFail($id);
-        $mutasis = MasterMutasiMasuk::select('kdmutasimasuk', 'mutasimasuk')->get();
-        $dusuns = MasterDusun::select('kddusun', 'dusun')->get();
-        $provinsis = MasterProvinsi::select('kdprovinsi', 'provinsi')->get();
-        $kabupatens = MasterKabupaten::select('kdkabupaten', 'kabupaten')->get();
-        $kecamatans = MasterKecamatan::select('kdkecamatan', 'kecamatan')->get();
-        $desas = MasterDesa::select('kddesa', 'desa')->get();
+        $keluarga  = DataKeluarga::findOrFail($id);
+        $mutasis   = MasterMutasiMasuk::select('kdmutasimasuk', 'mutasimasuk')->get();
+        $dusuns    = MasterDusun::select('kddusun', 'dusun')->get();
+        $provinsis = MasterProvinsi::select('kdprovinsi', 'provinsi')->orderBy('provinsi')->get();
 
-        return view('keluarga.edit', compact(
-            'keluarga',
-            'mutasis',
-            'dusuns',
-            'provinsis',
-            'kabupatens',
-            'kecamatans',
-            'desas'
-        ));
+        // Tambahkan ini 3 baris
+        $kabupatens = $keluarga->kdprovinsi ? MasterKabupaten::where('kdprovinsi', $keluarga->kdprovinsi)->orderBy('kabupaten')->get() : collect();
+        $kecamatans = $keluarga->kdkabupaten ? MasterKecamatan::where('kdkabupaten', $keluarga->kdkabupaten)->orderBy('kecamatan')->get() : collect();
+        $desas      = $keluarga->kdkecamatan ? MasterDesa::where('kdkecamatan', $keluarga->kdkecamatan)->orderBy('desa')->get() : collect();
+
+        return view('keluarga.edit', compact('keluarga', 'mutasis', 'dusuns', 'provinsis', 'kabupatens', 'kecamatans', 'desas'));
     }
 
     public function update(Request $request, $id)
@@ -126,5 +110,34 @@ class KeluargaController extends Controller
 
         return redirect()->route('dasar-keluarga.index')
             ->with('success', 'Data keluarga berhasil dihapus.');
+    }
+    public function kabupaten($kdprovinsi)
+    {
+        $kabupatens = MasterKabupaten::where('kdprovinsi', $kdprovinsi)
+            ->select('kdkabupaten', 'kabupaten')
+            ->orderBy('kabupaten')
+            ->get();
+
+        return response()->json($kabupatens);
+    }
+
+    public function kecamatan($kdkabupaten)
+    {
+        $kecamatans = MasterKecamatan::where('kdkabupaten', $kdkabupaten)
+            ->select('kdkecamatan', 'kecamatan')
+            ->orderBy('kecamatan')
+            ->get();
+
+        return response()->json($kecamatans);
+    }
+
+    public function desa($kdkecamatan)
+    {
+        $desas = MasterDesa::where('kdkecamatan', $kdkecamatan)
+            ->select('kddesa', 'desa')
+            ->orderBy('desa')
+            ->get();
+
+        return response()->json($desas);
     }
 }
