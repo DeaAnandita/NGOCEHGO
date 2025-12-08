@@ -33,6 +33,7 @@ class MasterLapanganUsahaSeeder extends Seeder
             ['kdlapanganusaha' => 19, 'lapanganusaha' => 'JASA KEMASYARAKATAN, PEMERINTAH & PERORANGAN'],
             ['kdlapanganusaha' => 20, 'lapanganusaha' => 'PEMULUNG'],
             ['kdlapanganusaha' => 21, 'lapanganusaha' => 'LAINNYA'],
+            ['kdlapanganusaha' => 22, 'lapanganusaha' => 'TIDAK MEMILIKI USAHA'],
         ]);
     }
 }

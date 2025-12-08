@@ -18,7 +18,7 @@ class MasterHubunganKeluargaSeeder extends Seeder
             ['kdhubungankeluarga' => 4, 'hubungankeluarga' => 'MENANTU'],
             ['kdhubungankeluarga' => 5, 'hubungankeluarga' => 'CUCU'],
             ['kdhubungankeluarga' => 6, 'hubungankeluarga' => 'ORANG TUA/MERTUA'],
-            ['kdhubungankeluarga' => 7, 'hubungankeluarga' => 'FAMILI LAIN'],
+            ['kdhubungankeluarga' => 7, 'hubungankeluarga' => 'KELUARGA LAIN'],
             ['kdhubungankeluarga' => 8, 'hubungankeluarga' => 'PEMBANTU RUMAH TANGGA'],
             ['kdhubungankeluarga' => 9, 'hubungankeluarga' => 'LAINNYA'],
         ]);

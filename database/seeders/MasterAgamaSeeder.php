@@ -17,7 +17,7 @@ class MasterAgamaSeeder extends Seeder
             ['kdagama' => 3, 'agama' => 'KRISTEN KATHOLIK'],
             ['kdagama' => 4, 'agama' => 'HINDU'],
             ['kdagama' => 5, 'agama' => 'BUDHA'],
-            ['kdagama' => 6, 'agama' => 'KONGHUCHU'],
+            ['kdagama' => 6, 'agama' => 'KONGHUCU'],
             ['kdagama' => 7, 'agama' => 'LAINNYA'],
         ]);
     }

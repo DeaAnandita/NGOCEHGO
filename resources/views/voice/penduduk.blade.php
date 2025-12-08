@@ -1,6 +1,5 @@
 <x-app-layout>
-
-   @slot('progresspenduduk')
+    @slot('progresspenduduk')
         <div class="sticky top-16 left-0 right-0 z-40 bg-white shadow-md border-b">
             <div class="max-w-7xl mx-auto overflow-x-auto scrollbar-hide">
                 <div id="progressSteps" class="flex items-center space-x-6 px-6 py-4 min-w-max">
@@ -9,953 +8,1524 @@
             </div>
         </div>
     @endslot
-
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <div class="max-w-7xl mx-auto py-8 px-6 space-y-6">
-
         <div class="flex justify-center">
             <button type="submit" id="simpanBtn" form="voiceForm"
                 class="px-8 py-3 text-white text-lg font-medium rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style="background-color: #9ca3af;" disabled>
-                Simpan Semua Data
+                Simpan Semua Data Penduduk
             </button>
         </div>
-
-        <div class="bg-white rounded-2xl shadow-lg p-6">
-            <h2 id="modulTitle" class="text-2xl font-bold text-center mb-6 text-green-800">Input Data Keluarga via Suara</h2>
-
+        <div id="inputArea" class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 id="modulTitle" class="text-2xl font-bold text-center mb-6 text-green-800">Input Data Penduduk via Suara</h2>
             <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
                 <div id="progressBar" class="bg-green-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
             </div>
             <div class="text-center text-sm text-gray-600 mb-4">
                 Pertanyaan <span id="currentQ">1</span> dari <span id="totalQ">7</span>
             </div>
-
-            <div id="voice-status" class="text-center text-lg font-medium text-gray-700 mb-6">
+            <div id="voice-status" class="text-center text-lg font-medium text-gray-700 mb-8">
                 Tekan mic untuk mulai merekam...
             </div>
-
             <div id="quizArea" class="space-y-6"></div>
-
-            <div class="flex flex-col items-center mt-10">
-                <div class="relative">
-                    <button id="startBtn" class="relative w-28 h-28 bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-105">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
-                        </svg>
-                    </button>
-                    <canvas id="visualizer" class="absolute inset-0 w-full h-full pointer-events-none opacity-0 transition-opacity rounded-full" width="112" height="112"></canvas>
-                </div>
-                <p class="mt-3 text-sm text-gray-500">Tekan untuk mulai merekam</p>
-            </div>
-        </div>
-
-        <div id="reviewForm" class="hidden bg-white rounded-2xl shadow-lg p-6 mt-6">
-            <h3 class="text-xl font-bold text-center mb-6 text-green-700">Review & Edit Data Penduduk</h3>
-            <form id="voiceForm" class="space-y-5">
-                @csrf
-                <div id="reviewFields" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"></div>
-
-                <!-- PERBAIKI: Ganti $provinsi → $provinsis (atau nama variabel yang benar di controller) -->
-                <div id="wilayahDatangReview" class="hidden bg-teal-50 p-4 rounded-xl md:col-span-2">
-                    <h4 class="font-bold text-sm mb-3">Wilayah Datang</h4>
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                            <label>Provinsi</label>
-                            <select name="kdprovinsi" id="kdprovinsi" class="w-full border rounded-lg p-2">
-                                <option value="">-- Pilih --</option>
-                                @foreach($provinsis ?? [] as $k => $v)   <!-- GANTI DI SINI -->
-                                    <option value="{{ $k }}">{{ $v }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div><label>Kabupaten</label><select name="kdkabupaten" id="kdkabupaten" class="w-full border rounded-lg p-2"><option>-- Pilih Provinsi --</option></select></div>
-                        <div><label>Kecamatan</label><select name="kdkecamatan" id="kdkecamatan" class="w-full border rounded-lg p-2"><option>-- Pilih Kabupaten --</option></select></div>
-                        <div><label>Desa</label><select name="kddesa" id="kddesa" class="w-full border rounded-lg p-2"><option>-- Pilih Kecamatan --</option></select></div>
+            <div class="flex items-center justify-center mt-10 space-x-4">
+                <!-- Tombol Mic / Stop -->
+                <button id="recordBtn" class="relative w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 z-10">
+                    <svg id="recordIcon" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
+                    </svg>
+                    <span class="absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-75 hidden" id="pulseRing"></span>
+                </button>
+                <!-- Visualizer + Placeholder Text -->
+                <div class="relative w-72 h-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-full shadow-inner overflow-hidden flex items-center justify-center">
+                    <canvas id="visualizer" class="absolute inset-0 w-full h-full px-6 hidden"></canvas>
+                    <div id="visualizerPlaceholder" class="absolute text-gray-500 text-sm font-medium pointer-events-none">
+                        Klik mic untuk mulai merekam
                     </div>
                 </div>
+            </div>
+        </div>
+        <div id="reviewForm" class="hidden bg-white rounded-2xl shadow-lg p-6 mt-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-center text-blue-700">Review & Edit Data Penduduk</h3>
+                <button id="restartBtn" class="px-4 py-2 bg-red-500 text-white rounded-lg shadow">Ulang Data</button>
+            </div>
+            <form id="voiceForm" class="space-y-5">
+                @csrf
+                <div id="reviewFields" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"></div>
             </form>
         </div>
     </div>
-
-<style>
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    .option-card {
-        transition: all .3s; border: 2px solid #e5e7eb; cursor: pointer;
-        padding: 1rem; border-radius: 1rem; text-align: center;
-    }
-    .option-card:hover { background-color: #f0fdfa; border-color: #14b8a6; }
-    .option-card.selected { background-color: #ccfbf1 !important; border-color: #14b8a6 !important; box-shadow: 0 0 0 3px rgba(20,184,166,.2); }
-    #startBtn.listening { background: linear-gradient(to bottom right, #ef4444, #dc2626) !important; transform: scale(1.15); }
-</style>
-
-<script>
-const mutasiOptions   = @json($mutasi ?? []);
-const provinsiOptions = @json($provinsis ?? []);
-const kabupatenData = @json($kabupatens ?? []);     // [kdprovinsi => [kdkab => nama]]
-const kecamatanData = @json($kecamatans ?? []);     // [kdkab => [kdkec => nama]]
-const desaData = @json($desas ?? []);               // [kdkec => [kddesa => nama]]           
-const masters         = @json($masters ?? []);
-
-const jenisKelaminOptions = masters.jenis_kelamin ?? {};
-const agamaOptions = masters.agama ?? {};
-const hubunganOptions = masters.hubungan_keluarga ?? {};
-const hubunganKepalaOptions = masters.hubungan_kepala_keluarga ?? {};
-const statusKawinOptions = masters.status_kawin ?? {};
-const aktaNikahOptions = masters.akta_nikah ?? {};
-const tercantumOptions = masters.tercantum_kk ?? {};
-const statusTinggalOptions = masters.status_tinggal ?? {};
-const kartuIdOptions = masters.kartu_identitas ?? {};
-const pekerjaanOptions = masters.pekerjaan ?? {};
-const getKabupatenOptions = (kdprovinsi) => kabupatenData[kdprovinsi] ?? {};
-const getKecamatanOptions = (kdkabupaten) => kecamatanData[kdkabupaten] ?? {};
-const getDesaOptions = (kdkecamatan) => desaData[kdkecamatan] ?? {};
-const partisipasiSekolahOptions = masters.partisipasi_sekolah ?? {};
-const tingkatSulitDisabilitasOptions = masters.tingkat_sulit_disabilitas ?? {};
-const statusKedudukanKerjaOptions = masters.status_kedudukan_kerja ?? {};
-const ijasahTerakhirOptions = masters.ijasah_terakhir ?? {};
-const penyakitKronisOptions = masters.penyakit_kronis ?? {};
-const pendapatanPerBulanOptions = masters.pendapatan_perbulan ?? {};
-const jenisDisabilitasOptions = masters.jenis_disabilitas ?? {};
-const lapanganUsahaOptions = masters.lapangan_usaha ?? {};
-const imunisasiOptions = masters.imunisasi ?? {};
-const tempatUsahaOptions = masters.tempat_usaha ?? {};
-const omsetUsahaOptions = masters.omset_usaha ?? {};
-const jawabProgramOptions = masters.jawab_program_serta ?? {};
-const jawabLemdesOptions = masters.jawab_lemdes ?? {};
-const jawabLemmasOptions = masters.jawab_lemmas ?? {};
-const jawabLemekOptions = masters.jawab_lemek ?? {};
-
-let currentModul = 1;
-let step = 0;
-let answers = { penduduk_tanggalmutasi: new Date().toISOString().split('T')[0] };
-let modulStatus = {1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending'};
-let recognition = null;
-let isListening = false;
-let audioContext = null, analyser = null, dataArray = null, canvas = null, ctx = null;
-let isSpeaking = false;
-let isReviewMode = false;
-
-const modules = [
-    {id: 1, name: "Data Penduduk"},
-    {id: 2, name: "Kelahiran"},
-    {id: 3, name: "Sosial Ekonomi"},
-    {id: 4, name: "Usaha ART"},
-    {id: 5, name: "Program Serta"},
-    {id: 6, name: "Lembaga Desa"},
-    {id: 7, name: "Lembaga Masyarakat"},
-    {id: 8, name: "Lembaga Ekonomi"}
-];
-
-const questions = {
-    1: [ 
-        { type: "text", label: "Sebutkan nomor NIK", field: "nik" },
-        { type: "text", label: "Sebutkan nama lengkap penduduk", field: "penduduk_namalengkap" },
-        { type: "text", label: "Dimana tempat lahirnya?", field: "penduduk_tempatlahir" },
-        { type: "date", label: "Tanggal lahir?", field: "penduduk_tanggallahir" },
-        { type: "select", label: "Apa golongan darahnya?", field: "penduduk_goldarah", options: {"A":"A","B":"B","AB":"AB","O":"O"} },
-        { type: "text", label: "Sebutkan nomor akta lahir", field: "penduduk_noaktalahir" },
-        { type: "skip",   label: "Kewarganegaraan", field: "penduduk_kewarganegaraan", default: "INDONESIA" },
-        { type: "select", label: "Apa jenis kelaminnya?", field: "kdjeniskelamin", options: jenisKelaminOptions },
-        { type: "select", label: "Apa agamanya?", field: "kdagama", options: agamaOptions },
-        { type: "text", label: "Sebutkan nomor kartu keluarga", field: "no_kk" },
-        { type: "text", label: "Sebutkan nomor urut dalam KK", field: "penduduk_nourutkk" },
-        { type: "select", label: "Apa hubungan dalam keluarga?", field: "kdhubungankeluarga", options: hubunganOptions },
-        { type: "select", label: "Apa hubungan dengan kepala keluarga?", field: "kdhubungankepalakeluarga", options: hubunganKepalaOptions },
-        { type: "select", label: "Apa status perkawinannya?", field: "kdstatuskawin", options: statusKawinOptions },
-        { type: "select", label: "Memiliki akta nikah?", field: "kdaktanikah", options: aktaNikahOptions },
-        { type: "select", label: "Apakah tercantum dalam KK?", field: "kdtercantumdalamkk", options: tercantumOptions },
-        { type: "select", label: "Apa status tinggalnya?", field: "kdstatustinggal", options: statusTinggalOptions },
-        { type: "select", label: "Jenis kartu identitas apa?", field: "kdkartuidentitas", options: kartuIdOptions },
-        { type: "select", label: "Jenis mutasi apa?", field: "kdmutasimasuk", options: mutasiOptions },
-        { type: "date", label: "Tanggal mutasi", field: "penduduk_tanggalmutasi" },
-        { type: "text", label: "Sebutkan nama ayah", field: "penduduk_namaayah" },
-        { type: "text", label: "Sebutkan nama ibu", field: "penduduk_namaibu" },
-        { type: "text", label: "Sebutkan nama tempat bekerja (jika ada)", field: "penduduk_namatempatbekerja" },
-        { type: "select", label: "Apa pekerjaannya?", field: "kdpekerjaan", options: pekerjaanOptions },
-    ],
-   2: [ // MODUL KELAHIRAN — TOTAL 16 pertanyaan khusus
-        { type: "text",   label: "Sebutkan NIK bayi yang baru lahir", field: "nik_bayi" },
-        { type: "text",   label: "Sebutkan nama lengkap bayi", field: "nama_bayi" },
-        { type: "date",   label: "Tanggal lahir bayi?", field: "tanggal_lahir_bayi" },
-        { type: "select", label: "Jenis kelamin bayi?", field: "kdjeniskelamin_bayi", options: masters.jenis_kelamin },
-        { type: "select", label: "Tempat persalinan bayi?", field: "kdtempatpersalinan", options: masters.tempat_persalinan },
-        { type: "select", label: "Jenis kelahiran apa?", field: "kdjeniskelahiran", options: masters.jenis_kelahiran },
-        { type: "select", label: "Siapa yang menolong persalinan?", field: "kdpertolonganpersalinan", options: masters.pertolongan_persalinan },
-        { type: "time",   label: "Jam berapa bayi lahir?", field: "jam_kelahiran" },
-        { type: "number", label: "Ini kelahiran ke berapa bagi ibunya?", field: "kelahiran_ke" },
-        { type: "number", label: "Berat lahir bayi dalam gram?", field: "berat_lahir" },
-        { type: "number", label: "Panjang lahir bayi dalam cm?", field: "panjang_lahir" },
-        { type: "text",   label: "Sebutkan NIK ibu kandung", field: "nik_ibu" },
-        { type: "text",   label: "Sebutkan NIK ayah", field: "nik_ayah", required: false },
-    ],
-    3: [
-        { type: "select", label: "Partisipasi sekolah saat ini?", field: "kdpartisipasisekolah", options: partisipasiSekolahOptions },
-        { type: "select", label: "Ijasah tertinggi yang dimiliki?", field: "kdijasahterakhir", options: ijasahTerakhirOptions },
-        { type: "select", label: "Status kedudukan dalam pekerjaan utama?", field: "kdstatuskedudukankerja", options: statusKedudukanKerjaOptions },
-        { type: "select", label: "Lapangan usaha pekerjaan utama?", field: "kdlapanganusaha", options: lapanganUsahaOptions },
-        { type: "select", label: "Pendapatan per bulan?", field: "kdpendapatanperbulan", options: pendapatanPerBulanOptions },
-        { type: "select", label: "Penyakit kronis yang diderita?", field: "kdpenyakitkronis", options: penyakitKronisOptions },
-        { type: "select", label: "Jenis disabilitas yang dialami?", field: "kdjenisdisabilitas", options: jenisDisabilitasOptions },
-        { type: "select", label: "Tingkat kesulitan disabilitas?", field: "kdtingkatsulitdisabilitas", options: tingkatSulitDisabilitasOptions },
-        { type: "select", label: "Imunisasi apa saja yang sudah diberikan?", field: "kdimunisasi", options: imunisasiOptions }
-    ],
-    4: [
-        { type: "text", label: "Nama usaha ART?", field: "usahaart_namausaha" },
-        { type: "select", label: "Ada tempat usaha tetap?", field: "kdtempatusaha", options: tempatUsahaOptions },
-        { type: "select", label: "Lapangan usaha ART?", field: "kdlapanganusaha_art", options: lapanganUsahaOptions },
-        { type: "select", label: "Omset usaha per bulan?", field: "kdomsetusaha", options: omsetUsahaOptions },
-        { type: "number", label: "Jumlah pekerja di usaha ini?", field: "usahaart_jumlahpekerja" },
-    ],
-    5: [
-    { type: "select", label: "Apakah memiliki Kartu Keluarga Sejahtera (KKS) atau Kartu Perlindungan Sosial (KPS)?", field: "kks_kps", options: jawabProgramOptions },
-    { type: "select", label: "Apakah memiliki Kartu Indonesia Pintar (KIP)?", field: "kip", options: jawabProgramOptions },
-    { type: "select", label: "Apakah memiliki Kartu Indonesia Sehat (KIS)?", field: "kis", options: jawabProgramOptions },
-    { type: "select", label: "Apakah terdaftar sebagai peserta BPJS Kesehatan mandiri (bukan PBI/bantuan pemerintah)?", field: "bpjs_non_pbi", options: jawabProgramOptions },
-    { type: "select", label: "Apakah pernah atau sedang terdaftar di BPJS Ketenagakerjaan (Jamsostek)?", field: "jamsostek", options: jawabProgramOptions },
-    { type: "select", label: "Apakah memiliki asuransi kesehatan lain selain BPJS?", field: "asuransi_lain", options: jawabProgramOptions },
-    { type: "select", label: "Apakah saat ini menerima bantuan Program Keluarga Harapan (PKH)?", field: "pkh", options: jawabProgramOptions },
-    { type: "select", label: "Apakah pernah atau sedang menerima bantuan beras miskin (Raskin)?", field: "raskin", options: jawabProgramOptions },
-    ],
-   6: [
-    { type: "select", label: "Apakah saat ini menjabat sebagai Kepala Desa atau Lurah?", field: "kepala_desa", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai Sekretaris Desa?", field: "sekretaris_desa", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai Kepala Urusan di kantor desa?", field: "kepala_urusan", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai Kepala Dusun (Kadus)?", field: "kepala_dusun", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai staf atau pegawai kantor desa?", field: "staf_desa", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai Ketua BPD?", field: "ketua_bpd", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai Wakil Ketua BPD?", field: "wakil_ketua_bpd", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai Sekretaris BPD?", field: "sekretaris_bpd", options: jawabLemdesOptions },
-    { type: "select", label: "Apakah saat ini menjabat sebagai Anggota BPD?", field: "anggota_bpd", options: jawabLemdesOptions },
-    ],
-   7: [
-        // === LEMBAGA MASYARAKAT (OPTIMIZED UNTUK VOICE) ===
-    { type: "select", label: "Apakah bapak/ibu pengurus RT?", field: "lembaga_pengurus_rt", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota pengurus RT?", field: "lembaga_anggota_pengurus_rt", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus RW?", field: "lembaga_pengurus_rw", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota pengurus RW?", field: "lembaga_anggota_pengurus_rw", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus LPM atau LKMD?", field: "lembaga_pengurus_lkmd", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota LPM atau LKMD?", field: "lembaga_anggota_lkmd", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus PKK?", field: "lembaga_pengurus_pkk", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota PKK?", field: "lembaga_anggota_pkk", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus lembaga adat?", field: "lembaga_pengurus_lembaga_adat", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus Karang Taruna?", field: "lembaga_pengurus_karang_taruna", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota Karang Taruna?", field: "lembaga_anggota_karang_taruna", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pernah jadi Hansip atau Linmas?", field: "lembaga_pengurus_hansip", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus poskamling?", field: "lembaga_pengurus_poskamling", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi perempuan?", field: "lembaga_pengurus_org_perempuan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi perempuan?", field: "lembaga_anggota_org_perempuan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi bapak-bapak?", field: "lembaga_pengurus_org_bapak", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi bapak-bapak?", field: "lembaga_anggota_org_bapak", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi keagamaan?", field: "lembaga_pengurus_org_keagamaan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi keagamaan?", field: "lembaga_anggota_org_keagamaan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi profesi wartawan?", field: "lembaga_pengurus_org_wartawan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi wartawan?", field: "lembaga_anggota_org_wartawan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus Posyandu?", field: "lembaga_pengurus_posyandu", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus Posyantekdes?", field: "lembaga_pengurus_posyantekdes", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus kelompok tani atau nelayan?", field: "lembaga_pengurus_kel_tani", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota kelompok tani atau nelayan?", field: "lembaga_anggota_kel_tani", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus lembaga gotong royong?", field: "lembaga_pengurus_gotong_royong", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota lembaga gotong royong?", field: "lembaga_anggota_gotong_royong", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi profesi guru?", field: "lembaga_pengurus_org_guru", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi guru?", field: "lembaga_anggota_org_guru", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi dokter atau tenaga medis?", field: "lembaga_pengurus_org_dokter", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi tenaga medis?", field: "lembaga_anggota_org_dokter", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi pensiunan?", field: "lembaga_pengurus_org_pensiunan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi pensiunan?", field: "lembaga_anggota_org_pensiunan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi pemirsa atau pendengar?", field: "lembaga_pengurus_org_pemirsa", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi pemirsa?", field: "lembaga_anggota_org_pemirsa", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus kelompok pencinta alam?", field: "lembaga_pengurus_pencinta_alam", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota kelompok pencinta alam?", field: "lembaga_anggota_pencinta_alam", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus organisasi ilmu pengetahuan?", field: "lembaga_pengurus_ilmu_pengetahuan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota organisasi ilmu pengetahuan?", field: "lembaga_anggota_ilmu_pengetahuan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu memiliki atau mendirikan yayasan?", field: "lembaga_pemilik_yayasan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus yayasan?", field: "lembaga_pengurus_yayasan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota pengurus yayasan?", field: "lembaga_anggota_yayasan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus satgas kebersihan?", field: "lembaga_pengurus_satgas_kebersihan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota satgas kebersihan?", field: "lembaga_anggota_satgas_kebersihan", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus satgas kebakaran?", field: "lembaga_pengurus_satgas_kebakaran", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota satgas kebakaran?", field: "lembaga_anggota_satgas_kebakaran", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu pengurus posko bencana?", field: "lembaga_pengurus_posko_bencana", options: jawabLemmasOptions },
-    { type: "select", label: "Apakah bapak/ibu anggota tim penanggulangan bencana?", field: "lembaga_anggota_tim_bencana", options: jawabLemmasOptions },
-    ],
-
-   8: [
-    { type: "select", label: "Apakah memiliki atau terlibat dalam Koperasi?", field: "90", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki Unit Usaha Simpan Pinjam?", field: "91", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha industri kerajinan tangan?", field: "92", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha industri pakaian/jahit menjahit?", field: "93", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha industri pengolahan makanan/minuman?", field: "94", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha industri alat rumah tangga?", field: "95", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perdagangan bahan bangunan?", field: "96", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perdagangan alat pertanian/perkebunan?", field: "97", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha restoran/rumah makan/warung makan?", field: "98", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki toko kelontong/swalayan/minimarket?", field: "99", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki warung kelontong/kios/toko kecil?", field: "100", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha angkutan darat (mobil/bus/truk)?", field: "101", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha angkutan sungai/perahu motor?", field: "102", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha angkutan laut/kapal?", field: "103", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha angkutan udara?", field: "104", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha jasa ekspedisi/pengiriman barang?", field: "105", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang sumur/bor air?", field: "106", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki atau mengelola pasar harian?", field: "107", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki atau mengelola pasar mingguan?", field: "108", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki atau mengelola pasar ternak?", field: "109", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perdagangan hasil bumi atau tambang?", field: "110", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perdagangan antar pulau?", field: "111", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai pengijon (pemberi modal hasil bumi)?", field: "112", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tengkulak/pedagang pengumpul?", field: "113", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha peternakan (sapi, kambing, ayam, dll)?", field: "114", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perikanan (tambak, budidaya ikan)?", field: "115", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perkebunan (kelapa sawit, karet, dll)?", field: "116", options: jawabLemekOptions },
-    { type: "select", label: "Apakah tergabung dalam kelompok simpan pinjam wanita/arisan?", field: "117", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha produksi minuman (sirup, kopi, dll)?", field: "118", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha apotek/toko obat/farmasi?", field: "119", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha karoseri/modifikasi kendaraan?", field: "120", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha penitipan/garasi kendaraan bermotor?", field: "121", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perakitan elektronik/reparasi?", field: "122", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha pengolahan kayu/mebel?", field: "123", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki atau mengelola bioskop?", field: "124", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha film keliling/bioskop berjalan?", field: "125", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki grup sandiwara/drama/teater?", field: "126", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki grup lawak/komedi?", field: "127", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki grup tari Jaipongan?", field: "128", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki grup wayang orang/golek?", field: "129", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki grup musik/band/orkes?", field: "130", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki grup vokal/paduan suara?", field: "131", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha persewaan genset/tenaga listrik?", field: "132", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha pengecer gas elpiji/BBM eceran?", field: "133", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha air minum isi ulang/AMDK?", field: "134", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang kayu/mebel?", field: "135", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang batu/bangunan?", field: "136", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang jahit/bordir/konveksi?", field: "137", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang cukur/pangkas rambut?", field: "138", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang service elektronik?", field: "139", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang las/besi?", field: "140", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai tukang pijat/urut/refleksi?", field: "141", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai Notaris?", field: "143", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai Pengacara/Advokat?", field: "144", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai Konsultan Manajemen?", field: "145", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai Konsultan Teknik?", field: "146", options: jawabLemekOptions },
-    { type: "select", label: "Apakah berprofesi sebagai Pejabat Pembuat Akta Tanah (PPAT)?", field: "147", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha losmen/pondok wisata?", field: "148", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha wisma/penginapan?", field: "149", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha asrama/kos-kosan?", field: "150", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha persewaan kamar?", field: "151", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki rumah kontrakan?", field: "152", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki mess/pondok pekerja?", field: "153", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha hotel?", field: "154", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha home stay?", field: "155", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha villa?", field: "156", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha town house/apartemen sewa?", field: "157", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha perusahaan asuransi?", field: "158", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki lembaga keuangan mikro/bukan bank?", field: "159", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki Lembaga Perkreditan Rakyat (LPR)?", field: "160", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha pegadaian?", field: "161", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki Bank Perkreditan Rakyat (BPR)?", field: "162", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha penyewaan alat pesta/tenda?", field: "163", options: jawabLemekOptions },
-    { type: "select", label: "Apakah memiliki usaha pengolahan dan penjualan hasil hutan?", field: "164", options: jawabLemekOptions }
-],
-};
-
-const wilayahQuestions = [
-    { type: "select", label: "Provinsi asalnya apa?", field: "kdprovinsi", options: provinsiOptions },
-    { type: "select", label: "Kabupaten atau kota asalnya apa?", field: "kdkabupaten", dynamic: true, dynamicUrl: "/get-kabupaten/" },
-    { type: "select", label: "Kecamatan asalnya apa?", field: "kdkecamatan", dynamic: true, dynamicUrl: "/get-kecamatan/" },
-    { type: "select", label: "Desa atau kelurahan asalnya apa?", field: "kddesa", dynamic: true, dynamicUrl: "/get-desa/" }
-];
-
-/* ==================== SPEECH ==================== */
-function speak(text) {
-    return new Promise(resolve => {
-        if (isSpeaking) return resolve();
-        isSpeaking = true;
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'id-ID';
-        utter.rate = 1.05;
-        utter.onend = () => { isSpeaking = false; resolve(); };
-        utter.onerror = () => { isSpeaking = false; resolve(); };
-        speechSynthesis.speak(utter);
-    });
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all duration-300 scale-100">
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
+                <div id="loadingBar" class="bg-gradient-to-r from-blue-500 to-green-600 h-3 rounded-full transition-all duration-300" style="width:0%"></div>
+            </div>
+            <p id="loadingText" class="text-lg font-semibold text-gray-800 mb-2">Menyimpan data...</p>
+            <p class="text-sm text-gray-500">Proses penyimpanan 8 modul data penduduk</p>
+        </div>
+    </div>
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .option-card {
+            transition: all .3s; border: 2px solid #e5e7eb; cursor: pointer;
+            padding: 1rem; border-radius: 1rem; text-align: center;
+        }
+        .option-card:hover { background-color: #eff6ff; border-color: #14b8a6; }
+        .option-card.selected { background-color: #dbeafe !important; border-color: #14b8a6 !important; box-shadow: 0 0 0 3px rgba(37,99,235,.2); }
+        /* Recording state */
+        #recordBtn.recording {
+            background: linear-gradient(to bottom right, #ef4444, #dc2626) !important;
+        }
+        #recordBtn.recording #pulseRing { display: block; }
+        /* Visualizer aktif → placeholder hilang */
+        #visualizer.show { display: block !important; }
+        #visualizerPlaceholder.hide { display: none !important; }
+    </style>
+    <script>
+        // ==================== DATA FROM LARAVEL (SESUAI CONTROLLER PENDUDUK) ====================
+        const masters = @json($masters);
+        const mutasiOptions = @json($mutasi);
+        const provinsiOptions = @json($provinsi);
+        const kabupatenData = @json($kabupatens ?? []); // [kdprovinsi => [kdkab => nama]]
+        const kecamatanData = @json($kecamatans ?? []); // [kdkab => [kdkec => nama]]
+        const desaData = @json($desas ?? []); // [kdkec => [kddesa => nama]]
+        // ==================== STATE ====================
+        let currentModul = 1;
+        let step = 0;
+        let answers = { penduduk_tanggalmutasi: new Date().toISOString().split('T')[0] };
+        let modulStatus = {
+            1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending'
+        };
+        let recognition = null;
+        let isListening = false;
+        let audioContext = null, analyser = null, dataArray = null, canvas = null, ctx = null;
+        let isSpeaking = false;
+        let isReviewMode = false;
+        // ==================== 8 MODUL PENDUDUK ====================
+        const modules = [
+            {id:1,name:"Data Penduduk"},
+            {id:2,name:"Kelahiran"},
+            {id:3,name:"Sosial Ekonomi"},
+            {id:4,name:"Usaha ART"},
+            {id:5,name:"Program Serta"},
+            {id:6,name:"Lembaga Desa"},
+            {id:7,name:"Lembaga Masyarakat"},
+            {id:8,name:"Lembaga Ekonomi"}
+        ];
+        const questions = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[]};
+        // ==================== BUILD QUESTIONS SESUAI CONTROLLER ====================
+        // MODUL 1: DATA PENDUDUK
+        questions[1] = [
+            {type:"text",label:"Sebutkan nomor NIK",field:"nik"},
+            {type:"text",label:"Sebutkan nama lengkap penduduk",field:"penduduk_namalengkap"},
+            {type:"text",label:"Dimana tempat lahirnya?",field:"penduduk_tempatlahir"},
+            {type:"date",label:"Tanggal lahir?",field:"penduduk_tanggallahir"},
+            {type:"select",label:"Apa golongan darahnya?",field:"penduduk_goldarah",options:{"a":"A","b":"B","ab":"AB","o":"O"}},
+            {type:"text",label:"Sebutkan nomor akta lahir",field:"penduduk_noaktalahir"},
+            {type:"skip",label:"Kewarganegaraan",field:"penduduk_kewarganegaraan",default:"INDONESIA"},
+            {type:"select",label:"Apa jenis kelaminnya?",field:"kdjeniskelamin",options:masters.jenis_kelamin},
+            {type:"select",label:"Apa agamanya?",field:"kdagama",options:masters.agama},
+            {type:"text",label:"Sebutkan nomor kartu keluarga",field:"no_kk"},
+            {type:"text",label:"Sebutkan nomor urut dalam KK",field:"penduduk_nourutkk"},
+            {type:"select",label:"Apa hubungan dalam keluarga?",field:"kdhubungankeluarga",options:masters.hubungan_keluarga},
+            {type:"select",label:"Apa hubungan dengan kepala keluarga?",field:"kdhubungankepalakeluarga",options:masters.hubungan_kepala_keluarga},
+            {type:"select",label:"Apa status perkawinannya?",field:"kdstatuskawin",options:masters.status_kawin},
+            {type:"select",label:"Memiliki akta nikah?",field:"kdaktanikah",options:masters.akta_nikah},
+            {type:"select",label:"Apakah tercantum dalam KK?",field:"kdtercantumdalamkk",options:masters.tercantum_kk},
+            {type:"select",label:"Apa status tinggalnya?",field:"kdstatustinggal",options:masters.status_tinggal},
+            {type:"select",label:"Jenis kartu identitas apa?",field:"kdkartuidentitas",options:masters.kartu_identitas},
+            {type:"select",label:"Jenis mutasi apa?",field:"kdmutasimasuk",options:mutasiOptions},
+            {type:"text",label:"Sebutkan nama ayah",field:"penduduk_namaayah"},
+            {type:"text",label:"Sebutkan nama ibu",field:"penduduk_namaibu"},
+            {type:"text",label:"Sebutkan nama tempat bekerja (jika ada)",field:"penduduk_namatempatbekerja"},
+            {type:"select",label:"Apa pekerjaannya?",field:"kdpekerjaan",options:masters.pekerjaan}
+        ];
+        // MODUL 2: KELAHIRAN
+        questions[2] = [
+            {type:"text",label:"Sebutkan NIK bayi yang baru lahir",field:"nik_bayi"}, // kalau tidak dipakai, tetap dikomentari
+            {type:"select",label:"Tempat persalinan bayi?",field:"kdtempatpersalinan",options:masters.tempat_persalinan},
+            {type:"select",label:"Jenis kelahiran apa?",field:"kdjeniskelahiran",options:masters.jenis_kelahiran},
+            {type:"select",label:"Siapa yang menolong persalinan?",field:"kdpertolonganpersalinan",options:masters.pertolongan_persalinan},
+            {type:"text", label:"Jam berapa bayi lahir? (contoh: jam 21:00)", field:"kelahiran_jamkelahiran"},
+            {type:"number",label:"Ini kelahiran ke berapa bagi ibunya?",field:"kelahiran_kelahiranke"},
+            {type:"number",label:"Berat lahir bayi dalam gram?",field:"kelahiran_berat"},
+            {type:"number",label:"Panjang lahir bayi dalam cm?",field:"kelahiran_panjang"},
+            {type:"text",label:"Sebutkan NIK ibu kandung",field:"kelahiran_nikibu"},
+            {type:"text",label:"Sebutkan NIK ayah (jika ada)",field:"kelahiran_nikayah", required:false}
+        ];
+        // MODUL 3: SOSIAL EKONOMI
+        questions[3] = [
+            {type:"select",label:"Partisipasi sekolah saat ini?",field:"kdpartisipasisekolah",options:masters.partisipasi_sekolah},
+            {type:"select",label:"Ijasah tertinggi yang dimiliki?",field:"kdijasahterakhir",options:masters.ijasah_terakhir},
+            {type:"select",label:"Status kedudukan dalam pekerjaan utama?",field:"kdstatuskedudukankerja",options:masters.status_kedudukan_kerja},
+            {type:"select",label:"Lapangan usaha pekerjaan utama?",field:"kdlapanganusaha",options:masters.lapangan_usaha},
+            {type:"select",label:"Pendapatan per bulan?",field:"kdpendapatanperbulan",options:masters.pendapatan_perbulan},
+            {type:"select",label:"Penyakit kronis yang diderita?",field:"kdpenyakitkronis",options:masters.penyakit_kronis},
+            {type:"select",label:"Jenis disabilitas yang dialami?",field:"kdjenisdisabilitas",options:masters.jenis_disabilitas},
+            {type:"select",label:"Tingkat kesulitan disabilitas?",field:"kdtingkatsulitdisabilitas",options:masters.tingkat_sulit_disabilitas},
+            {type:"select",label:"Imunisasi apa saja yang sudah diberikan?",field:"kdimunisasi",options:masters.imunisasi}
+        ];
+        // MODUL 4: USAHA ART
+        questions[4] = [
+            {type:"text",label:"Nama usaha ART?",field:"usahaart_namausaha"},
+            {type:"select",label:"Ada tempat usaha tetap?",field:"kdtempatusaha",options:masters.tempat_usaha},
+            {type:"select",label:"Lapangan usaha ART?",field:"kdlapanganusaha",options:masters.lapangan_usaha},
+            {type:"select",label:"Omset usaha per bulan?",field:"kdomsetusaha",options:masters.omset_usaha},
+            {type:"number",label:"Jumlah pekerja di usaha ini?",field:"usahaart_jumlahpekerja"}
+        ];
+        // MODUL 5: PROGRAM SERTA
+        questions[5] = [
+            {type:"select",label:"Apakah memiliki Kartu Keluarga Sejahtera (KKS) atau Kartu Perlindungan Sosial (KPS)?",field:"programserta_1",options:masters.jawab_program_serta},
+            {type:"select",label:"Apakah memiliki Kartu Indonesia Pintar (KIP)?",field:"programserta_2",options:masters.jawab_program_serta},
+            {type:"select",label:"Apakah memiliki Kartu Indonesia Sehat (KIS)?",field:"programserta_3",options:masters.jawab_program_serta},
+            {type:"select",label:"Apakah terdaftar sebagai peserta BPJS Kesehatan mandiri (bukan PBI/bantuan pemerintah)?",field:"programserta_4",options:masters.jawab_program_serta},
+            {type:"select",label:"Apakah pernah atau sedang terdaftar di BPJS Ketenagakerjaan (Jamsostek)?",field:"programserta_5",options:masters.jawab_program_serta},
+            {type:"select",label:"Apakah memiliki asuransi kesehatan lain selain BPJS?",field:"programserta_6",options:masters.jawab_program_serta},
+            {type:"select",label:"Apakah saat ini menerima bantuan Program Keluarga Harapan (PKH)?",field:"programserta_7",options:masters.jawab_program_serta},
+            {type:"select",label:"Apakah pernah atau sedang menerima bantuan beras miskin (Raskin)?",field:"programserta_8",options:masters.jawab_program_serta}
+        ];
+        // MODUL 6: LEMBAGA DESA
+        questions[6] = [
+            {type:"select",label:"Apakah saat ini menjabat sebagai Kepala Desa atau Lurah?",field:"lemdes_1",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai Sekretaris Desa?",field:"lemdes_2",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai Kepala Urusan di kantor desa?",field:"lemdes_3",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai Kepala Dusun (Kadus)?",field:"lemdes_4",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai staf atau pegawai kantor desa?",field:"lemdes_5",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai Ketua BPD?",field:"lemdes_6",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai Wakil Ketua BPD?",field:"lemdes_7",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai Sekretaris BPD?",field:"lemdes_8",options:masters.jawab_lemdes},
+            {type:"select",label:"Apakah saat ini menjabat sebagai Anggota BPD?",field:"lemdes_9",options:masters.jawab_lemdes}
+        ];
+        // MODUL 7: LEMBAGA MASYARAKAT
+        questions[7] = [
+            {type:"select",label:"Apakah bapak/ibu pengurus RT?",field:"lemmas_1",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota pengurus RT?",field:"lemmas_2",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus RW?",field:"lemmas_3",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota pengurus RW?",field:"lemmas_4",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus LPM atau LKMD?",field:"lemmas_5",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota LPM atau LKMD?",field:"lemmas_6",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus PKK?",field:"lemmas_7",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota PKK?",field:"lemmas_8",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus lembaga adat?",field:"lemmas_9",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus Karang Taruna?",field:"lemmas_10",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota Karang Taruna?",field:"lemmas_11",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pernah jadi Hansip atau Linmas?",field:"lemmas_12",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus poskamling?",field:"lemmas_13",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi perempuan?",field:"lemmas_14",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi perempuan?",field:"lemmas_15",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi bapak-bapak?",field:"lemmas_16",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi bapak-bapak?",field:"lemmas_17",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi keagamaan?",field:"lemmas_18",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi keagamaan?",field:"lemmas_19",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi wartawan?",field:"lemmas_20",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi wartawan?",field:"lemmas_21",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus Posyandu?",field:"lemmas_22",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus Posyantekdes?",field:"lemmas_23",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus kelompok tani atau nelayan?",field:"lemmas_24",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota kelompok tani atau nelayan?",field:"lemmas_25",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus lembaga gotong royong?",field:"lemmas_26",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota lembaga gotong royong?",field:"lemmas_27",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi guru?",field:"lemmas_28",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi guru?",field:"lemmas_29",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi dokter atau tenaga medis?",field:"lemmas_30",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi tenaga medis?",field:"lemmas_31",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi pensiunan?",field:"lemmas_32",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi pensiunan?",field:"lemmas_33",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi pemirsa atau pendengar?",field:"lemmas_34",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi pemirsa?",field:"lemmas_35",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus kelompok pencinta alam?",field:"lemmas_36",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota kelompok pencinta alam?",field:"lemmas_37",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi ilmu pengetahuan?",field:"lemmas_38",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota organisasi ilmu pengetahuan?",field:"lemmas_39",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu memiliki atau mendirikan yayasan?",field:"lemmas_40",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus yayasan?",field:"lemmas_41",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota pengurus yayasan?",field:"lemmas_42",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus satgas kebersihan?",field:"lemmas_43",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota satgas kebersihan?",field:"lemmas_44",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus satgas kebakaran?",field:"lemmas_45",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota satgas kebakaran?",field:"lemmas_46",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus posko bencana?",field:"lemmas_47",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu anggota tim penanggulangan bencana?",field:"lemmas_48",options:masters.jawab_lemmas}
+        ];
+        // MODUL 8: LEMBAGA EKONOMI
+        questions[8] = [
+            {type:"select",label:"Apakah memiliki atau terlibat dalam Koperasi?",field:"lemek_1",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki Unit Usaha Simpan Pinjam?",field:"lemek_2",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri kerajinan tangan?",field:"lemek_3",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri pakaian/jahit menjahit?",field:"lemek_4",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri pengolahan makanan/minuman?",field:"lemek_5",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri alat rumah tangga?",field:"lemek_6",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan bahan bangunan?",field:"lemek_7",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan alat pertanian/perkebunan?",field:"lemek_8",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha restoran/rumah makan/warung makan?",field:"lemek_9",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki toko kelontong/swalayan/minimarket?",field:"lemek_10",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki warung kelontong/kios/toko kecil?",field:"lemek_11",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan darat (mobil/bus/truk)?",field:"lemek_12",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan sungai/perahu motor?",field:"lemek_13",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan laut/kapal?",field:"lemek_14",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan udara?",field:"lemek_15",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha jasa ekspedisi/pengiriman barang?",field:"lemek_16",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang sumur/bor air?",field:"lemek_17",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola pasar harian?",field:"lemek_18",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola pasar mingguan?",field:"lemek_19",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola pasar ternak?",field:"lemek_20",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan hasil bumi atau tambang?",field:"lemek_21",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan antar pulau?",field:"lemek_22",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai pengijon (pemberi modal hasil bumi)?",field:"lemek_23",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tengkulak/pedagang pengumpul?",field:"lemek_24",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha peternakan (sapi, kambing, ayam, dll)?",field:"lemek_25",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perikanan (tambak, budidaya ikan)?",field:"lemek_26",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perkebunan (kelapa sawit, karet, dll)?",field:"lemek_27",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah tergabung dalam kelompok simpan pinjam wanita/arisan?",field:"lemek_28",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha produksi minuman (sirup, kopi, dll)?",field:"lemek_29",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha apotek/toko obat/farmasi?",field:"lemek_30",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha karoseri/modifikasi kendaraan?",field:"lemek_31",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha penitipan/garasi kendaraan bermotor?",field:"lemek_32",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perakitan elektronik/reparasi?",field:"lemek_33",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pengolahan kayu/mebel?",field:"lemek_34",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola bioskop?",field:"lemek_35",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha film keliling/bioskop berjalan?",field:"lemek_36",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup sandiwara/drama/teater?",field:"lemek_37",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup lawak/komedi?",field:"lemek_38",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup tari Jaipongan?",field:"lemek_39",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup wayang orang/golek?",field:"lemek_40",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup musik/band/orkes?",field:"lemek_41",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup vokal/paduan suara?",field:"lemek_42",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha persewaan genset/tenaga listrik?",field:"lemek_43",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pengecer gas elpiji/BBM eceran?",field:"lemek_44",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha air minum isi ulang/AMDK?",field:"lemek_45",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang kayu/mebel?",field:"lemek_46",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang batu/bangunan?",field:"lemek_47",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang jahit/bordir/konveksi?",field:"lemek_48",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang cukur/pangkas rambut?",field:"lemek_49",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang service elektronik?",field:"lemek_50",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang las/besi?",field:"lemek_51",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang pijat/urut/refleksi?",field:"lemek_52",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Notaris?",field:"lemek_53",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Pengacara/Advokat?",field:"lemek_54",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Konsultan Manajemen?",field:"lemek_55",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Konsultan Teknik?",field:"lemek_56",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Pejabat Pembuat Akta Tanah (PPAT)?",field:"lemek_57",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha losmen/pondok wisata?",field:"lemek_58",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha wisma/penginapan?",field:"lemek_59",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha asrama/kos-kosan?",field:"lemek_60",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha persewaan kamar?",field:"lemek_61",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki rumah kontrakan?",field:"lemek_62",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki mess/pondok pekerja?",field:"lemek_63",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha hotel?",field:"lemek_64",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha home stay?",field:"lemek_65",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha villa?",field:"lemek_66",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha town house/apartemen sewa?",field:"lemek_67",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perusahaan asuransi?",field:"lemek_68",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki lembaga keuangan mikro/bukan bank?",field:"lemek_69",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki Lembaga Perkreditan Rakyat (LPR)?",field:"lemek_70",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pegadaian?",field:"lemek_71",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki Bank Perkreditan Rakyat (BPR)?",field:"lemek_72",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha penyewaan alat pesta/tenda?",field:"lemek_73",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pengolahan dan penjualan hasil hutan?",field:"lemek_74",options:masters.jawab_lemek}
+        ];
+       
+        const wilayahQuestions = [
+            {type:"select",label:"Provinsi asalnya apa?",field:"kdprovinsi",options:provinsiOptions},
+            {type:"select",label:"Kabupaten atau kota asalnya apa?",field:"kdkabupaten",dynamic:true,parentField:"kdprovinsi",dynamicUrl:"/voice/kabupaten/"},
+            {type:"select",label:"Kecamatan asalnya apa?",field:"kdkecamatan",dynamic:true,parentField:"kdkabupaten",dynamicUrl:"/voice/kecamatan/"},
+            {type:"select",label:"Desa atau kelurahan asalnya apa?",field:"kddesa",dynamic:true,parentField:"kdkecamatan",dynamicUrl:"/voice/desa/"}
+        ];
+        // Insert wilayah jika mutasi datang (akan ditangani dinamis)
+        function injectWilayahIfNeeded() {
+            const idx = questions[1].findIndex(q => q.field === "kdmutasimasuk");
+            const hasWilayah = questions[1].some(q => q.field === "kdprovinsi");
+            if (answers.kdmutasimasuk === '3' && !hasWilayah) {
+                // Sisipkan 4 pertanyaan wilayah setelah mutasi
+                questions[1].splice(idx + 1, 0,
+                    {type:"select", label:"Provinsi asalnya apa?", field:"kdprovinsi", options: provinsiOptions},
+                    {type:"select", label:"Kabupaten atau kota asalnya apa?", field:"kdkabupaten", dynamic:true, parentField:"kdprovinsi", dynamicUrl:"/voice/get-kabupaten/"},
+                    {type:"select", label:"Kecamatan asalnya apa?", field:"kdkecamatan", dynamic:true, parentField:"kdkabupaten", dynamicUrl:"/voice/get-kecamatan/"},
+                    {type:"select", label:"Desa atau kelurahan asalnya apa?", field:"kddesa", dynamic:true, parentField:"kdkecamatan", dynamicUrl:"/voice/get-desa/"}
+                );
+                // Reset jawaban wilayah
+                ["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].forEach(f => delete answers[f]);
+                // Trigger render ulang
+                if (currentModul === 1) {
+                    updateProgress();
+                    renderQuestion(); // ini akan trigger load provinsi langsung karena options sudah ada
+                }
+            }
+            else if (answers.kdmutasimasuk !== '3' && hasWilayah) {
+                // Hapus pertanyaan wilayah
+                questions[1] = questions[1].filter(q =>
+                    !["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].includes(q.field)
+                );
+                ["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].forEach(f => delete answers[f]);
+               
+                if (currentModul === 1) {
+                    updateProgress();
+                    renderQuestion();
+                }
+            }
+        }
+        // ==================== UTILITIES ====================
+        function capitalize(t){return t.replace(/\b\w/g,l=>l.toUpperCase());}
+        function pad3(n){return String(n).padStart(3,'0');}
+        function normalize(t){return t.toLowerCase().replace(/[^a-z0-9\s]/g,'').trim();}
+        function cleanOptionText(t){return t.replace(/\//g,' atau ').replace(/_/g,' ').replace(/\-/g, ' ke ');}
+        function findBestMatch(text,options){
+            const n=normalize(text); let best=null,score=0;
+            Object.entries(options).forEach(([id,name])=>{
+                const nn=normalize(name); let s=0;
+                if(nn.includes(n))s=1000;else if(n.includes(nn))s=800;
+                else nn.split(' ').forEach(w=>{if(n.includes(w))s+=w.length*3;});
+                if(s>score){score=s;best=[id,name];}
+            });
+            return score>3?best:null;
+        }
+        function mapOmsetToCode(omset) {
+        let input = (omset ?? '').toString().toLowerCase().trim();
+        let angka = parseFloat(input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+        if (/juta|jutaan/i.test(input)) angka *= 1000000;
+        if (angka <= 1000000) return '1';
+        if (angka <= 5000000) return '2';
+        if (angka <= 10000000) return '3';
+        return '4';
 }
-
-async function speakQuestionAndOptions() {
+function mapPendapatanToCode(pendapatan) {
+        if (!pendapatan) return '0';
+        let input = pendapatan.toString().toLowerCase().trim();
+        // Ambil angka saja
+        let angkaStr = input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.');
+        let nilai = parseFloat(angkaStr) || 0;
+        // Deteksi "juta"
+        if (/juta|jutaan|milyar/i.test(input)) {
+            nilai *= 1000000;
+        }
+        // Deteksi "ribu" (biar 800 ribu masuk)
+        else if (/ribu/i.test(input) && nilai < 10000) {
+            nilai *= 1000;
+        }
+        if (nilai <= 1000000) return '1'; // ≤ 1 juta
+        if (nilai <= 1500000) return '2'; // ≤ 1,5 juta
+        if (nilai <= 2000000) return '3'; // ≤ 2 juta
+        if (nilai <= 3000000) return '4'; // ≤ 3 juta
+        return '5'; // > 3 juta
+    }
+        function speak(t){
+            return new Promise(r=>{
+                if(isSpeaking)return r(); isSpeaking=true;
+                const u=new SpeechSynthesisUtterance(t);
+                u.lang='id-ID'; u.rate=1.2;
+                u.onend=()=>{isSpeaking=false;r();};
+                speechSynthesis.speak(u);
+            });
+        }
+        // ==================== CORE FUNCTIONS (LENGKAP) ====================
+        function initFresh(){
+            localStorage.clear();
+            currentModul=1; step=0;
+            answers={
+                penduduk_tanggalmutasi: new Date().toISOString().split('T')[0],
+                no_kk: ''
+            };
+            modulStatus={1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending'};
+            isReviewMode=false;
+            document.getElementById('reviewForm').classList.add('hidden');
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('simpanBtn').style.backgroundColor='#9ca3af';
+            document.getElementById('simpanBtn').disabled=true;
+            document.getElementById('quizArea').innerHTML='';
+            document.getElementById('voice-status').innerText='Tekan mic untuk mulai merekam...';
+            updateProgressSteps(); renderQuestion(); checkAllCompletedAndShowSimpanBtn();
+        }
+        function saveData(){
+            localStorage.setItem('voiceAnswersPenduduk',JSON.stringify(answers));
+            localStorage.setItem('modulStatusPenduduk',JSON.stringify(modulStatus));
+            localStorage.setItem(`step_${currentModul}_penduduk`,step);
+            localStorage.setItem(`review_${currentModul}_penduduk`,isReviewMode);
+            localStorage.setItem('currentModulPenduduk',currentModul);
+        }
+        function loadModulData(id){
+            const a=localStorage.getItem('voiceAnswersPenduduk'); if(a)answers=JSON.parse(a);
+            const s=localStorage.getItem('modulStatusPenduduk'); if(s)modulStatus=JSON.parse(s);
+            const st=localStorage.getItem(`step_${id}_penduduk`);
+            const rv=localStorage.getItem(`review_${id}_penduduk`);
+            if(modulStatus[id] === 'completed') {
+                isReviewMode = true;
+                step = questions[id].length;
+            } else {
+                isReviewMode = false;
+                step = st ? parseInt(st) : 0;
+            }
+            currentModul=id;
+            Object.keys(modulStatus).forEach(k => {
+                if (k == id) {
+                    modulStatus[k] = modulStatus[k] === 'completed' ? 'completed' : 'active';
+                } else {
+                    modulStatus[k] = modulStatus[k] === 'completed' ? 'completed' : 'pending';
+                }
+            });
+        }
+        function updateProgressSteps(){
+            const c=document.getElementById('progressSteps'); c.innerHTML='';
+            modules.forEach((m,i)=>{
+                if(i>0){const l=document.createElement('div'); l.className=`h-0.5 w-12 self-center rounded-full ${modulStatus[m.id]==='completed'?'bg-blue-600':'bg-gray-300'}`; c.appendChild(l);}
+                const d=document.createElement('div'); d.className='flex items-center cursor-pointer'; d.onclick=()=>switchModul(m.id);
+                const circle=document.createElement('div'); circle.className=`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white ${modulStatus[m.id]==='completed'?'bg-blue-600':modulStatus[m.id]==='active'?'bg-green-600':'bg-gray-300 text-gray-600'}`;
+                circle.textContent=m.id;
+                const txt=document.createElement('div'); txt.className='ml-2 text-left';
+                txt.innerHTML=`<div class="font-medium text-sm">${m.name}</div><div class="text-xs ${modulStatus[m.id]==='completed'?'text-blue-600':modulStatus[m.id]==='active'?'text-green-600':'text-gray-500'}">${modulStatus[m.id]==='completed'?'Selesai':modulStatus[m.id]==='active'?'Aktif':'Belum'}</div>`;
+                d.appendChild(circle); d.appendChild(txt); c.appendChild(d);
+            });
+        }
+        function switchModul(id){
+            stopListening(); saveData(); loadModulData(id);
+            document.getElementById('reviewForm').classList.add('hidden');
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('quizArea').innerHTML='';
+            document.getElementById('voice-status').innerText='Tekan mic untuk mulai merekam...';
+            document.getElementById('modulTitle').textContent=modules.find(m=>m.id===id).name;
+            updateProgressSteps(); checkAllCompletedAndShowSimpanBtn();
+            if(modulStatus[id] === 'completed') {
+                showReviewForm();
+            } else {
+                renderQuestion();
+            }
+        }
+        function stopListening(){
+            if(recognition){recognition.stop();recognition=null;}
+            if(audioContext){audioContext.close().catch(()=>{});audioContext=null;}
+            analyser=null; isListening=false;
+           
+            document.getElementById('recordBtn').classList.remove('recording');
+            document.getElementById('visualizer').classList.remove('show');
+            document.getElementById('visualizerPlaceholder').classList.remove('hide');
+           
+            document.getElementById('recordIcon').innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
+            `;
+            document.getElementById('voice-status').innerText = 'Merekam dihentikan. Klik mic untuk mulai lagi...';
+        }
+        function checkAllCompletedAndShowSimpanBtn(){
+            const allDone=Object.values(modulStatus).every(s=>s==='completed');
+            const b=document.getElementById('simpanBtn');
+            if(allDone){b.style.backgroundColor='#14b8a6';b.disabled=false;}else{b.style.backgroundColor='#9ca3af';b.disabled=true;}
+        }
+        function updateProgress(){
+            const total=questions[currentModul].length;
+            const pct=((step+1)/total)*100;
+            document.getElementById('progressBar').style.width=pct+'%';
+            document.getElementById('currentQ').textContent=step+1;
+            document.getElementById('totalQ').textContent=total;
+        }
+        async function renderQuestion(){
+            const q=questions[currentModul][step];
+            if (q.dynamic && !q.options && answers[q.parentField]) {
+                const parentValue = answers[q.parentField];
+                const url = q.dynamicUrl + parentValue;
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('Network error');
+                    q.options = await res.json();
+                } catch (err) {
+                    console.error('Gagal load wilayah:', err);
+                    q.options = {};
+                    await speak("Gagal memuat data wilayah. Mohon coba lagi.");
+                }
+            }
+            let html='';
+            // Hint khusus per modul
+       
+            html+=`<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
+            if(q.type==="select"){
+                let cols = 3;
+                let gridClass = `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto`;
+                html+=`<div class="${gridClass}">`;
+                Object.entries(q.options).forEach(([id,nama])=>{
+                    const sel=answers[q.field]==id?'selected':'';
+                    html+=`<div class="option-card ${sel}" data-value="${id}" data-text="${nama}"><span class="text-sm font-medium">${nama}</span></div>`;
+                });
+                html+='</div>';
+            }else{
+                const val = answers[q.field]||'';
+                html+=`<div class="max-w-md mx-auto"><input type="text" id="inputAnswer" class="w-full border border-gray-300 rounded-xl p-3 text-center text-lg" readonly value="${val}" placeholder="Jawaban muncul di sini..."></div>`;
+            }
+            document.getElementById('quizArea').innerHTML=html;
+            updateProgress();
+            attachCardListeners();
+        }
+        function attachCardListeners(){
+            document.querySelectorAll('.option-card').forEach(c=>{
+                c.onclick=()=>{
+                    document.querySelectorAll('.option-card').forEach(x=>x.classList.remove('selected'));
+                    c.classList.add('selected');
+                    processVoiceAnswer(c.dataset.text.toLowerCase());
+                };
+            });
+        }
+        async function speakQuestionAndOptions() {
     const q = questions[currentModul][step];
 
-    if (currentModul === 3 && step === 0) await speak("Modul Sosial Ekonomi. Jawab sesuai pilihan.");
-    if (currentModul === 4 && step === 0) await speak("Modul Usaha ART dimulai.");
+    // Hint pembuka modul
+    if (currentModul === 1 && step === 0) await speak("Modul Data Penduduk dimulai. Jawab pertanyaan satu per satu.");
+    if (currentModul === 2 && step === 0) await speak("Modul Kelahiran. Pilih jawaban yang sesuai.");
+    if (currentModul === 3 && step === 0) await speak("Modul Sosial Ekonomi. Jawab sesuai kondisi penduduk.");
+    if (currentModul === 4 && step === 0) await speak("Modul Usaha A Er Te. Isi data usaha jika ada.");
+    if (currentModul === 5 && step === 0) await speak("Modul Program Serta. Jawab 1 untuk ikut, 2 pernah ikut, 3 tidak ikut.");
+    if ([6,7,8].includes(currentModul) && step === 0) await speak("Modul Lembaga. Jawab 1 ADA, 2 PERNAH ADA, 3 TIDAK ADA.");
 
-    await speak(q.label);
+    // Baca pertanyaan
+    let pertanyaanDibaca = q.label
+        .replace(/\//g, ' atau ')
+        .replace(/\&/g, ' dan ')
+        .replace(/\-/g, ' ke ')
+        .replace(/\s+/g, ' ')
+        .trim();
 
-    if (q.type === "select" && q.options) {
-        const opts = Object.values(q.options).slice(0, 25);
+    pertanyaanDibaca = pertanyaanDibaca
+    .replace(/\bART\b/g, 'A Er Te');
+
+    await speak(pertanyaanDibaca);
+
+    // ========== KHUSUS AGAMA: PAKSA DIBACA BENAR ==========
+    if (q.field === "kdagama") {
+        const teksAgamaBenar = [
+            "1. Islam",
+            "2. Kristen Protestan",
+            "3. Kristen Katolik",
+            "4. Hindu",
+            "5. Buddha",
+            "6. Khonghucu",     // ini yang paling penting
+            "7. Lainnya"
+        ];
+
+        for (let i = 0; i < teksAgamaBenar.length; i++) {
+            await speak(teksAgamaBenar[i]);
+            if (i < teksAgamaBenar.length - 1) await new Promise(r => setTimeout(r, 250));
+        }
+
+        document.getElementById('voice-status').innerText = 'Mendengarkan...';
+        return; // keluar fungsi setelah selesai baca agama
+    }
+
+    // ========== PILIHAN UMUM (kecuali yang dikecualikan) ==========
+    if (
+        q.type === "select" &&
+        currentModul !== 5 &&                                    // Program Serta tidak dibacakan (terlalu banyak)
+        ![6, 7, 8].includes(currentModul) &&                     // Lembaga juga tidak (ratusan pertanyaan)
+        !["kdprovinsi", "kdkabupaten", "kdkecamatan", "kddesa", "kdpekerjaan", "kdlapanganusaha"].includes(q.field)
+    ) {
+        const opts = Object.values(q.options);
         for (let i = 0; i < opts.length; i++) {
-            const clean = opts[i].replace(/\//g, ' atau ').replace(/_/g, ' ');
-            await speak(`${i + 1}. ${clean}`);
-            if (i < opts.length - 1) await new Promise(r => setTimeout(r, 100));
+            // Fix Buddha & Konghucu juga di master lain kalau ada
+            let nama = opts[i];
+            if (nama === "BUDHA") nama = "Buddha";
+            if (nama === "KONGHUCHU") nama = "Khonghucu";
+            if (nama === "PERIKANAN BUDIDAYA") nama = "perikanan budidaya";
+            if (nama === "TBC (TUBERCULLOSIS)") nama = "TBC (tuberkulosis)";
+            if (nama === "RP. 1 JUTA S/D RP. 1,5 JUTA") nama = "RP. 1 JUTA Sampai Dengan RP. 1,5 JUTA";
+            if (nama === "RP. 1,5 JUTA S/D RP. 2 JUTA") nama = "RP. 1,5 JUTA Sampai Dengan RP. 2 JUTA";
+            if (nama === "RP. 2 JUTA S/D RP. 3 JUTA") nama = "RP. 2 JUTA Sampai Dengan RP. 3 JUTA";
+            if (nama === "RP. 1 JUTA S/D RP. 5 JUTA") nama = "RP. 1 JUTA Sampai Dengan RP. 5 JUTA";
+            if (nama === "RP. 5 JUTA S/D RP. 10 JUTA") nama = "RP. 5 JUTA Sampai Dengan RP. 10 JUTA";
+            if (nama === "PASPORT") nama = "paspor";
+            
+            await speak(`${i + 1}. ${cleanOptionText(nama)}`);
+            if (i < opts.length - 1) await new Promise(r => setTimeout(r, 150));
         }
     }
 
     document.getElementById('voice-status').innerText = 'Mendengarkan...';
 }
+        // ===================================================================
+        // PROSES JAWABAN – VERSI FINAL & RAPIH
+        // ===================================================================
+        async function processVoiceAnswer(text) {
+            if (isSpeaking) return;
 
-async function nextQuestion() {
-    step++;
-    if (step >= questions[currentModul].length) {
-        modulStatus[currentModul] = 'completed';
-        if (currentModul === 5 || currentModul === 6) {
-            await submitModul(currentModul);
-        }
-        isReviewMode = true;
-        saveData();
-        updateProgressSteps();
-        checkAllCompletedAndShowSimpanBtn();
-        showReviewForm();
-    } else {
-        renderQuestion();
-        if (isListening) speakQuestionAndOptions();
-    }
-}
+            const q = questions[currentModul][step];
+            let value = text.trim();
+            const lowerText = text.toLowerCase().trim();
 
+            // ===================================================================
+            // 1. JAM KELAHIRAN (kolom: kelahiran_jamkelahiran → time)
+            // ===================================================================
+            if (q.field === "kelahiran_jamkelahiran") {
+                let cleaned = lowerText
+                    .replace(/\b(jam|pukul|lewat|kurang|setengah|malam|pagi|siang|sore|wib|wita|wit|dan|nol|menit)\b/gi, ' ')
+                    .replace(/\s+/g, ' ').trim();
 
-/* ==================== UTILITIES ==================== */
-function capitalize(text) { return text.replace(/\b\w/g, l => l.toUpperCase()); }
-function cleanOptionText(text) { return text.replace(/\//g, ' atau ').replace(/_/g, ' '); }
+                const kataAngka = {
+                    satu:1, dua:2, tiga:3, empat:4, lima:5, enam:6, tujuh:7, delapan:8, sembilan:9, sepuluh:10,
+                    sebelas:11, "dua belas":12, "tiga belas":13, "empat belas":14, "lima belas":15,
+                    "enam belas":16, "tujuh belas":17, "delapan belas":18, "sembilan belas":19,
+                    "dua puluh":20, "tiga puluh":30, "empat puluh":40, "lima puluh":50
+                };
+                for (const [kata, num] of Object.entries(kataAngka)) {
+                    cleaned = cleaned.replace(new RegExp('\\b' + kata + '\\b', 'gi'), num + ' ');
+                }
 
-function findBestMatch(text, options) {
-    const norm = text.toLowerCase().trim();
-    for (const [id, label] of Object.entries(options)) {
-        const cleanLabel = label.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (label.toLowerCase().includes(norm) || norm.includes(cleanLabel)) {
-            return [id, label];
-        }
-    }
-    return null;
-}
+                const nums = cleaned.match(/\d+/g)?.map(Number) || [];
+                let jam = 0, menit = 0;
 
-function mapOmsetToCode(omset) {
-    let input = (omset ?? '').toString().toLowerCase().trim();
-    let angka = parseFloat(input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
-    if (/juta|jutaan/i.test(input)) angka *= 1000000;
+                if (nums.length === 0) {
+                    await speak("Jam kelahiran tidak terdeteksi. Ulangi dengan jelas.");
+                    return;
+                }
+                if (nums.length === 1) {
+                    const n = nums[0];
+                    if (n >= 0 && n <= 2359) { jam = Math.floor(n / 100); menit = n % 100; }
+                    else if (n <= 23) jam = n;
+                } else {
+                    jam = nums[0] || 0;
+                    menit = nums[1] || 0;
+                }
 
-    if (angka <= 1000000) return '1';
-    if (angka <= 5000000) return '2';
-    if (angka <= 10000000) return '3';
-    return '4';
-}
-function mapPendapatanToCode(pendapatan) {
-    if (!pendapatan) return '0';
+                if (jam < 0 || jam > 23 || menit < 0 || menit > 59) {
+                    await speak("Jam tidak valid. Harus 00–23 untuk jam, 00–59 untuk menit.");
+                    return;
+                }
 
-    let input = pendapatan.toString().toLowerCase().trim();
+                value = `${jam.toString().padStart(2,'0')}:${menit.toString().padStart(2,'0')}:00`;
+                await speak(`Jam kelahiran ${jam} lewat ${menit} menit. Lanjut.`);
+                answers[q.field] = value;
+                document.getElementById('inputAnswer').value = value.substring(0, 5);
+                saveData();
+                nextQuestion(1500);
+                return;
+            }
 
-    // Ambil angka saja
-    let angkaStr = input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.');
-    let nilai = parseFloat(angkaStr) || 0;
+            // ===================================================================
+            // 2. GOLONGAN DARAH
+            // ===================================================================
+            if (q.field === "penduduk_goldarah") {
+                const map = { "a": "a", "b": "b", "ab": "ab", "o": "o", "a b": "ab", "abe": "ab", "a be": "ab" };
+                const key = lowerText.replace(/\s+/g, ' ');
+                if (map[key]) {
+                    value = map[key];
+                    selectCard(value);
+                    answers[q.field] = value;
+                    saveData();
+                    nextQuestion(1200);
+                    return;
+                }
+            }
 
-    // Deteksi "juta"
-    if (/juta|jutaan|milyar/i.test(input)) {
-        nilai *= 1000000;
-    }
-    // Deteksi "ribu" (biar 800 ribu masuk)
-    else if (/ribu/i.test(input) && nilai < 10000) {
-        nilai *= 1000;
-    }
+            // ===================================================================
+            // 3. STATUS TINGGAL
+            // ===================================================================
+            if (q.field === "kdstatustinggal") {
+                if (lowerText.includes("dalam kota") || lowerText.includes("di dalam kota")) value = '2';
+                else if (lowerText.includes("luar kota") || lowerText.includes("di luar kota")) value = '1';
+                else if (lowerText.includes("tinggal bersama") || lowerText.includes("bersama")) value = '3';
+                else {
+                    await speak("Maaf tidak dikenali. Ulangi: tinggal bersama, tidak tinggal bersama di dalam kota, atau di luar kota.");
+                    return;
+                }
+                selectCard(value);
+                answers[q.field] = value;
+                saveData();
+                nextQuestion(1200);
+                return;
+            }
 
-    if (nilai <= 1000000)  return '1';  // ≤ 1 juta
-    if (nilai <= 1500000)  return '2';  // ≤ 1,5 juta
-    if (nilai <= 2000000)  return '3';  // ≤ 2 juta
-    if (nilai <= 3000000)  return '4';  // ≤ 3 juta
-    return '5';                                 // > 3 juta
-}
+            // ===================================================================
+            // 4. WILAYAH DATANG (Provinsi, Kab, Kec, Desa)
+            // ===================================================================
+            if (["kdprovinsi", "kdkabupaten", "kdkecamatan", "kddesa"].includes(q.field)) {
+                const match = findBestMatch(text, q.options);
+                if (!match) {
+                    await speak("Maaf, nama wilayah tidak dikenali. Ulangi dengan jelas.");
+                    return;
+                }
+                value = match[0];
+                selectCard(value);
+                answers[q.field] = value;
+                saveData();
+                nextQuestion(1200);
+                return;
+            }
 
-/* ==================== PROCESS ANSWER ==================== */
-async function processVoiceAnswer(text) {
-    if (isSpeaking) return;
-    const q = questions[currentModul][step];
-    let value = text.trim();
+            // ===================================================================
+            // 5. SKIP FIELD (contoh: kewarganegaraan)
+            // ===================================================================
+            if (q.type === "skip") {
+                answers[q.field] = q.default || "INDONESIA";
+                saveData();
+                nextQuestion(600);
+                return;
+            }
 
-    // Omset khusus
-    if (q.field === "kdomsetusaha") {
-        const kode = mapOmsetToCode(text);
-        answers[q.field] = kode;
-        const konfirmasi = { '1': 'kurang dari atau sama dengan satu juta', '2': 'satu sampai lima juta', '3': 'lima sampai sepuluh juta', '4': 'lebih dari sepuluh juta' };
-        await speak(`Omset ${konfirmasi[kode]} rupiah. Lanjut.`);
-        saveData(); renderQuestion(); setTimeout(nextQuestion, 1500);
-        return;
-    }
-        else if (q.field === "kdpendapatanperbulan") {
-        const kode = mapPendapatanToCode(text);
-        if (kode === '0') {
-            await speak("Maaf, pendapatan tidak terdeteksi. Ulangi dengan bilang angka, contoh: satu juta, satu setengah juta, dua juta, tiga setengah juta.");
-            return;
-        }
-        answers[q.field] = kode;
-        const konfirmasi = {
-            '1': 'kurang dari atau sama dengan satu juta rupiah',
-            '2': 'satu juta sampai satu setengah juta rupiah',
-            '3': 'satu setengah juta sampai dua juta rupiah',
-            '4': 'dua juta sampai tiga juta rupiah',
-            '5': 'lebih dari tiga juta rupiah'
-        };
-        await speak(`Pendapatan per bulan ${konfirmasi[kode]}. Lanjut ya.`);
-        const inputEl = document.getElementById('inputAnswer');
-        if (inputEl) inputEl.value = konfirmasi[kode];
-        saveData();
-        renderQuestion();
-        setTimeout(nextQuestion, 2000);
-        return;
-    }
+            // ===================================================================
+            // 6. VALIDASI ANGKA KHUSUS
+            // ===================================================================
+            if (["nik", "no_kk"].includes(q.field)) {
+                value = text.replace(/\D/g, '').slice(0, 16);
+                if (value.length !== 16) {
+                    await speak("Harus 16 digit angka. Mohon ulangi dengan jelas.");
+                    return;
+                }
+            }
+            else if (q.field === "penduduk_nourutkk") {
+                const num = text.replace(/\D/g, '');
+                if (!num || parseInt(num) < 1 || parseInt(num) > 99) {
+                    await speak("Nomor urut KK harus dari 1 sampai 99.");
+                    return;
+                }
+                value = num.padStart(2, '0');
+            }
+            else if (q.field === "penduduk_noaktalahir") {
+                const num = text.replace(/\D/g, '');
+                if (num.length < 6) {
+                    await speak("Nomor akta lahir minimal 6 digit.");
+                    return;
+                }
+                value = `AKL-${num}`;
+            }
 
-    if (q.type === "skip") {
-        answers[q.field] = q.default;
-        setTimeout(nextQuestion, 800);
-        return;
-    }
+            // ===================================================================
+            // 7. OMSET USAHA
+            // ===================================================================
+            if (q.field === "kdomsetusaha") {
+                const kode = mapOmsetToCode(text);
+                const konfirmasi = { '1': '≤ 1 juta', '2': '1–5 juta', '3': '5–10 juta', '4': '> 10 juta' };
+                answers[q.field] = kode;
+                await speak(`Omset ${konfirmasi[kode]} rupiah. Lanjut.`);
+                saveData();
+                nextQuestion(1500);
+                return;
+            }
 
-    if (q.type === "select") {
-        const match = findBestMatch(text, q.options);
-        if (!match) { await speak("Maaf, tidak dikenali. Mohon ulangi."); return; }
-        value = match[0];
-    } 
-    else if (q.type === "text") 
-        // === VALIDASI KHUSUS ANGKA ===
-    if (["nik", "no_kk"].includes(q.field)) {
-        const angka = text.replace(/\D/g, ''); // hanya ambil angka
-        if (angka.length !== 16) {
-            await speak("Harus 16 digit. Mohon ulangi dengan jelas.");
-            return;
-        }
-        value = angka;
-    }
-    else if (q.field === "penduduk_noaktalahir") {
-        const angka = text.replace(/\D/g, '');
-        if (angka.length === 0) {
-            await speak("Nomor akta lahir harus berupa angka. Ulangi.");
-            return;
-        }
-        value = angka;
-    }
-    else if (q.field === "penduduk_nourutkk") {
-        const angka = text.replace(/\D/g, '');
-        if (!angka || angka === "0" || parseInt(angka) > 99) {
-            await speak("Nomor urut KK harus dari 1 sampai 99. Ulangi.");
-            return;
-        }
-        value = angka.padStart(2, '0'); // otomatis jadi 02, 05, dst
-    }
-    // === KEWARGANEGARAAN OTOMATIS ===
-    else if (q.type === "skip") {
-        answers[q.field] = q.default;
-        saveData();
-        setTimeout(nextQuestion, 600);
-        return;
-    }
-    // === SELECT BIASA ===
-    else if (q.type === "select") {
-        const match = findBestMatch(text, q.options);
-        if (!match) {
-            await speak("Pilihan tidak dikenali. Mohon ulangi.");
-            return;
-        }
-        value = match[0];
-    }
-    // === TEXT BIASA ===
-    else {
-        value = capitalize(text);
-    }
+            // ===================================================================
+            // 8. PENDAPATAN PER BULAN
+            // ===================================================================
+            if (q.field === "kdpendapatanperbulan") {
+                const kode = mapPendapatanToCode(text);
+                if (kode === '0') {
+                    await speak("Pendapatan tidak terdeteksi. Ulangi dengan bilang angka, contoh: satu juta, dua setengah juta.");
+                    return;
+                }
+                const konfirmasi = {
+                    '1': '≤ 1 juta', '2': '1–1,5 juta', '3': '1,5–2 juta', '4': '2–3 juta', '5': '> 3 juta'
+                };
+                answers[q.field] = kode;
+                await speak(`Pendapatan ${konfirmasi[kode]} per bulan. Lanjut.`);
+                const inputEl = document.getElementById('inputAnswer');
+                if (inputEl) inputEl.value = konfirmasi[kode];
+                saveData();
+                nextQuestion(1800);
+                return;
+            }
 
-    answers[q.field] = value;
+            // ===================================================================
+            // 9. TANGGAL LAHIR & TANGGAL MUTASI
+            // ===================================================================
+            if (q.field === "penduduk_tanggallahir" || q.field === "penduduk_tanggalmutasi") {
+                const formatted = convertTanggalIndoToISO(lowerText);
+                if (!formatted) {
+                    await speak("Tanggal tidak dikenali. Ulangi, contoh: dua puluh lima desember dua ribu dua puluh empat.");
+                    return;
+                }
+                value = formatted;
+                answers[q.field] = value;
+                document.getElementById('inputAnswer').value = value.split('-').reverse().join('/');
+                await speak(`Tanggal ${q.field === "penduduk_tanggallahir" ? "lahir" : "mutasi"} ${value.split('-').reverse().join(' ')}. Lanjut.`);
+                saveData();
+                nextQuestion(1500);
+                return;
+            }
 
-    // Insert wilayah datang jika mutasi "Datang"
-    if (currentModul === 1 && q.field === "kdmutasimasuk" && text.toLowerCase().includes("datang")) {
-        const idx = questions[1].findIndex(i => i.field === "penduduk_tanggalmutasi") + 1;
-        if (!questions[1].some(x => x.field === "kdprovinsi")) {
-            questions[1].splice(idx, 0, ...wilayahQuestions);
-            document.getElementById('wilayahDatangReview').classList.remove('hidden');
-        }
-    }
+            // ===================================================================
+            // 10. TIPE UMUM (select / text / number)
+            // ===================================================================
+            if (q.type === "select") {
+                const match = findBestMatch(text, q.options);
+                if (!match) {
+                    await speak("Pilihan tidak dikenali. Mohon ulangi.");
+                    return;
+                }
+                value = match[0];
+            }
+            else if (q.type === "number") {
+                const num = text.match(/\d+/g);
+                if (!num) {
+                    await speak("Harus berupa angka. Ulangi.");
+                    return;
+                }
+                value = num.join('');
+            }
+            else if (q.type === "text") {
+                value = capitalize(text.trim());
+            }
 
-    saveData();
-    renderQuestion();
-    setTimeout(nextQuestion, 1200);
-}
+            // ===================================================================
+            // UPDATE JAWABAN & UI
+            // ===================================================================
+            answers[q.field] = value;
 
-function nextQuestion() {
-    step++;
-    if (step >= questions[currentModul].length) {
-        modulStatus[currentModul] = 'completed';
-        isReviewMode = true;
-        saveData();
-        updateProgressSteps();
-        checkAllCompletedAndShowSimpanBtn();
-        showReviewForm();
-    } else {
-        renderQuestion();
-        if (isListening) speakQuestionAndOptions();
-    }
-}
+            if (q.type === "select") {
+                selectCard(value);
+            } else {
+                const input = document.getElementById('inputAnswer');
+                if (input) input.value = value;
+            }
 
-/* ==================== RENDER ==================== */
-function renderQuestion() {
-    const q = questions[currentModul][step];
-    let html = `<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
+            // Inject wilayah jika mutasi datang
+            if (currentModul === 1 && q.field === "kdmutasimasuk") {
+                injectWilayahIfNeeded();
+                if (answers.kdmutasimasuk === '3') {
+                    setTimeout(() => {
+                        step = questions[1].findIndex(x => x.field === "kdprovinsi");
+                        if (step !== -1) {
+                            renderQuestion();
+                            if (isListening) speakQuestionAndOptions();
+                        }
+                    }, 1200);
+                    return;
+                }
+            }
 
-    if (q.type === "select") {
-        const optionCount = Object.keys(q.options).length;
-
-        // KHUSUS 2 PILIHAN → pakai layout spesial supaya pas di tengah
-        if (optionCount === 2) {
-            html += `<div class="flex justify-center items-center gap-8 px-6 max-w-3xl mx-auto">`;
-
-            Object.entries(q.options).forEach(([id, nama]) => {
-                const selected = answers[q.field] === id ? 'selected' : '';
-                html += `
-                    <div class="option-card ${selected} flex-1 max-w-sm py-8 cursor-pointer select-none transition-all duration-200 text-center text-lg font-semibold rounded-2xl shadow-sm hover:shadow-md"
-                         data-value="${id}"
-                         data-text="${nama}">
-                        ${nama}
-                    </div>
-                `;
-            });
-
-            html += `</div>`;
-        }
-        // LEBIH DARI 2 PILIHAN → tetap pakai grid seperti biasa (sudah rata tengah)
-        else {
-            html += `
-                <div class="flex justify-center px-4">
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 w-full max-w-5xl">
-            `;
-
-            Object.entries(q.options).forEach(([id, nama]) => {
-                const selected = answers[q.field] === id ? 'selected' : '';
-                html += `
-                    <div class="option-card ${selected} cursor-pointer select-none text-center py-4"
-                         data-value="${id}"
-                         data-text="${nama}">
-                        <span class="text-sm font-medium block">${nama}</span>
-                    </div>
-                `;
-            });
-
-            html += `
-                    </div>
-                </div>
-            `;
-        }
-    } 
-    else {
-        // Tipe input text biasa
-        const val = answers[q.field] || '';
-        html += `
-            <div class="max-w-md mx-auto">
-                <input type="text" id="inputAnswer"
-                       class="w-full border border-gray-300 rounded-xl p-3 text-center text-lg"
-                       readonly value="${val}" placeholder="Jawaban akan muncul di sini...">
-            </div>
-        `;
-    }
-
-    document.getElementById('quizArea').innerHTML = html;
-    updateProgress();
-    attachCardListeners();
-}
-
-function updateProgress() {
-    const total = questions[currentModul].length;
-    const percent = ((step + 1) / total) * 100;
-    document.getElementById('progressBar').style.width = percent + "%";
-    document.getElementById('currentQ').textContent = step + 1;
-    document.getElementById('totalQ').textContent = total;
-}
-
-function attachCardListeners() {
-    document.querySelectorAll('.option-card').forEach(card => {
-        card.onclick = () => {
-            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            processVoiceAnswer(card.dataset.text);
-        };
-    });
-}
-
-/* ==================== STORAGE & NAVIGASI ==================== */
-function saveData() {
-    localStorage.setItem('voiceAnswers', JSON.stringify(answers));
-    localStorage.setItem('modulStatus', JSON.stringify(modulStatus));
-    localStorage.setItem(`step_${currentModul}`, step);
-    localStorage.setItem(`review_${currentModul}`, isReviewMode);
-    localStorage.setItem('currentModul', currentModul);
-}
-
-function loadModulData(modId) {
-    const savedAnswers = localStorage.getItem('voiceAnswers');
-    const savedStatus = localStorage.getItem('modulStatus');
-    const savedStep = localStorage.getItem(`step_${modId}`);
-    const savedReview = localStorage.getItem(`review_${modId}`);
-
-    if (savedAnswers) answers = JSON.parse(savedAnswers);
-    if (savedStatus) modulStatus = JSON.parse(savedStatus);
-    step = savedStep ? parseInt(savedStep) : 0;
-    isReviewMode = savedReview === 'true';
-    currentModul = modId;
-
-    Object.keys(modulStatus).forEach(k => {
-        modulStatus[k] = (k == modId) ? 'active' : (modulStatus[k] === 'completed' ? 'completed' : 'pending');
-    });
-}
-
-function updateProgressSteps() {
-    const container = document.getElementById('progressSteps');
-    container.innerHTML = '';
-
-    modules.forEach((mod, i) => {
-        if (i > 0) {
-            const line = document.createElement('div');
-            line.className = `h-0.5 w-12 self-center rounded-full ${modulStatus[mod.id] === 'completed' ? 'bg-blue-600' : 'bg-gray-300'}`;
-            container.appendChild(line);
+            saveData();
+            nextQuestion(1200);
         }
 
-        const div = document.createElement('div');
-        div.className = 'flex items-center cursor-pointer';
-        div.onclick = () => switchModul(mod.id);
-
-        const status = modulStatus[mod.id] || 'pending';
-        const circle = document.createElement('div');
-        circle.className = `w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white ${
-            status === 'completed' ? 'bg-blue-600' : status === 'active' ? 'bg-green-600' : 'bg-gray-300 text-gray-600'
-        }`;
-        circle.textContent = mod.id;
-
-        const text = document.createElement('div');
-        text.className = 'ml-2 text-left';
-        text.innerHTML = `<div class="font-medium text-sm">${mod.name}</div>
-                         <div class="text-xs ${status === 'completed' ? 'text-blue-600' : status === 'active' ? 'text-green-600' : 'text-gray-500'}">
-                             ${status === 'completed' ? 'Selesai' : status === 'active' ? 'Aktif' : 'Belum'}
-                         </div>`;
-
-        div.appendChild(circle);
-        div.appendChild(text);
-        container.appendChild(div);
-    });
-}
-
-function switchModul(modId) {
-    stopListening();
-    saveData();
-    loadModulData(modId);
-
-    document.getElementById('reviewForm').classList.add('hidden');
-    document.getElementById('quizArea').innerHTML = '';
-    document.getElementById('voice-status').innerText = 'Tekan mic untuk mulai merekam...';
-    document.getElementById('modulTitle').textContent = modules.find(m => m.id === modId).name;
-
-    updateProgressSteps();
-    checkAllCompletedAndShowSimpanBtn();
-
-    if (modulStatus[modId] === 'completed' && isReviewMode) {
-        showReviewForm();
-    } else {
-        renderQuestion();
-    }
-}
-
-function stopListening() {
-    if (recognition) recognition.stop();
-    if (audioContext) audioContext.close().catch(() => {});
-    isListening = false;
-    document.getElementById('startBtn').classList.remove('listening');
-    document.getElementById('visualizer').style.opacity = 0;
-}
-
-function checkAllCompletedAndShowSimpanBtn() {
-    const allDone = Object.values(modulStatus).every(s => s === 'completed');
-    const btn = document.getElementById('simpanBtn');
-    if (allDone) {
-        btn.style.backgroundColor = '#2563eb';
-        btn.disabled = false;
-    } else {
-        btn.style.backgroundColor = '#9ca3af';
-        btn.disabled = true;
-    }
-}
-
-function showReviewForm() {
-    stopListening();
-    document.getElementById('quizArea').innerHTML = '';
-    document.getElementById('voice-status').innerText = 'Review data. Selesaikan semua modul untuk simpan.';
-    document.getElementById('reviewForm').classList.remove('hidden');
-
-    const container = document.getElementById('reviewFields');
-    container.innerHTML = '';
-
-    questions[currentModul].forEach(q => {
-        if (!answers[q.field]) return;
-
-        let input = '';
-        if (q.type === "select") {
-            input = `<select name="${q.field}" class="w-full border rounded-lg p-2 text-sm"><option value="">-- Pilih --</option>`;
-            Object.entries(q.options || {}).forEach(([k, v]) => {
-                input += `<option value="${k}" ${answers[q.field] == k ? 'selected' : ''}>${v}</option>`;
-            });
-            input += `</select>`;
-        } else {
-            input = `<input type="${q.type === 'number' ? 'number' : 'text'}" name="${q.field}" value="${answers[q.field] || ''}" class="w-full border rounded-lg p-2 text-sm">`;
+        // ===================================================================
+        // FUNGSI BANTUAN
+        // ===================================================================
+        function selectCard(value) {
+            const card = document.querySelector(`.option-card[data-value="${value}"]`);
+            if (card) {
+                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+            }
         }
 
-        container.innerHTML += `
-            <div>
-                <label class="block text-xs font-medium mb-1">${q.label.replace('?', '')}</label>
-                ${input}
+        function nextQuestion(delay = 1200) {
+            setTimeout(async () => {
+                step++;
+                if (step < questions[currentModul].length) {
+                    renderQuestion();
+                    if (isListening) await speakQuestionAndOptions();
+                } else {
+                    finishModul();
+                }
+            }, delay);
+        }
+
+        function finishModul() {
+            isReviewMode = true;
+            modulStatus[currentModul] = 'completed';
+            saveData();
+            updateProgressSteps();
+            checkAllCompletedAndShowSimpanBtn();
+            showReviewForm();
+        }
+
+        // Fungsi konversi tanggal Indo → ISO (pindahkan ke luar kalau belum ada)
+        function convertTanggalIndoToISO(text) {
+            let input = text.replace(/tanggal|tgl|lahir|mutasi|tahun|thn\.?/gi, '').trim();
+            const bulanMap = {
+                januari: '01', februari: '02', maret: '03', april: '04', mei: '05', juni: '06',
+                juli: '07', agustus: '08', september: '09', oktober: '10', november: '11', desember: '12'
+            };
+            for (const [k, v] of Object.entries(bulanMap)) {
+                input = input.replace(new RegExp('\\b' + k + '\\b', 'gi'), v);
+            }
+            const match = input.match(/(\d{1,2})[\/\.\-\s]+(\d{1,2})[\/\.\-\s]+(\d{2,4})/);
+            if (match) {
+                let [_, d, m, y] = match;
+                if (y.length === 2) y = '20' + y;
+                return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+            }
+            return null;
+        }
+
+        function showReviewForm() {
+            stopListening();
+            document.getElementById('inputArea').classList.add('hidden');
+            document.getElementById('reviewForm').classList.remove('hidden');
+            document.getElementById('quizArea').innerHTML = '';
+            document.getElementById('voice-status').innerText = 'Review & edit data. Selesai semua modul untuk simpan.';
+
+            const container = document.getElementById('reviewFields');
+            container.innerHTML = '';
+
+            // ===================================================================
+            // MODUL 1: DATA PENDUDUK (Sudah bagus, tetap pakai versi custom)
+            // ===================================================================
+            if (currentModul === 1) {
+            const isMutasiDatang = answers.kdmutasimasuk === '3';
+            let html = '';
+            // 1. NIK
+            html += `<div><label class="block text-xs font-medium mb-1">NIK (Nomor Induk Kependudukan)</label>
+                <input type="text" name="nik" value="${answers.nik || ''}" maxlength="16" class="w-full border rounded-lg p-2.5" required></div>`;
+            // 2. Nama Lengkap
+            html += `<div><label class="block text-xs font-medium mb-1">Nama Lengkap</label>
+                <input type="text" name="penduduk_namalengkap" value="${answers.penduduk_namalengkap || ''}" class="w-full border rounded-lg p-2.5" required></div>`;
+            // 3. Tempat Lahir
+            html += `<div><label class="block text-xs font-medium mb-1">Tempat Lahir</label>
+                <input type="text" name="penduduk_tempatlahir" value="${answers.penduduk_tempatlahir || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+            // 4. Tanggal Lahir
+            html += `<div><label class="block text-xs font-medium mb-1">Tanggal Lahir</label>
+            <input type="date" name="penduduk_tanggallahir" value="${answers.penduduk_tanggallahir || ''}" class="w-full border rounded-lg p-2.5" required></div>`;
+            // 5. Golongan Darah
+            html += `<div>
+                <label class="block text-xs font-medium mb-1">Golongan Darah</label>
+                <select name="penduduk_goldarah" class="w-full border rounded-lg p-2.5" required>
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries({"A":"A","B":"B","AB":"AB","O":"O"}).map(([k,v]) => {
+                        // Normalisasi nilai jawaban: trim + uppercase
+                        const currentVal = (answers.penduduk_goldarah || '').toString().trim().toUpperCase();
+                        const isSelected = currentVal === k;
+                        return `<option value="${k}" ${isSelected ? 'selected' : ''}>${v}</option>`;
+                    }).join('')}
+                </select>
             </div>`;
-    });
-}
+            // 6. No. Akta Lahir
+            html += `<div><label class="block text-xs font-medium mb-1">Nomor Akta Lahir</label>
+                <input type="text" name="penduduk_noaktalahir" value="${answers.penduduk_noaktalahir || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+            // 7. Kewarganegaraan (skip, tetap disimpan hidden)
+            html += `<div><label class="block text-xs font-medium mb-1">Kewarganegaraan</label>
+                <input type="text" name="penduduk_kewarganegaraan" value="${answers.penduduk_kewarganegaraan || 'INDONESIA'}" class="w-full border rounded-lg p-2.5"></div>`;
+           
+            // 8. Jenis Kelamin
+            html += `<div><label class="block text-xs font-medium mb-1">Jenis Kelamin</label>
+                <select name="kdjeniskelamin" class="w-full border rounded-lg p-2.5" required>
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.jenis_kelamin).map(([k,v])=>`<option value="${k}" ${answers.kdjeniskelamin===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 9. Agama
+            html += `<div><label class="block text-xs font-medium mb-1">Agama</label>
+                <select name="kdagama" class="w-full border rounded-lg p-2.5" required>
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.agama).map(([k,v])=>`<option value="${k}" ${answers.kdagama===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 10. Nomor KK (wajib, warna merah)
+            html += `<div><label class="block text-xs font-medium mb-1 text-red-600">Nomor Kartu Keluarga *</label>
+                <input type="text" name="no_kk" value="${answers.no_kk || ''}" maxlength="16" class="w-full border rounded-lg p-2.5" required placeholder="16 digit"></div>`;
+            // 11. No. Urut KK
+            html += `<div><label class="block text-xs font-medium mb-1">Nomor Urut dalam KK</label>
+                <input type="text" name="penduduk_nourutkk" value="${answers.penduduk_nourutkk || ''}" maxlength="2" class="w-full border rounded-lg p-2.5"></div>`;
+            // 12. Hubungan dalam Keluarga
+            html += `<div><label class="block text-xs font-medium mb-1">Hubungan dalam Keluarga</label>
+                <select name="kdhubungankeluarga" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.hubungan_keluarga).map(([k,v])=>`<option value="${k}" ${answers.kdhubungankeluarga===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 13. Hubungan dengan Kepala Keluarga
+            html += `<div><label class="block text-xs font-medium mb-1">Hubungan dengan Kepala Keluarga</label>
+                <select name="kdhubungankepalakeluarga" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.hubungan_kepala_keluarga).map(([k,v])=>`<option value="${k}" ${answers.kdhubungankepalakeluarga===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 14. Status Perkawinan
+            html += `<div><label class="block text-xs font-medium mb-1">Status Perkawinan</label>
+                <select name="kdstatuskawin" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.status_kawin).map(([k,v])=>`<option value="${k}" ${answers.kdstatuskawin===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 15. Akta Nikah
+            html += `<div><label class="block text-xs font-medium mb-1">Memiliki Akta Nikah?</label>
+                <select name="kdaktanikah" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.akta_nikah).map(([k,v])=>`<option value="${k}" ${answers.kdaktanikah===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 16. Tercantum dalam KK
+            html += `<div><label class="block text-xs font-medium mb-1">Tercantum dalam KK?</label>
+                <select name="kdtercantumdalamkk" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.tercantum_kk).map(([k,v])=>`<option value="${k}" ${answers.kdtercantumdalamkk===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 17. Status Tinggal
+            html += `<div><label class="block text-xs font-medium mb-1">Status Tinggal</label>
+                <select name="kdstatustinggal" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.status_tinggal).map(([k,v])=>`<option value="${k}" ${answers.kdstatustinggal===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 18. Kartu Identitas
+            html += `<div><label class="block text-xs font-medium mb-1">Jenis Kartu Identitas</label>
+                <select name="kdkartuidentitas" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.kartu_identitas).map(([k,v])=>`<option value="${k}" ${answers.kdkartuidentitas===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 19. Jenis Mutasi
+            html += `<div><label class="block text-xs font-medium mb-1">Jenis Mutasi</label>
+                <select name="kdmutasimasuk" id="review_mutasi" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(mutasiOptions).map(([k,v])=>`<option value="${k}" ${answers.kdmutasimasuk===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // 20. Tanggal Mutasi
+            html += `<div><label class="block text-xs font-medium mb-1">Tanggal Mutasi</label>
+                <input type="date" name="penduduk_tanggalmutasi" value="${answers.penduduk_tanggalmutasi}" class="w-full border rounded-lg p-2.5"></div>`;
+            // 21. Nama Ayah
+            html += `<div><label class="block text-xs font-medium mb-1">Nama Ayah</label>
+                <input type="text" name="penduduk_namaayah" value="${answers.penduduk_namaayah || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+            // 22. Nama Ibu
+            html += `<div><label class="block text-xs font-medium mb-1">Nama Ibu</label>
+                <input type="text" name="penduduk_namaibu" value="${answers.penduduk_namaibu || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+            // 23. Tempat Bekerja
+            html += `<div><label class="block text-xs font-medium mb-1">Nama Tempat Bekerja (jika ada)</label>
+                <input type="text" name="penduduk_namatempatbekerja" value="${answers.penduduk_namatempatbekerja || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+            // 24. Pekerjaan
+            html += `<div><label class="block text-xs font-medium mb-1">Pekerjaan</label>
+                <select name="kdpekerjaan" class="w-full border rounded-lg p-2.5">
+                    <option value="">-- Pilih --</option>
+                    ${Object.entries(masters.pekerjaan).map(([k,v])=>`<option value="${k}" ${answers.kdpekerjaan===k?'selected':''}>${v}</option>`).join('')}
+                </select></div>`;
+            // === WILAYAH ASAL (jika mutasi datang) ===
+            html += `<div id="wilayahDatangSection" class="${isMutasiDatang ? '' : 'hidden'} col-span-3 bg-teal-50 p-6 rounded-xl border border-teal-200 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <h4 class="font-bold text-teal-800 mb-4 col-span-2">Wilayah Datang</h4>
+                
+                <div>
+                    <label class="block text-xs font-medium mb-1">Provinsi</label>
+                    <select name="kdprovinsi" id="review_kdprovinsi" class="w-full border rounded-lg p-2.5 text-sm">
+                        <option value="">-- Pilih Provinsi --</option>
+                        ${Object.entries(provinsiOptions).map(([k,v])=>`<option value="${k}" ${answers.kdprovinsi === k ? 'selected' : ''}>${v}</option>`).join('')}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium mb-1">Kabupaten/Kota</label>
+                    <select name="kdkabupaten" id="review_kdkabupaten" class="w-full border rounded-lg p-2.5 text-sm">
+                        <option value="">-- Pilih Provinsi Dahulu --</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium mb-1">Kecamatan</label>
+                    <select name="kdkecamatan" id="review_kdkecamatan" class="w-full border rounded-lg p-2.5 text-sm">
+                        <option value="">-- Pilih Kabupaten Dahulu --</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-medium mb-1">Desa/Kelurahan</label>
+                    <select name="kddesa" id="review_kddesa" class="w-full border rounded-lg p-2.5 text-sm">
+                        <option value="">-- Pilih Kecamatan Dahulu --</option>
+                    </select>
+                </div>
+            </div>`;
 
-/* ==================== MIC & VISUALIZER ==================== */
-document.getElementById('startBtn').addEventListener('click', async () => {
-    if (isListening || isReviewMode) return;
+            container.innerHTML = html;
 
-    isListening = true;
-    document.getElementById('startBtn').classList.add('listening');
-    document.getElementById('visualizer').style.opacity = 1;
+            // ===================================================================
+            // 1. Toggle Wilayah Datang saat ubah Jenis Mutasi
+            // ===================================================================
+            const mutasiSelect = document.getElementById('review_mutasi');
+            if (mutasiSelect) {
+                mutasiSelect.addEventListener('change', function () {
+                    answers.kdmutasimasuk = this.value;
+                    const section = document.getElementById('wilayahDatangSection');
 
-    try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        canvas = document.getElementById('visualizer');
-        ctx = canvas.getContext('2d');
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    if (this.value === '3') {
+                        section.classList.remove('hidden');
+                        injectWilayahIfNeeded(); // penting untuk suara
+                    } else {
+                        section.classList.add('hidden');
+                        ["kdprovinsi", "kdkabupaten", "kdkecamatan", "kddesa"].forEach(f => {
+                            delete answers[f];
+                            const el = document.querySelector(`[name="${f}"]`);
+                            if (el) el.value = '';
+                        });
+                        // Hapus dari daftar pertanyaan suara
+                        questions[1] = questions[1].filter(q => !["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].includes(q.field));
+                    }
+                    saveData();
+                });
+            }
 
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const source = audioContext.createMediaStreamSource(stream);
-        source.connect(analyser);
-        drawVisualizer();
-    } catch (err) {
-        alert("Gagal akses mikrofon! Pastikan izin diberikan.");
-        stopListening();
-        return;
-    }
+           
 
-    await speakQuestionAndOptions();
+            // ===================================================================
+            // 2. Cascade Wilayah – PAKAI URL YANG BENAR: /voice/get-kabupaten/...
+            // ===================================================================
+            const provEl = document.getElementById('review_kdprovinsi');
+            const kabEl  = document.getElementById('review_kdkabupaten');
+            const kecEl  = document.getElementById('review_kdkecamatan');
+            const desEl  = document.getElementById('review_kddesa');
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) { alert("Browser tidak mendukung Speech Recognition"); stopListening(); return; }
+            if (provEl) {
+                provEl.addEventListener('change', function () {
+                    const val = this.value;
+                    answers.kdprovinsi = val;
+                    saveData();
 
-    recognition = new SpeechRecognition();
-    recognition.lang = 'id-ID';
-    recognition.continuous = true;
-    recognition.interimResults = true;
+                    if (val) {
+                        window.getWilayah('get-kabupaten', val, 'review_kdkabupaten');
+                    } else {
+                        kabEl.innerHTML = '<option value="">-- Pilih Provinsi Dahulu --</option>';
+                    }
+                    kecEl.innerHTML = '<option value="">-- Pilih Kabupaten Dahulu --</option>';
+                    desEl.innerHTML = '<option value="">-- Pilih Kecamatan Dahulu --</option>';
+                });
+            }
 
-    recognition.onresult = e => {
-        const result = e.results[e.results.length - 1];
-        if (result.isFinal) {
-            const text = result[0].transcript.trim();
-            document.getElementById('voice-status').innerText = `Dengar: "${text}"`;
-            processVoiceAnswer(text);
+            if (kabEl) {
+                kabEl.addEventListener('change', function () {
+                    const val = this.value;
+                    answers.kdkabupaten = val;
+                    saveData();
+
+                    if (val) {
+                        window.getWilayah('get-kecamatan', val, 'review_kdkecamatan');
+                    } else {
+                        kecEl.innerHTML = '<option value="">-- Pilih Kabupaten Dahulu --</option>';
+                    }
+                    desEl.innerHTML = '<option value="">-- Pilih Kecamatan Dahulu --</option>';
+                });
+            }
+
+            if (kecEl) {
+                kecEl.addEventListener('change', function () {
+                    const val = this.value;
+                    answers.kdkecamatan = val;
+                    saveData();
+
+                    if (val) {
+                        window.getWilayah('get-desa', val, 'review_kddesa');
+                    } else {
+                        desEl.innerHTML = '<option value="">-- Pilih Kecamatan Dahulu --</option>';
+                    }
+                });
+            }
+
+            if (desEl) {
+                desEl.addEventListener('change', function () {
+                    answers.kddesa = this.value;
+                    saveData();
+                });
+            }
+
+            // ===================================================================
+            // 3. AUTO-LOAD WILAYAH DATANG SAAT MASUK REVIEW (INI YANG BIKIN OTOMATIS ISI)
+            // ===================================================================
+            if (answers.kdprovinsi && answers.kdmutasimasuk === '3') {
+                setTimeout(() => {
+                    // Load Kabupaten
+                    window.getWilayah('get-kabupaten', answers.kdprovinsi, 'review_kdkabupaten', answers.kdkabupaten);
+
+                    // Setelah kabupaten muncul → set value + load kecamatan
+                    if (answers.kdkabupaten) {
+                        setTimeout(() => {
+                            kabEl.value = answers.kdkabupaten;
+                            window.getWilayah('get-kecamatan', answers.kdkabupaten, 'review_kdkecamatan', answers.kdkecamatan);
+
+                            if (answers.kdkecamatan) {
+                                setTimeout(() => {
+                                    kecEl.value = answers.kdkecamatan;
+                                    window.getWilayah('get-desa', answers.kdkecamatan, 'review_kddesa', answers.kddesa);
+
+                                    if (answers.kddesa) {
+                                        setTimeout(() => {
+                                            desEl.value = answers.kddesa;
+                                        }, 400);
+                                    }
+                                }, 500);
+                            }
+                        }, 700);
+                    }
+                }, 300);
+            }
+
+            }
+            // ===================================================================
+            // MODUL 2: KELAHIRAN
+            // ===================================================================
+            else if (currentModul === 2) {
+                let html = '';
+
+                // 1. Tempat Persalinan
+                html += `<div><label class="block text-xs font-medium mb-1">Tempat Persalinan</label>
+                    <select name="kdtempatpersalinan" class="w-full border rounded-lg p-2.5" required>
+                        <option value="">-- Pilih Tempat Persalinan --</option>
+                        ${Object.entries(masters.tempat_persalinan).map(([k,v]) => 
+                            `<option value="${k}" ${answers.kdtempatpersalinan===k?'selected':''}>${v}</option>`
+                        ).join('')}
+                    </select></div>`;
+
+                // 2. Jenis Kelahiran
+                html += `<div><label class="block text-xs font-medium mb-1">Jenis Kelahiran</label>
+                    <select name="kdjeniskelahiran" class="w-full border rounded-lg p-2.5" required>
+                        <option value="">-- Pilih Jenis Kelahiran --</option>
+                        ${Object.entries(masters.jenis_kelahiran).map(([k,v]) => 
+                            `<option value="${k}" ${answers.kdjeniskelahiran===k?'selected':''}>${v}</option>`
+                        ).join('')}
+                    </select></div>`;
+
+                // 3. Penolong Persalinan
+                html += `<div><label class="block text-xs font-medium mb-1">Penolong Persalinan</label>
+                    <select name="kdpertolonganpersalinan" class="w-full border rounded-lg p-2.5" required>
+                        <option value="">-- Pilih Penolong --</option>
+                        ${Object.entries(masters.pertolongan_persalinan).map(([k,v]) => 
+                            `<option value="${k}" ${answers.kdpertolonganpersalinan===k?'selected':''}>${v}</option>`
+                        ).join('')}
+                    </select></div>`;
+
+                // 4. Jam Kelahiran
+                // 4. Jam Kelahiran – VERSI BENAR 100% TETAP 24-JAM
+                let jamValue = '';
+                if (answers.kelahiran_jamkelahiran) {
+                    const time = answers.kelahiran_jamkelahiran.trim();
+                    const hhmm = time.substring(0, 5); // "21:00" atau "09:00"
+
+                    // Validasi sederhana bahwa ini format HH:mm yang valid
+                    if (/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(hhmm)) {
+                        jamValue = hhmm; // LANGSUNG PAKAI STRING ASLI, JANGAN LEWAT DATE!
+                    } else {
+                        jamValue = hhmm; // fallback tetap
+                    }
+                }
+
+                html += `<div><label class="block text-xs font-medium mb-1">Jam Kelahiran</label>
+                    <input type="time" name="kelahiran_jamkelahiran" value="${jamValue}" class="w-full border rounded-lg p-2.5"></div>`;
+
+                // 5. Kelahiran Ke-
+                html += `<div><label class="block text-xs font-medium mb-1">Anak Ke-</label>
+                    <input type="number" name="kelahiran_kelahiranke" value="${answers.kelahiran_kelahiranke || ''}" min="1" max="20" class="w-full border rounded-lg p-2.5"></div>`;
+
+                // 6. Berat & Panjang Lahir (satu baris)
+                html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-medium mb-1">Berat Lahir (gram)</label>
+                        <input type="number" name="kelahiran_berat" value="${answers.kelahiran_berat || ''}" min="0" max="10000" class="w-full border rounded-lg p-2.5"></div>
+                    <div><label class="block text-xs font-medium mb-1">Panjang Lahir (cm)</label>
+                        <input type="number" name="kelahiran_panjang" value="${answers.kelahiran_panjang || ''}" min="0" max="100" class="w-full border rounded-lg p-2.5"></div>
+                </div>`;
+
+                // 7. NIK Ibu Kandung (wajib, merah)
+                html += `<div><label class="block text-xs font-medium mb-1">NIK Ibu</label>
+                    <input type="text" name="kelahiran_nikibu" value="${answers.kelahiran_nikibu || ''}" maxlength="16" class="w-full border rounded-lg p-2.5" required placeholder="16 digit NIK ibu"></div>`;
+
+                // 8. NIK Ayah (opsional)
+                html += `<div><label class="block text-xs font-medium mb-1">NIK Ayah</label>
+                    <input type="text" name="kelahiran_nikayah" value="${answers.kelahiran_nikayah || ''}" maxlength="16" class="w-full border rounded-lg p-2.5" required placeholder="16 digit NIK ayah"></div>`;
+
+                html += `</div></div>`; // tutup space-y-5 & container
+                container.innerHTML = html;
+            }
+            // ===================================================================
+            // MODUL LAIN (3-8): PAKAI GENERIK
+            // ===================================================================
+            else {
+                questions[currentModul].forEach(q => {
+                    if (!answers[q.field]) return;
+                    let input = '';
+                    if (q.type === "select") {
+                        input = `<select name="${q.field}" class="w-full border rounded-lg p-2.5 text-sm">
+                            <option value="">-- Pilih --</option>
+                            ${Object.entries(q.options||{}).map(([k,v]) => `<option value="${k}" ${answers[q.field]===k?'selected':''}>${v}</option>`).join('')}
+                        </select>`;
+                    } else if (q.field === "kelahiran_jamkelahiran") {
+                        const val = (answers[q.field] || '').substring(0,5);
+                        input = `<input type="time" name="${q.field}" value="${val}" class="w-full border rounded-lg p-2.5 text-sm">`;
+                    } else {
+                        input = `<input type="${q.type==='number'?'number':'text'}" name="${q.field}" value="${answers[q.field]||''}" class="w-full border rounded-lg p-2.5 text-sm">`;
+                    }
+                    container.innerHTML += `<div><label class="block text-xs font-medium mb-1">${q.label}</label>${input}</div>`;
+                });
+            }
+
+            // Update answers saat edit
+            document.querySelectorAll('#reviewFields input, #reviewFields select').forEach(el => {
+                el.addEventListener('change', e => {
+                    answers[e.target.name] = e.target.value;
+                    saveData();
+                });
+            });
         }
-    };
-
-    recognition.onerror = () => setTimeout(() => recognition?.start(), 500);
-    recognition.onend = () => { if (isListening) setTimeout(() => recognition?.start(), 500); };
-
-    recognition.start();
-});
-
-function drawVisualizer() {
-    if (!isListening) return;
-    requestAnimationFrame(drawVisualizer);
-    analyser.getByteFrequencyData(dataArray);
-    ctx.fillStyle = 'rgba(255,255,255,0.1)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const barWidth = (canvas.width / dataArray.length) * 2.5;
-    let x = 0;
-    for (let i = 0; i < dataArray.length; i++) {
-        const h = dataArray[i] / 2;
-        ctx.fillStyle = `rgb(${Math.min(h + 120, 255)}, 80, 80)`;
-        ctx.fillRect(x, canvas.height - h, barWidth, h);
-        x += barWidth + 1;
-    }
-}
-
-/* ==================== SUBMIT ==================== */
-document.getElementById('voiceForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const btn = document.getElementById('simpanBtn');
-    btn.disabled = true;
-    btn.innerText = "Menyimpan...";
-
-    Object.keys(answers).forEach(key => {
-        let el = this.querySelector(`[name="${key}"]`);
-        if (!el) {
-            el = document.createElement('input');
-            el.type = 'hidden';
-            el.name = key;
-            this.appendChild(el);
+        // VISUALIZER
+        function drawWaveVisualizer() {
+            if (!isListening) return;
+            requestAnimationFrame(drawWaveVisualizer);
+            analyser.getByteFrequencyData(dataArray);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const barWidth = (canvas.width / dataArray.length) * 2.8;
+            let x = canvas.width * 0.1;
+            for (let i = 0; i < dataArray.length; i++) {
+                let barHeight = (dataArray[i] / 255) * canvas.height * 0.8;
+                const gradient = ctx.createLinearGradient(0, canvas.height/2 - barHeight/2, 0, canvas.height/2 + barHeight/2);
+                gradient.addColorStop(0, '#14b8a6');
+                gradient.addColorStop(1, '#4f46e5');
+                ctx.fillStyle = gradient;
+                ctx.roundRect(x, canvas.height/2 - barHeight/2, barWidth * 0.7, barHeight, 6).fill();
+                x += barWidth + 2;
+            }
         }
-        el.value = answers[key];
-    });
-
-    const formData = new FormData(this);
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    try {
-        const res = await fetch("{{ route('voice.store-all') }}", {
-            method: "POST",
-            headers: { "X-CSRF-TOKEN": token, "Accept": "application/json" },
-            body: formData
+        // Canvas polyfill
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            this.beginPath();
+            this.moveTo(x + r, y);
+            this.arcTo(x + w, y, x + w, y + h, r);
+            this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r);
+            this.arcTo(x, y, x + w, y, r);
+            this.closePath();
+            return this;
+        };
+        // WILAYAH CASCADE
+        window.getWilayah = async function(tipe, parentId, targetId, selectedValue = null) {
+            if (!parentId) {
+                document.getElementById(targetId).innerHTML = '<option value="">-- Pilih Dulu --</option>';
+                return;
+            }
+            const select = document.getElementById(targetId);
+            select.innerHTML = '<option>-- Memuat... --</option>';
+            select.disabled = true;
+            try {
+                let url = `/voice/${tipe}/${parentId}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                select.innerHTML = '<option value="">-- Pilih --</option>';
+                Object.entries(data).forEach(([id, nama]) => {
+                    const sel = (id === selectedValue) ? 'selected' : '';
+                    select.innerHTML += `<option value="${id}" ${sel}>${nama}</option>`;
+                });
+            } catch (err) {
+                select.innerHTML = '<option>Gagal memuat</option>';
+            } finally {
+                select.disabled = false;
+            }
+        };
+        // EVENT LISTENERS
+        document.getElementById('recordBtn').addEventListener('click', async () => {
+            if (isReviewMode) return;
+            if (isListening) {
+                stopListening();
+                return;
+            }
+            isListening = true;
+            const btn = document.getElementById('recordBtn');
+            btn.classList.add('recording');
+           
+            document.getElementById('visualizer').classList.add('show');
+            document.getElementById('visualizerPlaceholder').classList.add('hide');
+            document.getElementById('recordIcon').innerHTML = `
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                    d="M10 9h4v6h-4z" fill="white" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                    d="M12 21a9 9 0 100-18 9 9 0 000 18z" stroke="white" fill="none" />
+            `;
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                canvas = document.getElementById('visualizer');
+                ctx = canvas.getContext('2d');
+                const resizeCanvas = () => {
+                    canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+                    canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+                };
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+                drawWaveVisualizer();
+            } catch (err) {
+                alert("Gagal akses mikrofon! Pastikan izin diberikan.");
+                stopListening();
+                return;
+            }
+            await speakQuestionAndOptions();
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SR();
+            recognition.lang = 'id-ID';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.onresult = e => {
+                const r = e.results[e.results.length - 1];
+                if (r.isFinal && r[0].confidence > 0.6) {
+                    const t = r[0].transcript.trim();
+                    document.getElementById('voice-status').innerText = `Dengar: "${t}"`;
+                    processVoiceAnswer(t.toLowerCase());
+                }
+            };
+            recognition.onerror = () => setTimeout(() => recognition?.start(), 100);
+            recognition.onend = () => { if(isListening) setTimeout(() => recognition?.start(), 100); };
+            recognition.start();
         });
-        const data = await res.json();
-
-        if (data.success) {
-            localStorage.clear();
-            alert("SEMUA DATA BERHASIL DISIMPAN!");
-            location.reload();
-        } else {
-            alert("Gagal: " + (data.error || JSON.stringify(data)));
-        }
-    } catch (err) {
-        alert("Error: " + err.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerText = "Simpan Semua Data";
-    }
-});
-
-/* ==================== CHAINED SELECT WILAYAH ==================== */
-['kdprovinsi', 'kdkabupaten', 'kdkecamatan'].forEach(id => {
-    document.getElementById(id)?.addEventListener('change', async function() {
-        const val = this.value;
-        const nextMap = { kdprovinsi: 'kdkabupaten', kdkabupaten: 'kdkecamatan', kdkecamatan: 'kddesa' };
-        const nextId = nextMap[id];
-        if (!nextId || !val) return;
-
-        const nextSelect = document.getElementById(nextId);
-        nextSelect.innerHTML = '<option>-- Pilih --</option>';
-        const url = `/get-${nextId.replace('kd', '').toLowerCase()}/${val}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        Object.entries(data).forEach(([k, v]) => {
-            nextSelect.innerHTML += `<option value="${k}">${v}</option>`;
+        // FORM SUBMIT
+        document.getElementById('voiceForm').addEventListener('submit', async function(e){
+            e.preventDefault();
+           
+            // TAMBAHKAN NO_KK YANG WAJIB
+            const noKKInput = document.createElement('input');
+            noKKInput.type = 'hidden';
+            noKKInput.name = 'no_kk';
+            noKKInput.value = answers.no_kk || prompt('Masukkan No. KK Keluarga:');
+            if(!noKKInput.value) return alert('No. KK wajib diisi!');
+            this.appendChild(noKKInput);
+            const btn=document.getElementById('simpanBtn');
+            btn.disabled=true;
+            btn.innerText="Menyimpan...";
+            Object.keys(answers).forEach(k=>{
+                let el=document.querySelector(`[name="${k}"]`);
+                if(!el){
+                    el=document.createElement('input');
+                    el.type='hidden';
+                    el.name=k;
+                    this.appendChild(el);
+                }
+                el.value=answers[k];
+            });
+            const fd=new FormData(this);
+            const token=document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+           
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                if(progress > 95) progress = 95;
+                document.getElementById('loadingBar').style.width = progress + '%';
+                document.getElementById('loadingText').innerText = `Menyimpan data... ${progress}%`;
+            }, 100);
+            try{
+                const res=await fetch("{{ route('voice.store-all') }}",{
+                    method:"POST",
+                    headers:{"X-CSRF-TOKEN":token,"Accept":"application/json"},
+                    body:fd
+                });
+                const data=await res.json();
+                clearInterval(interval);
+                document.getElementById('loadingBar').style.width = '100%';
+                document.getElementById('loadingText').innerText = 'Data tersimpan! 100%';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                }, 1500);
+               
+                if(data.success){
+                    localStorage.clear();
+                    alert("DATA PENDUDUK BERHASIL DISIMPAN! 🎉");
+                    location.reload();
+                } else {
+                    alert("Gagal: "+(data.error||JSON.stringify(data)));
+                }
+            }catch(err){
+                clearInterval(interval);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                alert("Error: "+err.message);
+            } finally{
+                btn.disabled=false;
+                btn.innerText="Simpan Semua Data Penduduk";
+            }
         });
-    });
-});
-
-/* ==================== INIT ==================== */
-function initFresh() {
-    localStorage.clear();
-    currentModul = 1; step = 0; isReviewMode = false;
-    answers = { penduduk_tanggalmutasi: new Date().toISOString().split('T')[0] };
-    modulStatus = {1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending'};
-    document.getElementById('reviewForm').classList.add('hidden');
-    document.getElementById('simpanBtn').disabled = true;
-    document.getElementById('simpanBtn').style.backgroundColor = '#9ca3af';
-    updateProgressSteps();
-    renderQuestion();
-    checkAllCompletedAndShowSimpanBtn();
-}
-initFresh();
-</script>
+        // RESTART BUTTON
+        document.getElementById('restartBtn').addEventListener('click', function() {
+            questions[currentModul].forEach(q => {
+                delete answers[q.field];
+            });
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('reviewForm').classList.add('hidden');
+            isReviewMode = false;
+            step = 0;
+            modulStatus[currentModul] = 'active';
+            updateProgressSteps();
+            renderQuestion();
+        });
+        // INISIALISASI
+        initFresh();
+    </script>
 </x-app-layout>
