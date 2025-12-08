@@ -120,28 +120,28 @@
         // MODUL 1: DATA PENDUDUK
         questions[1] = [
             {type:"text",label:"Sebutkan nomor NIK",field:"nik"},
-            {type:"text",label:"Sebutkan nama lengkap penduduk",field:"penduduk_namalengkap"},
-            {type:"text",label:"Dimana tempat lahirnya?",field:"penduduk_tempatlahir"},
-            {type:"date",label:"Tanggal lahir?",field:"penduduk_tanggallahir"},
-            {type:"select",label:"Apa golongan darahnya?",field:"penduduk_goldarah",options:{"a":"A","b":"B","ab":"AB","o":"O"}},
+            // {type:"text",label:"Sebutkan nama lengkap penduduk",field:"penduduk_namalengkap"},
+            // {type:"text",label:"Dimana tempat lahirnya?",field:"penduduk_tempatlahir"},
+            // {type:"date",label:"Tanggal lahir?",field:"penduduk_tanggallahir"},
+            // {type:"select",label:"Apa golongan darahnya?",field:"penduduk_goldarah",options:{"a":"A","b":"B","ab":"AB","o":"O"}},
             {type:"text",label:"Sebutkan nomor akta lahir",field:"penduduk_noaktalahir"},
-            {type:"skip",label:"Kewarganegaraan",field:"penduduk_kewarganegaraan",default:"INDONESIA"},
-            {type:"select",label:"Apa jenis kelaminnya?",field:"kdjeniskelamin",options:masters.jenis_kelamin},
-            {type:"select",label:"Apa agamanya?",field:"kdagama",options:masters.agama},
+            //{type:"skip",label:"Kewarganegaraan",field:"penduduk_kewarganegaraan",default:"INDONESIA"},
+            // {type:"select",label:"Apa jenis kelaminnya?",field:"kdjeniskelamin",options:masters.jenis_kelamin},
+            // {type:"select",label:"Apa agamanya?",field:"kdagama",options:masters.agama},
             {type:"text",label:"Sebutkan nomor kartu keluarga",field:"no_kk"},
             {type:"text",label:"Sebutkan nomor urut dalam KK",field:"penduduk_nourutkk"},
-            {type:"select",label:"Apa hubungan dalam keluarga?",field:"kdhubungankeluarga",options:masters.hubungan_keluarga},
-            {type:"select",label:"Apa hubungan dengan kepala keluarga?",field:"kdhubungankepalakeluarga",options:masters.hubungan_kepala_keluarga},
-            {type:"select",label:"Apa status perkawinannya?",field:"kdstatuskawin",options:masters.status_kawin},
-            {type:"select",label:"Memiliki akta nikah?",field:"kdaktanikah",options:masters.akta_nikah},
-            {type:"select",label:"Apakah tercantum dalam KK?",field:"kdtercantumdalamkk",options:masters.tercantum_kk},
-            {type:"select",label:"Apa status tinggalnya?",field:"kdstatustinggal",options:masters.status_tinggal},
-            {type:"select",label:"Jenis kartu identitas apa?",field:"kdkartuidentitas",options:masters.kartu_identitas},
-            {type:"select",label:"Jenis mutasi apa?",field:"kdmutasimasuk",options:mutasiOptions},
-            {type:"text",label:"Sebutkan nama ayah",field:"penduduk_namaayah"},
-            {type:"text",label:"Sebutkan nama ibu",field:"penduduk_namaibu"},
-            {type:"text",label:"Sebutkan nama tempat bekerja (jika ada)",field:"penduduk_namatempatbekerja"},
-            {type:"select",label:"Apa pekerjaannya?",field:"kdpekerjaan",options:masters.pekerjaan}
+            // {type:"select",label:"Apa hubungan dalam keluarga?",field:"kdhubungankeluarga",options:masters.hubungan_keluarga},
+            // {type:"select",label:"Apa hubungan dengan kepala keluarga?",field:"kdhubungankepalakeluarga",options:masters.hubungan_kepala_keluarga},
+            // {type:"select",label:"Apa status perkawinannya?",field:"kdstatuskawin",options:masters.status_kawin},
+            // {type:"select",label:"Memiliki akta nikah?",field:"kdaktanikah",options:masters.akta_nikah},
+            // {type:"select",label:"Apakah tercantum dalam KK?",field:"kdtercantumdalamkk",options:masters.tercantum_kk},
+            // {type:"select",label:"Apa status tinggalnya?",field:"kdstatustinggal",options:masters.status_tinggal},
+            // {type:"select",label:"Jenis kartu identitas apa?",field:"kdkartuidentitas",options:masters.kartu_identitas},
+            // {type:"select",label:"Jenis mutasi apa?",field:"kdmutasimasuk",options:mutasiOptions},
+            // {type:"text",label:"Sebutkan nama ayah",field:"penduduk_namaayah"},
+            // {type:"text",label:"Sebutkan nama ibu",field:"penduduk_namaibu"},
+            // {type:"text",label:"Sebutkan nama tempat bekerja (jika ada)",field:"penduduk_namatempatbekerja"},
+            // {type:"select",label:"Apa pekerjaannya?",field:"kdpekerjaan",options:masters.pekerjaan}
         ];
         // MODUL 2: KELAHIRAN
         questions[2] = [
@@ -758,30 +758,37 @@ function mapPendapatanToCode(pendapatan) {
             }
 
             // ===================================================================
-            // 6. VALIDASI ANGKA KHUSUS
+            // 6. VALIDASI ANGKA KHUSUS (NIK, KK, Akta Lahir, No Urut KK)
             // ===================================================================
             if (["nik", "no_kk"].includes(q.field)) {
-                value = text.replace(/\D/g, '').slice(0, 16);
-                if (value.length !== 16) {
+                const angka = text.replace(/\D/g, '').slice(0, 16);
+                if (angka.length !== 16) {
                     await speak("Harus 16 digit angka. Mohon ulangi dengan jelas.");
                     return;
                 }
+                value = angka;
+                document.getElementById('inputAnswer').value = value;
             }
+
             else if (q.field === "penduduk_nourutkk") {
                 const num = text.replace(/\D/g, '');
                 if (!num || parseInt(num) < 1 || parseInt(num) > 99) {
                     await speak("Nomor urut KK harus dari 1 sampai 99.");
                     return;
                 }
-                value = num.padStart(2, '0');
+                value = num.padStart(2, '0'); // otomatis jadi 01, 02, ..., 99
+                document.getElementById('inputAnswer').value = value;
             }
+
             else if (q.field === "penduduk_noaktalahir") {
                 const num = text.replace(/\D/g, '');
                 if (num.length < 6) {
-                    await speak("Nomor akta lahir minimal 6 digit.");
+                    await speak("Nomor akta lahir minimal 6 digit angka.");
                     return;
                 }
                 value = `AKL-${num}`;
+                document.getElementById('inputAnswer').value = value;
+                await speak(`Nomor akta lahir ${value}. Lanjut.`);
             }
 
             // ===================================================================
@@ -955,124 +962,161 @@ function mapPendapatanToCode(pendapatan) {
             // MODUL 1: DATA PENDUDUK (Sudah bagus, tetap pakai versi custom)
             // ===================================================================
             if (currentModul === 1) {
-            const isMutasiDatang = answers.kdmutasimasuk === '3';
-            let html = '';
-            // 1. NIK
-            html += `<div><label class="block text-xs font-medium mb-1">NIK (Nomor Induk Kependudukan)</label>
-                <input type="text" name="nik" value="${answers.nik || ''}" maxlength="16" class="w-full border rounded-lg p-2.5" required></div>`;
-            // 2. Nama Lengkap
-            html += `<div><label class="block text-xs font-medium mb-1">Nama Lengkap</label>
-                <input type="text" name="penduduk_namalengkap" value="${answers.penduduk_namalengkap || ''}" class="w-full border rounded-lg p-2.5" required></div>`;
-            // 3. Tempat Lahir
-            html += `<div><label class="block text-xs font-medium mb-1">Tempat Lahir</label>
-                <input type="text" name="penduduk_tempatlahir" value="${answers.penduduk_tempatlahir || ''}" class="w-full border rounded-lg p-2.5"></div>`;
-            // 4. Tanggal Lahir
-            html += `<div><label class="block text-xs font-medium mb-1">Tanggal Lahir</label>
-            <input type="date" name="penduduk_tanggallahir" value="${answers.penduduk_tanggallahir || ''}" class="w-full border rounded-lg p-2.5" required></div>`;
-            // 5. Golongan Darah
-            html += `<div>
-                <label class="block text-xs font-medium mb-1">Golongan Darah</label>
-                <select name="penduduk_goldarah" class="w-full border rounded-lg p-2.5" required>
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries({"A":"A","B":"B","AB":"AB","O":"O"}).map(([k,v]) => {
-                        // Normalisasi nilai jawaban: trim + uppercase
-                        const currentVal = (answers.penduduk_goldarah || '').toString().trim().toUpperCase();
-                        const isSelected = currentVal === k;
-                        return `<option value="${k}" ${isSelected ? 'selected' : ''}>${v}</option>`;
-                    }).join('')}
-                </select>
-            </div>`;
-            // 6. No. Akta Lahir
-            html += `<div><label class="block text-xs font-medium mb-1">Nomor Akta Lahir</label>
-                <input type="text" name="penduduk_noaktalahir" value="${answers.penduduk_noaktalahir || ''}" class="w-full border rounded-lg p-2.5"></div>`;
-            // 7. Kewarganegaraan (skip, tetap disimpan hidden)
-            html += `<div><label class="block text-xs font-medium mb-1">Kewarganegaraan</label>
-                <input type="text" name="penduduk_kewarganegaraan" value="${answers.penduduk_kewarganegaraan || 'INDONESIA'}" class="w-full border rounded-lg p-2.5"></div>`;
-           
-            // 8. Jenis Kelamin
-            html += `<div><label class="block text-xs font-medium mb-1">Jenis Kelamin</label>
-                <select name="kdjeniskelamin" class="w-full border rounded-lg p-2.5" required>
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.jenis_kelamin).map(([k,v])=>`<option value="${k}" ${answers.kdjeniskelamin===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 9. Agama
-            html += `<div><label class="block text-xs font-medium mb-1">Agama</label>
-                <select name="kdagama" class="w-full border rounded-lg p-2.5" required>
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.agama).map(([k,v])=>`<option value="${k}" ${answers.kdagama===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 10. Nomor KK (wajib, warna merah)
-            html += `<div><label class="block text-xs font-medium mb-1 text-red-600">Nomor Kartu Keluarga *</label>
-                <input type="text" name="no_kk" value="${answers.no_kk || ''}" maxlength="16" class="w-full border rounded-lg p-2.5" required placeholder="16 digit"></div>`;
-            // 11. No. Urut KK
-            html += `<div><label class="block text-xs font-medium mb-1">Nomor Urut dalam KK</label>
-                <input type="text" name="penduduk_nourutkk" value="${answers.penduduk_nourutkk || ''}" maxlength="2" class="w-full border rounded-lg p-2.5"></div>`;
-            // 12. Hubungan dalam Keluarga
-            html += `<div><label class="block text-xs font-medium mb-1">Hubungan dalam Keluarga</label>
-                <select name="kdhubungankeluarga" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.hubungan_keluarga).map(([k,v])=>`<option value="${k}" ${answers.kdhubungankeluarga===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 13. Hubungan dengan Kepala Keluarga
-            html += `<div><label class="block text-xs font-medium mb-1">Hubungan dengan Kepala Keluarga</label>
-                <select name="kdhubungankepalakeluarga" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.hubungan_kepala_keluarga).map(([k,v])=>`<option value="${k}" ${answers.kdhubungankepalakeluarga===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 14. Status Perkawinan
-            html += `<div><label class="block text-xs font-medium mb-1">Status Perkawinan</label>
-                <select name="kdstatuskawin" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.status_kawin).map(([k,v])=>`<option value="${k}" ${answers.kdstatuskawin===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 15. Akta Nikah
-            html += `<div><label class="block text-xs font-medium mb-1">Memiliki Akta Nikah?</label>
-                <select name="kdaktanikah" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.akta_nikah).map(([k,v])=>`<option value="${k}" ${answers.kdaktanikah===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 16. Tercantum dalam KK
-            html += `<div><label class="block text-xs font-medium mb-1">Tercantum dalam KK?</label>
-                <select name="kdtercantumdalamkk" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.tercantum_kk).map(([k,v])=>`<option value="${k}" ${answers.kdtercantumdalamkk===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 17. Status Tinggal
-            html += `<div><label class="block text-xs font-medium mb-1">Status Tinggal</label>
-                <select name="kdstatustinggal" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.status_tinggal).map(([k,v])=>`<option value="${k}" ${answers.kdstatustinggal===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 18. Kartu Identitas
-            html += `<div><label class="block text-xs font-medium mb-1">Jenis Kartu Identitas</label>
-                <select name="kdkartuidentitas" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.kartu_identitas).map(([k,v])=>`<option value="${k}" ${answers.kdkartuidentitas===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 19. Jenis Mutasi
-            html += `<div><label class="block text-xs font-medium mb-1">Jenis Mutasi</label>
-                <select name="kdmutasimasuk" id="review_mutasi" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(mutasiOptions).map(([k,v])=>`<option value="${k}" ${answers.kdmutasimasuk===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
-            // 20. Tanggal Mutasi
-            html += `<div><label class="block text-xs font-medium mb-1">Tanggal Mutasi</label>
-                <input type="date" name="penduduk_tanggalmutasi" value="${answers.penduduk_tanggalmutasi}" class="w-full border rounded-lg p-2.5"></div>`;
-            // 21. Nama Ayah
-            html += `<div><label class="block text-xs font-medium mb-1">Nama Ayah</label>
-                <input type="text" name="penduduk_namaayah" value="${answers.penduduk_namaayah || ''}" class="w-full border rounded-lg p-2.5"></div>`;
-            // 22. Nama Ibu
-            html += `<div><label class="block text-xs font-medium mb-1">Nama Ibu</label>
-                <input type="text" name="penduduk_namaibu" value="${answers.penduduk_namaibu || ''}" class="w-full border rounded-lg p-2.5"></div>`;
-            // 23. Tempat Bekerja
-            html += `<div><label class="block text-xs font-medium mb-1">Nama Tempat Bekerja (jika ada)</label>
-                <input type="text" name="penduduk_namatempatbekerja" value="${answers.penduduk_namatempatbekerja || ''}" class="w-full border rounded-lg p-2.5"></div>`;
-            // 24. Pekerjaan
-            html += `<div><label class="block text-xs font-medium mb-1">Pekerjaan</label>
-                <select name="kdpekerjaan" class="w-full border rounded-lg p-2.5">
-                    <option value="">-- Pilih --</option>
-                    ${Object.entries(masters.pekerjaan).map(([k,v])=>`<option value="${k}" ${answers.kdpekerjaan===k?'selected':''}>${v}</option>`).join('')}
-                </select></div>`;
+                const isMutasiDatang = answers.kdmutasimasuk === '3';
+                let html = '';
+
+                // 1. NIK (16 digit, hanya angka)
+                const cleanNik = (answers.nik || '').replace(/\D/g, '').slice(0, 16);
+                html += `<div><label class="block text-xs font-medium mb-1 text-red-600">NIK (Nomor Induk Kependudukan) *</label>
+                    <input type="text" name="nik" value="${cleanNik}" maxlength="16"
+                        oninput="this.value = this.value.replace(/\\D/g,'')"
+                        class="w-full border rounded-lg p-2.5" required></div>`;
+
+                // 2. Nama Lengkap
+                html += `<div><label class="block text-xs font-medium mb-1">Nama Lengkap *</label>
+                    <input type="text" name="penduduk_namalengkap" value="${answers.penduduk_namalengkap || ''}"
+                        class="w-full border rounded-lg p-2.5" required></div>`;
+
+                // 3. Tempat Lahir
+                html += `<div><label class="block text-xs font-medium mb-1">Tempat Lahir</label>
+                    <input type="text" name="penduduk_tempatlahir" value="${answers.penduduk_tempatlahir || ''}"
+                        class="w-full border rounded-lg p-2.5"></div>`;
+
+                // 4. Tanggal Lahir
+                html += `<div><label class="block text-xs font-medium mb-1">Tanggal Lahir *</label>
+                    <input type="date" name="penduduk_tanggallahir" value="${answers.penduduk_tanggallahir || ''}"
+                        class="w-full border rounded-lg p-2.5" required></div>`;
+
+                // 5. Golongan Darah
+                const golDarah = (answers.penduduk_goldarah || '').toString().trim().toUpperCase();
+                html += `<div><label class="block text-xs font-medium mb-1">Golongan Darah</label>
+                    <select name="penduduk_goldarah" class="w-full border rounded-lg p-2.5" required>
+                        <option value="">-- Pilih --</option>
+                        ${['A','B','AB','O'].map(v => `<option value="${v}" ${golDarah===v?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 6. No. Akta Lahir (otomatis AKL-)
+                const aktaRaw = (answers.penduduk_noaktalahir || '').replace(/[^0-9]/g, '');
+                const aktaTampil = aktaRaw.length >= 6 ? `AKL-${aktaRaw}` : aktaRaw;
+                html += `<div><label class="block text-xs font-medium mb-1">Nomor Akta Lahir</label>
+                    <input type="text" name="penduduk_noaktalahir" value="${aktaTampil}"
+                        oninput="let n = this.value.replace(/[^0-9]/g,''); 
+                                    if(n.length >= 6) this.value = 'AKL-' + n; 
+                                    else this.value = n;"
+                        class="w-full border rounded-lg p-2.5" required></div>`;
+
+                // 7. Kewarganegaraan (readonly)
+                html += `<div><label class="block text-xs font-medium mb-1">Kewarganegaraan</label>
+                    <input type="text" value="INDONESIA" readonly class="w-full border rounded-lg p-2.5 bg-gray-100"></div>`;
+
+                // 8. Jenis Kelamin
+                html += `<div><label class="block text-xs font-medium mb-1">Jenis Kelamin *</label>
+                    <select name="kdjeniskelamin" class="w-full border rounded-lg p-2.5" required>
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.jenis_kelamin).map(([k,v]) => `<option value="${k}" ${answers.kdjeniskelamin===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 9. Agama
+                html += `<div><label class="block text-xs font-medium mb-1">Agama *</label>
+                    <select name="kdagama" class="w-full border rounded-lg p-2.5" required>
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.agama).map(([k,v]) => `<option value="${k}" ${answers.kdagama===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 10. No. KK (16 digit)
+                const cleanKK = (answers.no_kk || '').replace(/\D/g, '').slice(0, 16);
+                html += `<div><label class="block text-xs font-medium mb-1 text-red-600">Nomor Kartu Keluarga *</label>
+                    <input type="text" name="no_kk" value="${cleanKK}" maxlength="16"
+                        oninput="this.value = this.value.replace(/\\D/g,'')"
+                        class="w-full border rounded-lg p-2.5" required></div>`;
+
+                // 11. No. Urut KK (selalu 2 digit)
+                const noUrut = (answers.penduduk_nourutkk || '').toString().padStart(2, '0').slice(0, 2);
+                html += `<div><label class="block text-xs font-medium mb-1">Nomor Urut dalam KK</label>
+                    <input type="text" name="penduduk_nourutkk" value="${noUrut}" maxlength="2"
+                        oninput="let v = this.value.replace(/\\D/g,''); 
+                                    if(v && v !== '0') v = v.padStart(2,'0'); 
+                                    this.value = v.slice(0,2);"
+                        class="w-full border rounded-lg p-2.5" required></div>`;
+
+                // 12. Hubungan dalam Keluarga
+                html += `<div><label class="block text-xs font-medium mb-1">Hubungan dalam Keluarga</label>
+                    <select name="kdhubungankeluarga" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.hubungan_keluarga).map(([k,v]) => `<option value="${k}" ${answers.kdhubungankeluarga===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 13. Hubungan dengan Kepala Keluarga
+                html += `<div><label class="block text-xs font-medium mb-1">Hubungan dengan Kepala Keluarga</label>
+                    <select name="kdhubungankepalakeluarga" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.hubungan_kepala_keluarga).map(([k,v]) => `<option value="${k}" ${answers.kdhubungankepalakeluarga===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 14. Status Perkawinan
+                html += `<div><label class="block text-xs font-medium mb-1">Status Perkawinan</label>
+                    <select name="kdstatuskawin" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.status_kawin).map(([k,v]) => `<option value="${k}" ${answers.kdstatuskawin===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 15. Akta Nikah
+                html += `<div><label class="block text-xs font-medium mb-1">Memiliki Akta Nikah?</label>
+                    <select name="kdaktanikah" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.akta_nikah).map(([k,v]) => `<option value="${k}" ${answers.kdaktanikah===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 16. Tercantum dalam KK
+                html += `<div><label class="block text-xs font-medium mb-1">Tercantum dalam KK?</label>
+                    <select name="kdtercantumdalamkk" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.tercantum_kk).map(([k,v]) => `<option value="${k}" ${answers.kdtercantumdalamkk===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 17. Status Tinggal
+                html += `<div><label class="block text-xs font-medium mb-1">Status Tinggal</label>
+                    <select name="kdstatustinggal" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.status_tinggal).map(([k,v]) => `<option value="${k}" ${answers.kdstatustinggal===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 18. Kartu Identitas
+                html += `<div><label class="block text-xs font-medium mb-1">Jenis Kartu Identitas</label>
+                    <select name="kdkartuidentitas" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.kartu_identitas).map(([k,v]) => `<option value="${k}" ${answers.kdkartuidentitas===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 19. Jenis Mutasi
+                html += `<div><label class="block text-xs font-medium mb-1">Jenis Mutasi</label>
+                    <select name="kdmutasimasuk" id="review_mutasi" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(mutasiOptions).map(([k,v]) => `<option value="${k}" ${answers.kdmutasimasuk===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
+
+                // 20. Tanggal Mutasi
+                html += `<div><label class="block text-xs font-medium mb-1">Tanggal Mutasi</label>
+                    <input type="date" name="penduduk_tanggalmutasi" value="${answers.penduduk_tanggalmutasi || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+
+                // 21. Nama Ayah
+                html += `<div><label class="block text-xs font-medium mb-1">Nama Ayah</label>
+                    <input type="text" name="penduduk_namaayah" value="${answers.penduduk_namaayah || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+
+                // 22. Nama Ibu
+                html += `<div><label class="block text-xs font-medium mb-1">Nama Ibu</label>
+                    <input type="text" name="penduduk_namaibu" value="${answers.penduduk_namaibu || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+
+                // 23. Tempat Bekerja
+                html += `<div><label class="block text-xs font-medium mb-1">Nama Tempat Bekerja (jika ada)</label>
+                    <input type="text" name="penduduk_namatempatbekerja" value="${answers.penduduk_namatempatbekerja || ''}" class="w-full border rounded-lg p-2.5"></div>`;
+
+                // 24. Pekerjaan
+                html += `<div><label class="block text-xs font-medium mb-1">Pekerjaan</label>
+                    <select name="kdpekerjaan" class="w-full border rounded-lg p-2.5">
+                        <option value="">-- Pilih --</option>
+                        ${Object.entries(masters.pekerjaan).map(([k,v]) => `<option value="${k}" ${answers.kdpekerjaan===k?'selected':''}>${v}</option>`).join('')}
+                    </select></div>`;
             // === WILAYAH ASAL (jika mutasi datang) ===
             html += `<div id="wilayahDatangSection" class="${isMutasiDatang ? '' : 'hidden'} col-span-3 bg-teal-50 p-6 rounded-xl border border-teal-200 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 <h4 class="font-bold text-teal-800 mb-4 col-span-2">Wilayah Datang</h4>
