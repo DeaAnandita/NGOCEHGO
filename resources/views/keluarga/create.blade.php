@@ -102,123 +102,160 @@
                                   placeholder="Masukkan alamat lengkap">{{ old('keluarga_alamatlengkap') }}</textarea>
                     </div>
 
-                    {{-- Wilayah Datang (muncul saat mutasi datang) --}}
-                    <div x-show="isDatang" x-transition>
-                        <h3 class="text-gray-700 font-semibold mb-4 mt-6">Wilayah Asal (Datang Dari)</h3>
+                    {{-- Wilayah Asal (Datang Dari) - CREATE & EDIT Compatible --}}
+<div x-show="isDatang" x-transition>
+    <h3 class="text-gray-700 font-semibold mb-4 mt-6">Wilayah Asal (Datang Dari)</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
-                            x-data="{
-                                provinsi: '{{ old('kdprovinsi') }}',
-                                kabupaten: '{{ old('kdkabupaten') }}',
-                                kecamatan: '{{ old('kdkecamatan') }}',
-                                desa: '{{ old('kddesa') }}',
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
+         x-data="wilayahDatang()"
+         x-init="init()">
 
-                                kabupatens: [],
-                                kecamatans: [],
-                                desas: [],
+        {{-- Ambil old() dulu, baru fallback ke data model (hanya ada saat edit) --}}
+        @php
+            $oldProv = old('kdprovinsi', $mutasi->kdprovinsi ?? '');
+            $oldKab  = old('kdkabupaten', $mutasi->kdkabupaten ?? '');
+            $oldKec  = old('kdkecamatan', $mutasi->kdkecamatan ?? '');
+            $oldDesa = old('kddesa', $mutasi->kddesa ?? '');
+        @endphp
 
-                                async loadKabupaten() {
-                                    if (!this.provinsi) {
-                                        this.kabupatens = []; this.kabupaten = ''; this.resetLower();
-                                        return;
-                                    }
-                                    const res = await fetch(`/api/wilayah/kabupaten/${this.provinsi}`);
-                                    this.kabupatens = await res.json();
-                                    this.kabupaten = '';
-                                    this.resetLower();
-                                },
-                                async loadKecamatan() {
-                                    if (!this.kabupaten) {
-                                        this.kecamatans = []; this.kecamatan = ''; this.desas = []; this.desa = '';
-                                        return;
-                                    }
-                                    const res = await fetch(`/api/wilayah/kecamatan/${this.kabupaten}`);
-                                    this.kecamatans = await res.json();
-                                    this.kecamatan = '';
-                                    this.desas = []; this.desa = '';
-                                },
-                                async loadDesa() {
-                                    if (!this.kecamatan) {
-                                        this.desas = []; this.desa = '';
-                                        return;
-                                    }
-                                    const res = await fetch(`/api/wilayah/desa/${this.kecamatan}`);
-                                    this.desas = await res.json();
-                                },
-                                resetLower() {
-                                    this.kecamatans = []; this.kecamatan = '';
-                                    this.desas = []; this.desa = '';
-                                }
-                            }"
-                            x-init="provinsi && loadKabupaten(); kabupaten && loadKecamatan(); kecamatan && loadDesa();">
+        async loadKabupaten() {
+    if (!this.provinsi) {
+        this.kabupatens = []; this.kabupaten = ''; this.kecamatans = []; this.kecamatan = ''; this.desas = []; this.desa = '';
+        return;
+    }
 
-                            <!-- Provinsi -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
-                                <select x-model="provinsi" @change="loadKabupaten()"
-                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Provinsi --</option>
-                                    @foreach($provinsis as $p)
-                                        <option value="{{ $p->kdprovinsi }}">{{ $p->provinsi }}</option>
-                                    @endforeach
-                                </select>
-                                <input type="hidden" name="kdprovinsi" :value="provinsi">
-                                @error('kdprovinsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
+    this.loadingKab = true;
+    try {
+        const res = await fetch(`/get-kabupaten/${this.provinsi}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
+        });
 
-                            {{-- Kabupaten --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota</label>
-                                <select x-model="kabupaten" @change="loadKecamatan()"
-                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        :disabled="!provinsi">
-                                    <option value="">-- Pilih Kabupaten/Kota --</option>
-                                    <template x-for="kab in kabupatens" :key="kab.kdkabupaten">
-                                        <option :value="kab.kdkabupaten" x-text="kab.kabupaten"></option>
-                                    </template>
-                                </select>
-                                <input type="hidden" name="kdkabupaten" :value="kabupaten">
-                                @error('kdkabupaten')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        this.kabupatens = await res.json();
 
-                            {{-- Kecamatan --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
-                                <select x-model="kecamatan" @change="loadDesa()"
-                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        :disabled="!kabupaten">
-                                    <option value="">-- Pilih Kecamatan --</option>
-                                    <template x-for="kec in kecamatans" :key="kec.kdkecamatan">
-                                        <option :value="kec.kdkecamatan" x-text="kec.kecamatan"></option>
-                                    </template>
-                                </select>
-                                <input type="hidden" name="kdkecamatan" :value="kecamatan">
-                                @error('kdkecamatan')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+    } catch (e) {
+        console.error(e);
+        this.kabupatens = [];
+        alert('Gagal memuat kabupaten. Cek console.');
+    } finally {
+        this.loadingKab = false;
+    }
+},
 
-                            {{-- Desa/Kelurahan --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan</label>
-                                <select x-model="desa"
-                                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        :disabled="!kecamatan">
-                                    <option value="">-- Pilih Desa/Kelurahan --</option>
-                                    <template x-for="d in desas" :key="d.kddesa">
-                                        <option :value="d.kddesa" x-text="d.desa"></option>
-                                    </template>
-                                </select>
-                                <input type="hidden" name="kddesa" :value="desa">
-                                @error('kddesa')
-                                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+async loadKecamatan() {
+    if (!this.kabupaten) return;
+    this.loadingKec = true;
+    try {
+        const res = await fetch(`/get-kecamatan/${this.kabupaten}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
+        });
+        this.kecamatans = await res.json();
+    } catch (e) {
+        console.error(e);
+        this.kecamatans = [];
+    } finally {
+        this.loadingKec = false;
+    }
+},
 
-                        </div>
-                    </div>
+async loadDesa() {
+    if (!this.kecamatan) return;
+    this.loadingDesa = true;
+    try {
+        const res = await fetch(`/get-desa/${this.kecamatan}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
+        });
+        this.desas = await res.json();
+    } catch (e) {
+        console.error(e);
+        this.desas = [];
+    } finally {
+        this.loadingDesa = false;
+    }
+},
+
+        <!-- PROVINSI -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi <span class="text-red-500">*</span></label>
+            <select x-model="provinsi" @change="loadKabupaten()"
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Pilih Provinsi --</option>
+                @foreach($provinsis as $p)
+                    <option value="{{ $p->kdprovinsi }}">{{ $p->provinsi }}</option>
+                @endforeach
+            </select>
+            <input type="hidden" name="kdprovinsi" :value="provinsi">
+            @error('kdprovinsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+        </div>
+
+        <!-- KABUPATEN -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota <span class="text-red-500">*</span></label>
+            <select x-model="kabupaten" @change="loadKecamatan()"
+                    :disabled="!provinsi"
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Pilih Kabupaten/Kota --</option>
+                <template x-if="loadingKab">
+                    <option disabled>Loading kabupaten...</option>
+                </template>
+                <template x-for="kab in kabupatens" :key="kab.kdkabupaten">
+                    <option :value="kab.kdkabupaten" x-text="kab.kabupaten"></option>
+                </template>
+            </select>
+            <input type="hidden" name="kdkabupaten" :value="kabupaten">
+            @error('kdkabupaten') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+        </div>
+
+        <!-- KECAMATAN -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan <span class="text-red-500">*</span></label>
+            <select x-model="kecamatan" @change="loadDesa()"
+                    :disabled="!kabupaten"
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Pilih Kecamatan --</option>
+                <template x-if="loadingKec">
+                    <option disabled>Loading kecamatan...</option>
+                </template>
+                <template x-for="kec in kecamatans" :key="kec.kdkecamatan">
+                    <option :value="kec.kdkecamatan" x-text="kec.kecamatan"></option>
+                </template>
+            </select>
+            <input type="hidden" name="kdkecamatan" :value="kecamatan">
+            @error('kdkecamatan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+        </div>
+
+        <!-- DESA -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan <span class="text-red-500">*</span></label>
+            <select x-model="desa"
+                    :disabled="!kecamatan"
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option value="">-- Pilih Desa/Kelurahan --</option>
+                <template x-if="loadingDesa">
+                    <option disabled>Loading desa...</option>
+                </template>
+                <template x-for="d in desas" :key="d.kddesa">
+                    <option :value="d.kddesa" x-text="d.desa"></option>
+                </template>
+            </select>
+            <input type="hidden" name="kddesa" :value="desa">
+            @error('kddesa') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+        </div>
+
+    </div>
+</div>
 
                     {{-- Tombol Aksi --}}
                     <div class="flex justify-end gap-3 pt-6">
