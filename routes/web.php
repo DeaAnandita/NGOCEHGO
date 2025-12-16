@@ -16,7 +16,7 @@ use App\Exports\{
     DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,
     DataAsetKeluargaExport, DataPrasaranaExport, DataSejahteraKeluargaExport, DataKonflikSosialExport,
     DataPendudukExport, DataKelahiranExport, DataSosialEkonomiExport, DataUsahaArtExport,
-    DataProgramSertaExport, DataLembagaDesaExport, DataKualitasBayiExport,
+    DataProgramSertaExport, DataLembagaDesaExport, DataKualitasBayiExport, DataAsetLahanExport,
     DataAsetTernakExport, DataAsetPerikananExport, DataSarprasKerjaExport, DataBangunKeluargaExport
 };
 
@@ -72,8 +72,8 @@ Route::middleware('auth')->group(function () {
 // ===============================
 Route::prefix('export')->group(function () {
     Route::get('aset-keluarga', fn() => DataAsetKeluargaExport::export())->name('export.asetkeluarga');
+    Route::get('aset-lahan', fn() => DataAsetLahanExport::export())->name('export.asetlahan');
     Route::get('data-keluarga', fn() => DataKeluargaExport::export())->name('export.datakeluarga');
-    Route::get('data-keluarga-pdf', fn() => DataKeluargaExport::export())->name('datakeluarga.export.pdf');
     Route::get('data-prasarana', fn() => DataPrasaranaExport::export())->name('export.dataprasarana');
     Route::get('sejahtera-keluarga', fn() => DataSejahteraKeluargaExport::export())->name('export.sejahterakeluarga');
     Route::get('konflik-sosial', fn() => DataKonflikSosialExport::export())->name('export.konfliksosial');
@@ -171,6 +171,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('laporan/penduduk/pdf', [PendudukController::class, 'exportPdf'])->name('penduduk.exportAnalisisPDF');
     Route::get('laporan/kelahiran/pdf', [KelahiranController::class, 'exportPdf'])->name('kelahiran.exportAnalisisPDF');
     Route::get('laporan/asetkeluarga/pdf', [AsetKeluargaController::class, 'exportPdf'])->name('asetkeluarga.exportAnalisisPDF');
+    Route::get('laporan/asetlahan/pdf', [AsetLahanController::class, 'exportPdf'])->name('asetlahan.exportAnalisisPDF');
+    Route::get('laporan/prasarana/pdf', [PrasaranaDasarController::class, 'exportPdf'])->name('prasarana.exportAnalisisPDF');
     Route::get('laporan/sosialekonomi/pdf', [SosialEkonomiController::class, 'exportPdf'])->name('sosialekonomi.exportAnalisisPDF');
     Route::get('laporan/usahaart/pdf', [UsahaArtController::class, 'exportPdf'])->name('usahaart.exportAnalisisPDF');
     Route::get('laporan/programserta/pdf', [ProgramSertaController::class, 'exportPdf'])->name('programserta.exportAnalisisPDF');

@@ -100,163 +100,112 @@ class AsetKeluargaController extends Controller
         return redirect()->route('keluarga.asetkeluarga.index')->with('success', 'Data aset keluarga berhasil dihapus.');
     }
 
-    /**
-     * Export laporan analisis aset keluarga ke PDF
-     */
-    public function exportPdf()
+    public static function exportPDF()
     {
-        $data = DB::table('data_asetkeluarga')->get();
-        $totalKeluarga = $data->count();
+        // Ambil data master aset
+        $master = MasterAsetKeluarga::all();
+        $data = DataAsetKeluarga::all();
+        $total = $data->count();
 
-        if ($totalKeluarga === 0) {
-            return back()->with('error', 'Tidak ada data aset keluarga untuk dianalisis.');
+        // Jumlah aset maksimal = 41
+        $max_aset = 41;
+
+        // Hitung jumlah kepemilikan (YA = 1) dan tidak untuk setiap aset
+        $indikator = [];
+        $total_ya = 0;
+        for ($i = 1; $i <= $max_aset; $i++) {
+            $count_ya = DataAsetKeluarga::where("asetkeluarga_$i", 1)->count();
+            $count_tidak = $total - $count_ya;
+            $persen_ya = $total > 0 ? ($count_ya / $total) * 100 : 0;
+
+            $indikator["aset_$i"] = [
+                'count_ya' => $count_ya,
+                'count_tidak' => $count_tidak,
+                'persen_ya' => round($persen_ya, 2),
+                'keterangan' => $persen_ya > 70 ? 'Mayoritas keluarga memiliki aset ini, menunjukkan akses yang baik.'
+                            : ($persen_ya > 40 ? 'Sebagian keluarga memiliki aset ini, tetapi masih ada ruang untuk peningkatan.'
+                            : 'Mayoritas keluarga tidak memiliki aset ini, memerlukan intervensi prioritas.')
+            ];
+            $total_ya += $count_ya;
         }
 
-        // 🔹 Hitung skor tiap keluarga
-        $baik = $sedang = $buruk = 0;
-        foreach ($data as $row) {
-            $skor = 0;
-            for ($i = 1; $i <= 42; $i++) {
-                $val = $row->{"asetkeluarga_$i"};
-                // anggap 1 = YA, 2 = TIDAK, 0/null = tidak diisi
-                if ($val == 1) $skor++;
-            }
+        // Hitung rata-rata jumlah aset per keluarga (hanya aset 1-41)
+        $sum_cases = implode(' + ', array_map(function ($i) {
+            return "CASE WHEN asetkeluarga_$i = 1 THEN 1 ELSE 0 END";
+        }, range(1, $max_aset)));
 
-            if ($skor >= 25) $baik++;
-            elseif ($skor >= 15) $sedang++;
-            else $buruk++;
-        }
+        $avg_assets_raw = DataAsetKeluarga::select(DB::raw("AVG($sum_cases) as avg_assets"))->first()->avg_assets ?? 0;
 
-        // 🔹 Hitung persentase
-        $persenBaik = round(($baik / $totalKeluarga) * 100, 1);
-        $persenSedang = round(($sedang / $totalKeluarga) * 100, 1);
-        $persenBuruk = round(($buruk / $totalKeluarga) * 100, 1);
+        // Bulatkan ke bilangan bulat terdekat untuk tampilan
+        $avg_assets = round($avg_assets_raw); // misal 19.42 → 19, 19.5 → 20
 
-        // 🔹 Tentukan kategori dominan
-        $kategori = ['Baik' => $baik, 'Sedang' => $sedang, 'Buruk' => $buruk];
-        arsort($kategori);
-        $dominan = array_key_first($kategori);
-        $persenDominan = match ($dominan) {
-            'Baik' => $persenBaik,
-            'Sedang' => $persenSedang,
-            'Buruk' => $persenBuruk,
-        };
+        // Skor kesejahteraan aset (persentase rata-rata kepemilikan dari total 41 aset)
+        $skor = ($avg_assets_raw / $max_aset) * 100;
+        $skor = max(0, min(100, round($skor, 2)));
 
-        // 🔹 Ambil nama aset dan hitung jumlah YA
-        $asetMaster = DB::table('master_asetkeluarga')
-            ->pluck('asetkeluarga', 'kdasetkeluarga')
-            ->toArray();
+        // Hitung rata-rata persentase kategori aset
+        // Asumsi pembagian kategori (sesuaikan jika berbeda):
+        // Dasar: 1-10 (10 aset)
+        // Menengah: 11-25 (15 aset)
+        // Mewah: 26-41 (16 aset) → total 10+15+16=41
+        $avg_dasar = array_sum(array_map(fn($i) => $indikator["aset_$i"]['persen_ya'], range(1, 10))) / 10;
+        $avg_menengah = array_sum(array_map(fn($i) => $indikator["aset_$i"]['persen_ya'], range(11, 25))) / 15;
+        $avg_mewah = array_sum(array_map(fn($i) => $indikator["aset_$i"]['persen_ya'], range(26, 41))) / 16;
 
-        $asetCount = [];
-        foreach ($asetMaster as $kode => $nama) {
-            $jumlah = $data->where("asetkeluarga_$kode", 1)->count(); // ambil yg jawab YA
-            $asetCount[$kode] = [
-                'nama' => Str::replaceFirst('Memiliki ', '', $nama),
-                'jumlah' => $jumlah
+        // Logika kategori, analisis, dan rekomendasi
+        if ($skor < 20 || $avg_dasar < 30) {
+            $kategori = 'Miskin / Rentan Kemiskinan';
+            $analisis = 'Berdasarkan data, kepemilikan aset dasar sangat rendah dengan rata-rata hanya ' . round($avg_dasar, 2) . '% keluarga yang memiliki aset dasar. Hal ini menunjukkan kerentanan tinggi terhadap kemiskinan struktural.';
+            $rekomendasi = [
+                'Prioritaskan distribusi aset dasar melalui program BLT atau PKH untuk keluarga yang tidak memiliki aset esensial.',
+                'Lakukan pelatihan keterampilan dasar untuk usaha kecil guna meningkatkan aset menengah.',
+                'Kolaborasi dengan pemerintah daerah untuk subsidi aset dasar seperti listrik dan air bersih.',
+                'Monitoring ketat terhadap keluarga rentan untuk mencegah kemiskinan kronis.'
+            ];
+        } elseif ($avg_menengah < 40 || $avg_dasar < 50) {
+            $kategori = 'Menengah Bawah / Rawan Kemiskinan';
+            $analisis = 'Aset dasar mulai terpenuhi (' . round($avg_dasar, 2) . '% kepemilikan), namun aset menengah seperti transportasi atau ternak masih rendah di ' . round($avg_menengah, 2) . '%. Keluarga rawan kembali ke kemiskinan jika terjadi guncangan ekonomi.';
+            $rekomendasi = [
+                'Berikan pendampingan usaha mikro, fokus pada peternakan dan pertanian.',
+                'Program kredit lunak untuk pembelian aset transportasi dasar.',
+                'Edukasi keuangan untuk mengelola aset yang ada.',
+                'Bangun infrastruktur pendukung seperti pasar desa.'
+            ];
+        } elseif ($avg_mewah < 20) {
+            $kategori = 'Menengah / Potensi Berkembang';
+            $analisis = 'Kepemilikan aset dasar dan menengah cukup baik, tetapi aset mewah masih minim di ' . round($avg_mewah, 2) . '%. Terdapat potensi besar untuk peningkatan ekonomi.';
+            $rekomendasi = [
+                'Dorong investasi aset mewah melalui insentif pajak untuk UMKM.',
+                'Pelatihan digital untuk memanfaatkan aset teknologi.',
+                'Bentuk koperasi keluarga untuk usaha kolektif.',
+                'Survey berkala untuk memantau kemajuan.'
+            ];
+        } else {
+            $kategori = 'Sejahtera / Stabil';
+            $analisis = 'Distribusi aset seimbang dengan rata-rata ' . $avg_assets . ' aset per keluarga dari total 41 jenis aset. Menandakan stabilitas ekonomi yang tinggi.';
+            $rekomendasi = [
+                'Pertahankan kestabilan melalui program tabungan dan investasi pendidikan.',
+                'Dukung ekspansi usaha besar untuk ekspor.',
+                'Libatkan keluarga sejahtera dalam program CSR.',
+                'Evaluasi berkelanjutan untuk pemerataan aset.'
             ];
         }
 
-        // 🔹 Urutkan berdasarkan jumlah terbanyak
-        usort($asetCount, fn($a, $b) => $b['jumlah'] <=> $a['jumlah']);
-        $topAset = array_slice($asetCount, 0, 5);
-
-        // === Generate QuickChart dan ubah ke Base64 biar bisa tampil di DomPDF ===
-        $pieChartData = [
-            'type' => 'pie',
-            'data' => [
-                'labels' => ['Baik', 'Sedang', 'Buruk'],
-                'datasets' => [[
-                    'data' => [$baik, $sedang, $buruk],
-                    'backgroundColor' => ['#10b981', '#f59e0b', '#ef4444']
-                ]]
-            ]
-        ];
-
-        // -----------------------------------------------------------------
-        // 1. Ambil nilai maksimal + beri ruang 5 poin di atasnya
-        $maxVal = $topAset ? max(array_column($topAset, 'jumlah')) : 0;
-        $maxVal = $maxVal + 5;               // ruang di atas
-        $step   = 1;                         // atau 5 bila data besar
-
-        $barChartData = [
-            'type' => 'bar',
-            'data' => [
-                'labels' => array_column($topAset, 'nama'),
-                'datasets' => [[
-                    'label' => 'Jumlah Dimiliki',
-                    'data' => array_column($topAset, 'jumlah'),
-                    'backgroundColor' => '#4f46e5',
-                ]]
-            ],
-            'options' => [
-                'responsive' => true,
-                'maintainAspectRatio' => false,
-                'layout' => [
-                    'padding' => 10
-                ],
-                'scales' => [
-                    'y' => [
-                        'type' => 'linear',
-                        'beginAtZero' => true,
-                        'grace' => 0, // ⬅️ PAKSA tanpa gap di bawah
-                        'ticks' => [
-                            'beginAtZero' => true, // ⬅️ QuickChart kadang cuma baca ini
-                            'stepSize' => 1,
-                            'precision' => 0,
-                        ],
-                        'min' => 0, // ⬅️ tetap disertakan untuk jaga-jaga
-                        'suggestedMin' => 0,
-                    ],
-                    'x' => [
-                        'type' => 'category',
-                    ],
-                ],
-                'plugins' => [
-                    'legend' => [
-                        'display' => true,
-                        'position' => 'top',
-                    ],
-                    'title' => [
-                        'display' => true,
-                        'text' => '5 Aset Keluarga Paling Banyak Dimiliki',
-                    ],
-                ],
-            ],
-        ];
-
-        $pieChartUrl = "https://quickchart.io/chart?c=" . urlencode(json_encode($pieChartData));
-        $barChartUrl = "https://quickchart.io/chart?c=" . urlencode(json_encode($barChartData)) . "&_t=" . time();
-
-        $pieChartBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($pieChartUrl));
-        $barChartBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($barChartUrl));
-
-        // 🔹 Generate PDF
         $pdf = Pdf::loadView('laporan.asetkeluarga', [
-            'totalKeluarga' => $totalKeluarga,
-            'baik' => $baik,
-            'sedang' => $sedang,
-            'buruk' => $buruk,
-            'persenBaik' => $persenBaik,
-            'persenSedang' => $persenSedang,
-            'persenBuruk' => $persenBuruk,
-            'dominan' => $dominan,
-            'persenDominan' => $persenDominan,
-            'topAset' => $topAset,
-            'pieChartUrl' => $pieChartBase64,
-            'barChartUrl' => $barChartBase64,
-            'periode' => Carbon::now()->translatedFormat('F Y'),
-            'tanggal' => Carbon::now()->translatedFormat('d F Y'),
+            'data' => $data,
+            'master' => $master,
+            'indikator' => $indikator,
+            'skor' => $skor,
+            'kategori' => $kategori,
+            'analisis' => $analisis,
+            'rekomendasi' => $rekomendasi,
+            'avg_dasar' => round($avg_dasar, 2),
+            'avg_menengah' => round($avg_menengah, 2),
+            'avg_mewah' => round($avg_mewah, 2),
+            'avg_assets' => $avg_assets,              // sudah dibulatkan (19 atau 20 dst)
+            'max_aset' => $max_aset,                  // kirim 41 ke view
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->stream('Laporan-Analisis-Aset-Keluarga.pdf');
+        return $pdf->download('Laporan_Analisis_Aset_Keluarga.pdf');
     }
-
-    //VOICE INPUT
-    public function voiceInput()
-    {
-        $keluargas = DataKeluarga::all();
-        $masterAset = MasterAsetKeluarga::all();
-        return view('keluarga.asetkeluarga.voice', compact('keluargas', 'masterAset'));
-    }
-
 }

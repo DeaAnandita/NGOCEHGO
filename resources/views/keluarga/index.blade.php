@@ -31,7 +31,7 @@
                                     <x-heroicon-o-document-arrow-down class="w-4 h-4 text-green-600" />
                                     Export Excel
                                 </a>
-                                <a href="{{ route('datakeluarga.export.pdf') }}"
+                                <a href="{{ route('keluarga.exportAnalisisPDF') }}"
                                     class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg">
                                     <x-heroicon-o-document-text class="w-4 h-4 text-red-600" />
                                     Export PDF

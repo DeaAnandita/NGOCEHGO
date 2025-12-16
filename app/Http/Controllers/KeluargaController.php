@@ -10,6 +10,9 @@ use App\Models\MasterKabupaten;
 use App\Models\MasterKecamatan;
 use App\Models\MasterDesa;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class KeluargaController extends Controller
 {
@@ -139,5 +142,78 @@ class KeluargaController extends Controller
             ->get();
 
         return response()->json($desas);
+    }
+
+    public static function exportPDF()
+    {
+        // Ambil data utama
+        $masterMutasi = MasterMutasiMasuk::all();
+        $masterDusun = MasterDusun::all();
+        $data = DataKeluarga::all();
+        $total = $data->count();
+
+        // Hitung persentase mutasi datang
+        $mutasi_datang = DataKeluarga::where('kdmutasimasuk', 'datang')->count();  // Asumsi kode 'datang'
+        $persen_datang = $total > 0 ? round(($mutasi_datang / $total) * 100, 2) : 0;
+
+        // Hitung kepadatan per dusun (rata-rata)
+        $kepadatan_per_dusun = DataKeluarga::select('kddusun', DB::raw('COUNT(*) as count'))
+            ->groupBy('kddusun')
+            ->get()
+            ->avg('count') ?? 0;
+
+        // Hitung persen migran dari daerah miskin (asumsi daftar provinsi miskin, sesuaikan)
+        $daerah_miskin = ['Papua', 'NTT'];  // Contoh, ambil dari config atau DB
+        $migran_miskin = DataKeluarga::where('kdmutasimasuk', 'datang')
+            ->whereHas('provinsi', function ($q) use ($daerah_miskin) {
+                $q->whereIn('provinsi', $daerah_miskin);
+            })->count();
+        $persen_migran_miskin = $mutasi_datang > 0 ? round(($migran_miskin / $mutasi_datang) * 100, 2) : 0;
+
+        // Skor kerentanan
+        $skor = ($persen_datang * 0.4) + ($kepadatan_per_dusun * 0.003) + ($persen_migran_miskin * 0.3);  // Adjust multiplier kepadatan agar masuk skala 0-100
+        $skor = max(0, min(100, round($skor, 2)));
+
+        // Kategori dan rekomendasi (mirip contoh aset)
+        if ($skor > 50 || $persen_datang > 20) {
+            $kategori = 'Rentan Kemiskinan Migrasi';
+            $rekomendasi = [
+                'Program integrasi migran dengan BLT khusus.',
+                'Mapping infrastruktur di dusun padat.',
+                'Kerja sama antar-daerah untuk pencegahan migrasi.'
+            ];
+        } elseif ($skor >= 30) {
+            $kategori = 'Rawan Kemiskinan Lokal';
+            $rekomendasi = [
+                'Alokasi PKH targeted per RW/RT.',
+                'Pembangunan infrastruktur desa.',
+                'Monitoring migrasi berkala.'
+            ];
+        } else {
+            $kategori = 'Stabil';
+            $rekomendasi = [
+                'Edukasi manajemen migrasi.',
+                'Program CSR untuk investasi.',
+                'Survey tahunan deteksi dini.'
+            ];
+        }
+
+        // Persentase ringkasan
+        $persen_kepadatan_tinggi = round(($kepadatan_per_dusun > 50 ? 100 : ($kepadatan_per_dusun / 50) * 100), 2);  // Asumsi threshold 50
+
+        $pdf = Pdf::loadView('laporan.keluarga', [
+            'data' => $data,
+            'masterMutasi' => $masterMutasi,
+            'masterDusun' => $masterDusun,
+            'persen_datang' => $persen_datang,
+            'kepadatan_per_dusun' => round($kepadatan_per_dusun, 2),
+            'persen_migran_miskin' => $persen_migran_miskin,
+            'skor' => $skor,
+            'kategori' => $kategori,
+            'rekomendasi' => $rekomendasi,
+            'persen_kepadatan_tinggi' => $persen_kepadatan_tinggi,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->download('Laporan_Analisis_Data_Keluarga.pdf');
     }
 }

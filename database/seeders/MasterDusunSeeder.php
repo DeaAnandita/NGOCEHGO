@@ -13,11 +13,11 @@ class MasterDusunSeeder extends Seeder
     public function run(): void
     {
         DB::table('master_dusun')->insert([
-            ['kddusun' => 1, 'dusun' => 'WINONG'],
-            ['kddusun' => 2, 'dusun' => 'KRAJAN'],
-            ['kddusun' => 3, 'dusun' => 'PLOSO'],
-            ['kddusun' => 4, 'dusun' => 'GONDANG'],
-            ['kddusun' => 5, 'dusun' => 'NGEMPLAK'],
+            ['kddusun' => 1, 'dusun' => 'KALIWUNGU'],
+            ['kddusun' => 2, 'dusun' => 'GERUNG'],
+            ['kddusun' => 3, 'dusun' => 'TEGUHAN'],
+            ['kddusun' => 4, 'dusun' => 'JETIS'],
+            ['kddusun' => 5, 'dusun' => 'PROKO WINONG'],
         ]);
     }
 }

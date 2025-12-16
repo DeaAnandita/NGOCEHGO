@@ -82,64 +82,70 @@
 </head>
 <body>
     <div class="header">
-        <p class="title">Laporan Analisis Aset Keluarga</p>
+        <p class="title">Laporan Analisis Data Keluarga</p>
         <p class="subtitle">Periode: {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</p>
     </div>
 
     <div class="summary">
         <p><strong>Total Keluarga Terdata:</strong> {{ number_format($data->count()) }}</p>
-        <p><strong>Skor Kepemilikan Aset Rata-rata:</strong> {{ $skor }} / 100</p>
+        <p><strong>Persentase Mutasi Datang:</strong> {{ $persen_datang }}%</p>
+        <p><strong>Rata-rata Kepadatan per Dusun:</strong> {{ $kepadatan_per_dusun }} keluarga</p>
+        <p><strong>Skor Kerentanan Kemiskinan:</strong> {{ $skor }} / 100</p>
         <div class="category-box">
-            Kategori Keluarga: {{ $kategori }}
+            Kategori: {{ $kategori }}
         </div>
     </div>
 
-    <h3>Jumlah Kepemilikan Aset per Indikator</h3>
+    <h3>Distribusi per Dusun</h3>
     <table>
         <thead>
             <tr>
-                <th style="width:40px;">No</th>
-                <th>Nama Aset</th>
-                <th style="width:120px;">Jumlah Keluarga Memiliki (YA)</th>
-                <th style="width:120px;">Jumlah Keluarga Tidak Memiliki</th>
-                <th style="width:200px;">Keterangan</th>
+                <th>No</th>
+                <th>Dusun</th>
+                <th>Jumlah Keluarga</th>
+                <th>% Mutasi Datang</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($master as $item)
+            @foreach($masterDusun as $item)
                 @php
-                    $kode = $item->kdasetkeluarga;
-                    $info = $indikator["aset_$kode"] ?? ['count_ya' => 0, 'count_tidak' => 0, 'keterangan' => 'Data tidak tersedia.'];
+                    $count = $data->where('kddusun', $item->kddusun)->count();
+                    $datang = $data->where('kddusun', $item->kddusun)->where('kdmutasimasuk', 'datang')->count();
+                    $persen = $count > 0 ? round(($datang / $count) * 100, 2) : 0;
                 @endphp
                 <tr>
-                    <td align="center">{{ $kode }}</td>
-                    <td>{{ $item->asetkeluarga }}</td>
-                    <td align="center">{{ $info['count_ya'] }}</td>
-                    <td align="center">{{ $info['count_tidak'] }}</td>
-                    <td>{{ $info['keterangan'] }}</td>
+                    <td align="center">{{ $loop->iteration }}</td>
+                    <td>{{ $item->dusun }}</td>
+                    <td align="center">{{ $count }}</td>
+                    <td align="center">{{ $persen }}%</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-    <div class="page-break"></div>
-    <h3>Ringkasan Kategori Aset</h3>
+    <h3>Ringkasan Migrasi</h3>
     <div class="summary">
-        <p>• <strong>Aset Dasar Rumah Tangga:</strong> Rata-rata {{ $avg_dasar }}% keluarga memiliki ({{ round(($data->count() * $avg_dasar / 100), 0) }} keluarga)</p>
-        <p>• <strong>Aset Menengah (transportasi, ternak, usaha kecil):</strong> Rata-rata {{ $avg_menengah }}% keluarga memiliki ({{ round(($data->count() * $avg_menengah / 100), 0) }} keluarga)</p>
-        <p>• <strong>Aset Mewah (usaha besar, saham, kapal, dll):</strong> Rata-rata {{ $avg_mewah }}% keluarga memiliki ({{ round(($data->count() * $avg_mewah / 100), 0) }} keluarga)</p>
-        <p>• <strong>Rata-rata jumlah aset yang dimiliki per keluarga:</strong> 
-            {{ $avg_assets }} dari {{ $max_aset }} jenis aset
-        </p>
+        <p>• <strong>Persentase Kepadatan Tinggi:</strong> {{ $persen_kepadatan_tinggi }}%</p>
+        <p>• <strong>Persentase Migran dari Daerah Miskin:</strong> {{ $persen_migran_miskin }}%</p>
     </div>
 
     <h3>Analisis Interpretatif</h3>
     <div class="summary">
-        <p>{{ $analisis }}</p>
+        <p>
+            Berdasarkan data, mayoritas keluarga berada pada kategori 
+            <strong>{{ $kategori }}</strong>. 
+            @if($kategori === 'Rentan Kemiskinan Migrasi')
+                Tinggi influx migran dari daerah miskin, rawan kemiskinan struktural.
+            @elseif($kategori === 'Rawan Kemiskinan Lokal')
+                Kepadatan tinggi per dusun, potensi overburden infrastruktur.
+            @else
+                Stabilitas tinggi, fokus pencegahan.
+            @endif
+        </p>
     </div>
 
     <div class="rekomendasi">
-        <h4>Rekomendasi Kebijakan Pemerintah dalam Penanggulangan Kemiskinan</h4>
+        <h4>Rekomendasi Kebijakan Penanggulangan Kemiskinan</h4>
         <ul>
             @foreach($rekomendasi as $item)
                 <li>{{ $item }}</li>

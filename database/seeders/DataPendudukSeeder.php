@@ -4,198 +4,229 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DataPendudukSeeder extends Seeder
 {
-    protected $namaPria = ['Ahmad', 'Budi', 'Candra', 'Dedi', 'Eko', 'Fajar', 'Galih', 'Hadi', 'Irfan', 'Joko', 'Kurniawan', 'Lukman', 'Maman', 'Nico', 'Oka', 'Putra', 'Qomar', 'Rudi', 'Slamet', 'Taufik'];
-    protected $namaWanita = ['Siti', 'Rina', 'Dewi', 'Nur', 'Lina', 'Rizka', 'Ayu', 'Maya', 'Fitri', 'Rani', 'Sari', 'Tika', 'Umi', 'Vina', 'Wulan', 'Yuni', 'Zahra', 'Intan', 'Jannah', 'Kartika'];
-    protected $namaBelakang = ['Santoso', 'Wijaya', 'Hartono', 'Gunawan', 'Pratama', 'Saputra', 'Lestari', 'Ramadhani', 'Permata', 'Hidayah', 'Nugroho', 'Setiawan', 'Wibowo', 'Rahayu', 'Kusuma', 'Suryadi', 'Purnomo', 'Siregar', 'Hasibuan', 'Nasution'];
+
+    protected $namaPria = ['Ahmad', 'Budi', 'Candra', 'Dedi', 'Eko', 'Fajar', 'Galih', 'Hadi', 'Irfan', 'Joko', 'Kurniawan', 'Lukman', 'Maman', 'Nico', 'Oka', 'Putra', 'Qomar', 'Rudi', 'Slamet', 'Taufik', 'Agus', 'Bambang', 'Dwi', 'Eka', 'Hendra', 'Indra', 'Krisna', 'Muhammad', 'Sigit', 'Wahyu'];
+    protected $namaWanita = ['Siti', 'Rina', 'Dewi', 'Nur', 'Lina', 'Rizka', 'Ayu', 'Maya', 'Fitri', 'Rani', 'Sari', 'Tika', 'Umi', 'Vina', 'Wulan', 'Yuni', 'Zahra', 'Intan', 'Jannah', 'Kartika', 'Ani', 'Desi', 'Eka', 'Fatmawati', 'Hani', 'Indah', 'Lestari', 'Mira', 'Novi', 'Puji'];
+    protected $namaBelakang = ['Santoso', 'Wijaya', 'Hartono', 'Gunawan', 'Pratama', 'Saputra', 'Lestari', 'Ramadhani', 'Permata', 'Hidayah', 'Nugroho', 'Setiawan', 'Wibowo', 'Rahayu', 'Kusuma', 'Suryadi', 'Purnomo', 'Siregar', 'Hasibuan', 'Nasution', 'Abdullah', 'Hidayat', 'Suprapto', 'Suharto', 'Yulianto'];
+
+    protected $dusunList = [
+        'KALIWUNGU', 'GERUNG', 'TEGUHAN', 'JETIS', 'PROKO WINONG'
+    ];
+
+    protected $dusunMap = [
+        'KALIWUNGU'    => 1,
+        'GERUNG'       => 2,
+        'TEGUHAN'      => 3,
+        'JETIS'        => 4,
+        'PROKO WINONG' => 5,
+    ];
+
+    protected $jalanList = [
+        'Jl. Raya Kudus - Jepara', 'Jl. Kaliwungu', 'Jl. Honocoroko', 'Jl. Masjid', 'Jl. Pemuda', 'Jl. Ahmad Yani', 'Jl. Sunan Muria', 'Jl. KH. Wahid Hasyim'
+    ];
 
     public function run(): void
     {
+        // Matikan foreign key check sementara
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
         DB::table('data_keluarga')->truncate();
         DB::table('data_penduduk')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Wilayah Kudus (valid)
-        $provLokal = 33;    
-        $kabLokal  = 3319;
-        $kecLokal  = 331902;
-        $desaLokal = 3319021001;
-
-        // Wilayah luar (aman)
         $wilayahLuar = [
-            ['prov' => 15, 'kab' => 1501, 'kec' => 150101, 'desa' => 1501012001], // Jakarta Selatan
-            ['prov' => 15, 'kab' => 1501, 'kec' => 150101, 'desa' => 1501012002], // Kota Bandung (3275 lebih umum)
-            ['prov' => 15, 'kab' => 1501, 'kec' => 150101, 'desa' => 1501012003], // Kota Surakarta (Solo)
-            ['prov' => 15, 'kab' => 1501, 'kec' => 150101, 'desa' => 1501011004], // Kota Surabaya
-            ['prov' => 15, 'kab' => 1501, 'kec' => 150101, 'desa' => 1501012005], // Kota Tangerang
-            ['prov' => 15, 'kab' => 1501, 'kec' => 150101, 'desa' => 1501012006], // Kota Denpasar
+            ['prov' => 31, 'kab' => 3171, 'kec' => 317101, 'desa' => 3171010001], // Jakarta
+            ['prov' => 32, 'kab' => 3275, 'kec' => 327501, 'desa' => 3275010001], // Bandung
+            ['prov' => 33, 'kab' => 3374, 'kec' => 337401, 'desa' => 3374010001], // Semarang
+            ['prov' => 35, 'kab' => 3578, 'kec' => 357801, 'desa' => 3578010001], // Surabaya
+            ['prov' => 36, 'kab' => 3671, 'kec' => 367101, 'desa' => 3671010001], // Tangerang
         ];
 
-        $dusunList = [1 => 'Winong', 2 => 'Krajan', 3 => 'Ploso', 4 => 'Gondang', 5 => 'Ngemplak'];
-        $dataKeluarga = [];
-        $dataPenduduk = [];
+        $jumlahKK   = 1200;
+        $batchSize  = 500;          // Insert 500 KK per batch
+        $nikCounter = 331901000000; // Basis NIK Kudus
+        $totalPenduduk = 0;
 
-        $nikCounter = 100000;
-        $jumlahKK = 100;
+        // Batch processing
+        for ($batchStart = 0; $batchStart < $jumlahKK; $batchStart += $batchSize) {
+            $dataKeluarga = [];
+            $dataPenduduk = [];
 
-        for ($i = 1; $i <= $jumlahKK; $i++) {
-            $noKK = '33741234' . str_pad($i, 8, '0', STR_PAD_LEFT);
-            $dusunId = array_rand($dusunList);
-            $rw = str_pad(rand(1, 20), 3, '0', STR_PAD_LEFT);
-            $rt = str_pad(rand(1, 20), 3, '0', STR_PAD_LEFT);
+            $batchEnd = min($batchStart + $batchSize, $jumlahKK);
 
-            // 15% mutasi datang
-            $mutasiDatang = rand(1, 100) <= 15;
+            for ($i = $batchStart + 1; $i <= $batchEnd; $i++) {
+                // No KK: 16 digit realistis (kode wilayah desa + urut 6 digit)
+                $noKK = '3319012001' . str_pad($i, 6, '0', STR_PAD_LEFT);
 
-            if ($mutasiDatang) {
-                $luar = $wilayahLuar[array_rand($wilayahLuar)];
-                $provinsiAsal   = $luar['prov'];
-                $kabupatenAsal  = $luar['kab'];
-                $kecamatanAsal  = $luar['kec'];
-                $desaAsal       = $luar['desa'];
-                $kdmutasimasuk  = 3;
-            } else {
-                $provinsiAsal   = null;
-                $kabupatenAsal  = null;
-                $kecamatanAsal  = null;
-                $desaAsal       = null;
-                $kdmutasimasuk  = rand(1, 2);
-            }
+                $dusunNama = $this->dusunList[array_rand($this->dusunList)];
+                $kddusunId = $this->dusunMap[$dusunNama];
+                $rw = str_pad(rand(1, 15), 2, '0', STR_PAD_LEFT);
+                $rt = str_pad(rand(1, 20), 3, '0', STR_PAD_LEFT);
 
-            $isKKLaki = rand(1, 100) <= 78;
-            $namaKK = $isKKLaki
-                ? $this->namaPria[array_rand($this->namaPria)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)]
-                : $this->namaWanita[array_rand($this->namaWanita)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)];
+                // 15% mutasi datang dari luar
+                $mutasiDatang = rand(1, 100) <= 15;
+                if ($mutasiDatang) {
+                    $luar = $wilayahLuar[array_rand($wilayahLuar)];
+                    $provinsiAsal   = $luar['prov'];
+                    $kabupatenAsal  = $luar['kab'];
+                    $kecamatanAsal  = $luar['kec'];
+                    $desaAsal       = $luar['desa'];
+                    $kdmutasimasuk  = 3; // Mutasi datang
+                } else {
+                    $provinsiAsal = $kabupatenAsal = $kecamatanAsal = $desaAsal = null;
+                    $kdmutasimasuk = rand(1, 2); // Lahir / lainnya
+                }
 
-            // Insert keluarga
-            $dataKeluarga[] = [
-                'no_kk'                  => $noKK,
-                'kdmutasimasuk'          => $kdmutasimasuk,
-                'keluarga_tanggalmutasi' => now(),
-                'keluarga_kepalakeluarga'=> $namaKK,
-                'kddusun'                => $dusunId,
-                'keluarga_rw'            => $rw,
-                'keluarga_rt'            => $rt,
-                'keluarga_alamatlengkap' => 'Jl. ' . fake()->streetName() . ' No. ' . rand(1, 150),
+                // 78% KK adalah laki-laki
+                $isKKLaki = rand(1, 100) <= 78;
+                $namaKK = $isKKLaki
+                    ? $this->namaPria[array_rand($this->namaPria)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)]
+                    : $this->namaWanita[array_rand($this->namaWanita)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)];
 
-                'kdprovinsi'   => $mutasiDatang ? $provinsiAsal   : null,
-                'kdkabupaten'  => $mutasiDatang ? $kabupatenAsal  : null,
-                'kdkecamatan'  => $mutasiDatang ? $kecamatanAsal  : null,
-                'kddesa'       => $mutasiDatang ? $desaAsal       : null,
-            ];
+                $jalan = $this->jalanList[array_rand($this->jalanList)];
+                $nomor = rand(1, 200);
+                $alamatLengkap = "Dusun {$dusunNama}, RT {$rt}/RW {$rw}, Desa Kaliwungu, Kecamatan Kaliwungu, Kabupaten Kudus";
 
-            // Urutan anggota dalam KK
-            $urut = 1;
+                // Insert ke data_keluarga
+                $dataKeluarga[] = [
+                    'no_kk'                  => $noKK,
+                    'kdmutasimasuk'          => $kdmutasimasuk,
+                    'keluarga_tanggalmutasi' => now(),
+                    'keluarga_kepalakeluarga'=> $namaKK,
+                    'kddusun'                => $kddusunId,
+                    'keluarga_rw'            => $rw,
+                    'keluarga_rt'            => $rt,
+                    'keluarga_alamatlengkap' => "{$jalan} No. {$nomor}, {$alamatLengkap}",
+                    'kdprovinsi'             => $mutasiDatang ? $provinsiAsal : null,
+                    'kdkabupaten'            => $mutasiDatang ? $kabupatenAsal : null,
+                    'kdkecamatan'            => $mutasiDatang ? $kecamatanAsal : null,
+                    'kddesa'                 => $mutasiDatang ? $desaAsal : null,
+                ];
 
-            // Kepala keluarga
-            $nikCounter++;
-            $dataPenduduk[] = $this->buatPenduduk([
-                'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
-                'no_kk' => $noKK,
-                'nama' => $namaKK,
-                'jk' => $isKKLaki ? 1 : 2,
-                'hub' => 1,
-                'urut' => str_pad($urut++, 2, '0', STR_PAD_LEFT),
-                'mutasi' => $kdmutasimasuk,
-                'prov' => $provinsiAsal,
-                'kab' => $kabupatenAsal,
-                'kec' => $kecamatanAsal,
-                'desa' => $desaAsal,
-            ]);
+                $urut = 1;
 
-            // Istri
-            if ($isKKLaki && rand(1, 100) <= 88) {
+                // 1. Kepala Keluarga
                 $nikCounter++;
-                $namaIstri = $this->namaWanita[array_rand($this->namaWanita)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)];
-
                 $dataPenduduk[] = $this->buatPenduduk([
-                    'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
-                    'no_kk' => $noKK,
-                    'nama' => $namaIstri,
-                    'jk' => 2,
-                    'hub' => 2,
-                    'urut' => str_pad($urut++, 2, '0', STR_PAD_LEFT),
+                    'nik'    => '3319' . str_pad($nikCounter, 12, '0', STR_PAD_LEFT),
+                    'no_kk'  => $noKK,
+                    'nama'   => $namaKK,
+                    'jk'     => $isKKLaki ? 1 : 2,
+                    'hub'    => 1, // Kepala Keluarga
+                    'urut'   => str_pad($urut++, 2, '0', STR_PAD_LEFT),
                     'mutasi' => $kdmutasimasuk,
-                    'prov' => $provinsiAsal,
-                    'kab' => $kabupatenAsal,
-                    'kec' => $kecamatanAsal,
-                    'desa' => $desaAsal,
+                    'prov'   => $provinsiAsal,
+                    'kab'    => $kabupatenAsal,
+                    'kec'    => $kecamatanAsal,
+                    'desa'   => $desaAsal,
                 ]);
+
+                // 2. Pasangan (istri/suami) - hanya jika KK laki-laki dan probabilitas 88%
+                if ($isKKLaki && rand(1, 100) <= 88) {
+                    $nikCounter++;
+                    $namaPasangan = $this->namaWanita[array_rand($this->namaWanita)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)];
+                    $dataPenduduk[] = $this->buatPenduduk([
+                        'nik'    => '3319' . str_pad($nikCounter, 12, '0', STR_PAD_LEFT),
+                        'no_kk'  => $noKK,
+                        'nama'   => $namaPasangan,
+                        'jk'     => 2,
+                        'hub'    => 2, // Istri
+                        'urut'   => str_pad($urut++, 2, '0', STR_PAD_LEFT),
+                        'mutasi' => $kdmutasimasuk,
+                        'prov'   => $provinsiAsal,
+                        'kab'    => $kabupatenAsal,
+                        'kec'    => $kecamatanAsal,
+                        'desa'   => $desaAsal,
+                    ]);
+                }
+
+                // 3. Anak-anak (0-5 orang)
+                $anakCount = rand(0, 5);
+                for ($a = 0; $a < $anakCount; $a++) {
+                    $nikCounter++;
+                    $jkAnak = rand(1, 2);
+                    $namaAnak = ($jkAnak == 1 ? $this->namaPria : $this->namaWanita)[array_rand($jkAnak == 1 ? $this->namaPria : $this->namaWanita)]
+                        . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)];
+
+                    $dataPenduduk[] = $this->buatPenduduk([
+                        'nik'    => '3319' . str_pad($nikCounter, 12, '0', STR_PAD_LEFT),
+                        'no_kk'  => $noKK,
+                        'nama'   => $namaAnak,
+                        'jk'     => $jkAnak,
+                        'hub'    => 3, // Anak
+                        'urut'   => str_pad($urut++, 2, '0', STR_PAD_LEFT),
+                        'mutasi' => $kdmutasimasuk,
+                        'prov'   => $provinsiAsal,
+                        'kab'    => $kabupatenAsal,
+                        'kec'    => $kecamatanAsal,
+                        'desa'   => $desaAsal,
+                    ]);
+                }
             }
 
-            // Anak (0–4)
-            $anakCount = rand(0, 4);
-            for ($a = 0; $a < $anakCount; $a++) {
-                $nikCounter++;
-                $jk = rand(1, 2);
-                $namaAnak = ($jk == 1 ? $this->namaPria : $this->namaWanita)[array_rand($jk == 1 ? $this->namaPria : $this->namaWanita)]
-                    . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)];
+            // Insert batch ini
+            DB::table('data_keluarga')->insert($dataKeluarga);
+            DB::table('data_penduduk')->insert($dataPenduduk);
 
-                $dataPenduduk[] = $this->buatPenduduk([
-                    'nik' => '33741234' . str_pad($nikCounter, 8, '0', STR_PAD_LEFT),
-                    'no_kk' => $noKK,
-                    'nama' => $namaAnak,
-                    'jk' => $jk,
-                    'hub' => 3,
-                    'urut' => str_pad($urut++, 2, '0', STR_PAD_LEFT),
-                    'mutasi' => $kdmutasimasuk,
-                    'prov' => $provinsiAsal,
-                    'kab' => $kabupatenAsal,
-                    'kec' => $kecamatanAsal,
-                    'desa' => $desaAsal,
-                ]);
-            }
+            $totalPenduduk += count($dataPenduduk);
+
+            $startKK = $batchStart + 1;
+
+            $this->command->info("Batch selesai: KK {$startKK} - {$batchEnd} (penduduk batch: " . count($dataPenduduk) . ")");
+
+            // Bersihkan memory
+            unset($dataKeluarga, $dataPenduduk);
+            gc_collect_cycles();
         }
 
-        DB::table('data_keluarga')->insert($dataKeluarga);
-        DB::table('data_penduduk')->insert($dataPenduduk);
-
-        $this->command->info("Seeder selesai! {$jumlahKK} KK + penduduk lengkap tanpa error.");
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        $this->command->info("Seeder SELESAI! Total {$jumlahKK} Kartu Keluarga dengan ±{$totalPenduduk} penduduk telah berhasil dibuat (dalam batch 500).");
     }
-
 
     private function buatPenduduk($d)
     {
+        $umur = rand(1, 80);
+
         return [
-            'nik' => $d['nik'],
-            'no_kk' => $d['no_kk'],
+            'nik'                       => $d['nik'],
+            'no_kk'                     => $d['no_kk'],
 
-            'kdmutasimasuk' => $d['mutasi'],
-            'penduduk_tanggalmutasi' => now(),
+            'kdmutasimasuk'             => $d['mutasi'],
+            'penduduk_tanggalmutasi'    => now(),
 
-            'penduduk_kewarganegaraan' => 'INDONESIA',
-            'penduduk_nourutkk' => $d['urut'],
+            'penduduk_kewarganegaraan'  => 'INDONESIA',
+            'penduduk_nourutkk'         => $d['urut'],
 
-            'penduduk_goldarah' => ['A','B','AB','O'][rand(0,3)],
-            'penduduk_noaktalahir' => 'AKL-' . date('Y') . rand(10000, 99999),
+            'penduduk_goldarah'         => ['A','B','AB','O'][rand(0,3)],
+            'penduduk_noaktalahir'      => 'AKL-' . date('Y') . str_pad(rand(1, 99999), 5, '0', STR_PAD_LEFT),
 
-            'penduduk_namalengkap' => $d['nama'],
-            'penduduk_tempatlahir' => 'Kudus',
-            'penduduk_tanggallahir' => now()->subYears(rand(1, 75))->format('Y-m-d'),
+            'penduduk_namalengkap'      => $d['nama'],
+            'penduduk_tempatlahir'      => rand(1,10) <= 8 ? 'Kudus' : 'Semarang',
+            'penduduk_tanggallahir'     => now()->subYears($umur)->subDays(rand(0,365))->format('Y-m-d'),
 
-            'kdjeniskelamin' => $d['jk'],
-            'kdagama' => rand(1, 6),
-            'kdhubungankeluarga' => $d['hub'],
-            'kdhubungankepalakeluarga' => $d['hub'],
-            'kdstatuskawin' => $d['hub'] == 3 ? 1 : 2,
-            'kdaktanikah' => rand(1, 3),
-            'kdtercantumdalamkk' => 1,
-            'kdstatustinggal' => 1,
-            'kdkartuidentitas' => 1,
-            'kdpekerjaan' => rand(1, 20),
+            'kdjeniskelamin'            => $d['jk'],
+            'kdagama'                   => rand(1, 6),
+            'kdhubungankeluarga'        => $d['hub'],
+            'kdhubungankepalakeluarga'  => $d['hub'],
+            'kdstatuskawin'             => $d['hub'] == 3 ? 1 : (rand(1,100) <= 70 ? 2 : 1), // Anak belum kawin
+            'kdaktanikah'               => rand(1, 3),
+            'kdtercantumdalamkk'        => 1,
+            'kdstatustinggal'           => 1,
+            'kdkartuidentitas'          => 1,
+            'kdpekerjaan'               => rand(1, 20),
 
-            'penduduk_namaayah' => $this->namaPria[array_rand($this->namaPria)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)],
-            'penduduk_namaibu'  => $this->namaWanita[array_rand($this->namaWanita)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)],
+            'penduduk_namaayah'         => $this->namaPria[array_rand($this->namaPria)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)],
+            'penduduk_namaibu'          => $this->namaWanita[array_rand($this->namaWanita)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)],
 
-            'penduduk_namatempatbekerja' => rand(1, 100) <= 60 ? fake()->company() : null,
+            'penduduk_namatempatbekerja'=> rand(1, 100) <= 70 ? fake()->company() : null,
 
-            'kdprovinsi'   => $d['prov'],
-            'kdkabupaten'  => $d['kab'],
-            'kdkecamatan'  => $d['kec'],
-            'kddesa'       => $d['desa'],
+            'kdprovinsi'                => $d['prov'],
+            'kdkabupaten'               => $d['kab'],
+            'kdkecamatan'               => $d['kec'],
+            'kddesa'                    => $d['desa'],
         ];
     }
 }
