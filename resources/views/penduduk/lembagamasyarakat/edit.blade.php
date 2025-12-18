@@ -6,7 +6,7 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-6">Edit Data Lembaga Masyarakat</h3>
 
-                <form action="{{ route('penduduk.lembagamasyarakat.update', $lembagaMasyarakat->nik) }}" method="POST">
+                <form action="{{ route('penduduk.lemmas.update', $lembagaMasyarakat->nik) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -52,7 +52,7 @@
                                 class="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200">
                             Simpan
                         </button>
-                        <a href="{{ route('penduduk.lembagamasyarakat.index') }}"
+                        <a href="{{ route('penduduk.lemmas.index') }}"
                            class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-300 transition duration-200">
                             Batal
                         </a>

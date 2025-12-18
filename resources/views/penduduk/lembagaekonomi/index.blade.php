@@ -6,10 +6,12 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <!-- Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                    <h3 class="text-xl font-bold text-gray-800">Data Lembaga Ekonomi</h3>
 
-                    <div class="flex flex-wrap items-center gap-2">
-                         <!-- Dropdown Export -->
+                    <!-- KIRI: Judul + Export -->
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-xl font-bold text-gray-800">Data Lembaga Ekonomi</h3>
+
+                        <!-- Dropdown Export -->
                         <div x-data="{ open: false }" class="relative">
                             <button @click="open = !open"
                                 class="bg-indigo-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
@@ -21,7 +23,6 @@
                                 </svg>
                             </button>
 
-                            <!-- Dropdown Menu -->
                             <div x-show="open" @click.away="open = false"
                                 x-transition
                                 class="absolute mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
@@ -29,20 +30,24 @@
                                     class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">
                                     <x-heroicon-o-document-arrow-down class="w-4 h-4 text-green-600" />
                                     Export Excel
+                                </a>
                                 <a href="{{ route('lembagaekonomi.exportAnalisisPDF') }}"
                                     class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-b-lg">
                                     <x-heroicon-o-document-text class="w-4 h-4 text-red-600" />
                                     Export PDF
-                              
                                 </a>
                             </div>
                         </div>
                     </div>
 
+                    <!-- KANAN: Tampilkan + Cari + Tambah -->
+                    <div class="flex flex-wrap items-center gap-2">
+
+                        <!-- Per Page -->
                         <form method="GET" action="{{ route('penduduk.lembagaekonomi.index') }}" class="flex items-center gap-2">
-                            <label for="per_page" class="text-sm text-gray-600">Tampilkan</label>
+                            <label class="text-sm text-gray-600">Tampilkan</label>
                             <select name="per_page" onchange="this.form.submit()"
-                                class="border border-gray-300 rounded-md px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-20 sm:w-24">
+                                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
                                 <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
                                 <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
                                 <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
@@ -53,22 +58,26 @@
                             @endif
                         </form>
 
+                        <!-- Search -->
                         <form method="GET" action="{{ route('penduduk.lembagaekonomi.index') }}" class="flex items-center">
                             <input type="text" name="search" value="{{ $search ?? '' }}"
-                                placeholder="Cari Nik / No KK"
-                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                placeholder="Cari NIK / No KK"
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
                             <button type="submit"
-                                class="ml-2 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700 transition">
+                                class="ml-2 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700">
                                 Cari
                             </button>
                         </form>
 
+                        <!-- Tambah -->
                         <a href="{{ route('penduduk.lembagaekonomi.create') }}"
-                           class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm">
+                        class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 shadow-sm">
                             + Tambah Data
                         </a>
+
                     </div>
                 </div>
+
 
                 <!-- Tabel scroll horizontal -->
                 <div class="relative">
