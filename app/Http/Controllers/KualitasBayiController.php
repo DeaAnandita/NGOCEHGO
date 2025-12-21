@@ -136,100 +136,122 @@ class KualitasBayiController extends Controller
     /**
      * Export laporan analisis kualitas bayi ke PDF.
      */
-    public function exportPdf()
+   public function exportPdf()
 {
-    $data = DataKualitasBayi::all();
-    $totalKeluarga = $data->count();
+    // Mapping nomor pertanyaan ke key yang akan digunakan di view
+    $pertanyaan = [
+        1 => 'keguguran',         // Keguguran kandungan
+        2 => 'lahir_normal',      // Bayi lahir hidup normal
+        3 => 'lahir_cacat',       // Bayi lahir hidup cacat
+        4 => 'lahir_mati',        // Bayi lahir mati
+        5 => 'bblr',              // Bayi lahir berat kurang dari 2,5 kg
+        6 => 'makrosomia',        // Bayi lahir berat lebih dari 4 kg
+        7 => 'kelainan_organ',    // Bayi 0-5 tahun hidup yang menderita kelainan organ
+    ];
 
-    if ($totalKeluarga === 0) {
+    $data = [];
+
+    foreach ($pertanyaan as $nomor => $key) {
+        $kolom = "kualitasbayi_{$nomor}";
+
+        $counts = DataKualitasBayi::selectRaw("
+            SUM(CASE WHEN {$kolom} = 1 THEN 1 ELSE 0 END) as ada,
+            SUM(CASE WHEN {$kolom} = 2 THEN 1 ELSE 0 END) as pernah_ada,
+            SUM(CASE WHEN {$kolom} = 3 THEN 1 ELSE 0 END) as tidak_ada,
+            SUM(CASE WHEN {$kolom} = 0 OR {$kolom} IS NULL THEN 1 ELSE 0 END) as tidak_diisi
+        ")->first();
+
+        $data["{$key}_ada"]      = $counts->ada ?? 0;
+        $data["{$key}_pernah"]   = $counts->pernah_ada ?? 0;
+        $data["{$key}_tidak"]    = $counts->tidak_ada ?? 0;
+        $data["{$key}_kosong"]   = $counts->tidak_diisi ?? 0;
+    }
+
+    // Total data keluarga yang memiliki record kualitas bayi
+    $totalData = DataKualitasBayi::count();
+
+    if ($totalData === 0) {
         return back()->with('error', 'Tidak ada data kualitas bayi untuk dianalisis.');
     }
 
-    // ✅ Hitung kategori Baik/Sedang/Buruk
-    $baik = $sedang = $buruk = 0;
-    foreach ($data as $row) {
-        $skor = 0;
-        for ($i = 1; $i <= 7; $i++) {
-            if (in_array($row->{"kualitasbayi_$i"}, [2, 3])) {
-                $skor++;
-            }
-        }
-
-        if ($skor >= 5) $baik++;
-        elseif ($skor >= 3) $sedang++;
-        else $buruk++;
+    // Deteksi kolom desa (nama_desa / desa / kelurahan)
+    $kolomDesa = null;
+    if (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'nama_desa')) {
+        $kolomDesa = 'nama_desa';
+    } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'desa')) {
+        $kolomDesa = 'desa';
+    } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'kelurahan')) {
+        $kolomDesa = 'kelurahan';
     }
 
-    // ✅ Persentase kategori
-    $persenBaik = round(($baik / $totalKeluarga) * 100, 1);
-    $persenSedang = round(($sedang / $totalKeluarga) * 100, 1);
-    $persenBuruk = round(($buruk / $totalKeluarga) * 100, 1);
+    $desaTertinggi = 'Tidak Ada Data';
+    if ($kolomDesa) {
+        $desaTerbanyak = DataKualitasBayi::join('data_keluarga', 'data_keluarga.no_kk', '=', 'data_kualitasbayi.no_kk')
+            ->select("data_keluarga.{$kolomDesa} as nama_desa")
+            ->groupBy("data_keluarga.{$kolomDesa}")
+            ->orderByRaw('COUNT(*) DESC')
+            ->first();
 
-    // ✅ Dominan
-    $kategori = ['Baik' => $baik, 'Sedang' => $sedang, 'Buruk' => $buruk];
-    arsort($kategori);
-    $dominan = array_key_first($kategori);
-
-    $persenDominan = match ($dominan) {
-        'Baik' => $persenBaik,
-        'Sedang' => $persenSedang,
-        'Buruk' => $persenBuruk,
-    };
-
-    // ✅ Ambil master indikator
-    $master = MasterKualitasBayi::pluck('kualitasbayi', 'kdkualitasbayi')->toArray();
-
-    // ✅ Hitung persentase indikator
-    $persen = [];
-    foreach ($master as $kode => $indikator) {
-        $jumlahAda = $data->where("kualitasbayi_$kode", 2)->count();
-        $persen[$kode] = round(($jumlahAda / $totalKeluarga) * 100, 1);
+        $desaTertinggi = $desaTerbanyak?->nama_desa ?? 'Tidak Ada Data';
     }
 
-    // ✅ Hitung top indikator
-    $kualitasCount = [];
-    foreach ($master as $kode => $nama) {
-        $jumlah = $data->where("kualitasbayi_$kode", 2)->count();
-        $kualitasCount[] = [
-            'nama' => $nama,
-            'jumlah' => $jumlah
-        ];
+    // Hitung indikator risiko utama
+    $totalRisikoTinggi = ($data['keguguran_ada'] ?? 0) + ($data['keguguran_pernah'] ?? 0) +
+                         ($data['lahir_mati_ada'] ?? 0) + ($data['lahir_mati_pernah'] ?? 0) +
+                         ($data['lahir_cacat_ada'] ?? 0) + ($data['lahir_cacat_pernah'] ?? 0) +
+                         ($data['kelainan_organ_ada'] ?? 0) + ($data['kelainan_organ_pernah'] ?? 0);
+
+    $persenRisikoTinggi = round($totalRisikoTinggi / $totalData * 100, 2);
+
+    $persenBBLRAtauMakrosomia = round(((
+        ($data['bblr_ada'] ?? 0) + ($data['bblr_pernah'] ?? 0) +
+        ($data['makrosomia_ada'] ?? 0) + ($data['makrosomia_pernah'] ?? 0)
+    ) / $totalData) * 100, 2);
+
+    // Tentukan kategori risiko
+    if ($persenRisikoTinggi > 15 || $persenBBLRAtauMakrosomia > 20) {
+        $kategori = 'Risiko Tinggi';
+    } elseif ($persenRisikoTinggi > 5 || $persenBBLRAtauMakrosomia > 10) {
+        $kategori = 'Risiko Sedang';
+    } else {
+        $kategori = 'Risiko Rendah';
     }
 
-    usort($kualitasCount, fn($a, $b) => $b['jumlah'] <=> $a['jumlah']);
+    // Rekomendasi otomatis berdasarkan data
+    $rekomendasi = [];
 
-    $topAset = array_slice($kualitasCount, 0, 5);
+    if ($data['keguguran_ada'] ?? 0 > 3 || $data['keguguran_pernah'] ?? 0 > 5) {
+        $rekomendasi[] = 'Perkuat program pencegahan keguguran melalui edukasi kesehatan reproduksi dan pemeriksaan kehamilan dini.';
+    }
 
-    // ✅ Rekomendasi
-    $rekomendasi = [
-        "Penguatan imunisasi dasar bayi.",
-        "Pemantauan pertumbuhan dan gizi bayi.",
-        "Peningkatan cakupan ASI eksklusif.",
-        "Pemantauan tanda bahaya bayi secara berkala.",
-    ];
+    if (($data['lahir_mati_ada'] ?? 0) + ($data['lahir_cacat_ada'] ?? 0) > 2) {
+        $rekomendasi[] = 'Lakukan audit perinatal dan tingkatkan kualitas persalinan serta deteksi dini kelainan kongenital.';
+    }
 
-    // ✅ Generate PDF
+    if (($data['bblr_ada'] ?? 0) + ($data['bblr_pernah'] ?? 0) > 5) {
+        $rekomendasi[] = 'Optimalkan program pemberian makanan tambahan ibu hamil dan pemantauan gizi balita untuk cegah BBLR.';
+    }
+
+    if ($data['kelainan_organ_ada'] ?? 0 > 2) {
+        $rekomendasi[] = 'Perlu skrining kelainan bawaan pada bayi baru lahir dan rujukan ke fasilitas spesialis.';
+    }
+
+    if ($data['lahir_normal_ada'] ?? 0 < $totalData * 0.7) {
+        $rekomendasi[] = 'Tingkatkan cakupan persalinan ditolong tenaga kesehatan terlatih dan promosi ASI eksklusif.';
+    }
+
+    if (empty($rekomendasi)) {
+        $rekomendasi[] = 'Kondisi kesehatan bayi secara umum baik. Tetap lakukan pemantauan pertumbuhan dan imunisasi rutin.';
+    }
+
     $pdf = Pdf::loadView('laporan.kualitasbayi', [
-        'totalKeluarga' => $totalKeluarga,
-        'baik' => $baik,
-        'sedang' => $sedang,
-        'buruk' => $buruk,
-        'persenBaik' => $persenBaik,
-        'persenSedang' => $persenSedang,
-        'persenBuruk' => $persenBuruk,
-        'dominan' => $dominan,
-        'persenDominan' => $persenDominan,
-
-        // ✅ Tambahan penting !!
-        'master' => $master,
-        'persen' => $persen,
-        'topAset' => $topAset,
-        'rekomendasi' => $rekomendasi,
-
-        'periode' => now()->translatedFormat('F Y'),
-        'tanggal' => now()->translatedFormat('d F Y'),
+        'data'          => $data,
+        'totalData'     => $totalData,
+        'desaTertinggi' => $desaTertinggi,
+        'kategori'      => $kategori,
+        'rekomendasi'   => $rekomendasi,
     ])->setPaper('a4', 'portrait');
 
-    return $pdf->stream('Laporan-Analisis-Kualitas-Bayi.pdf');
+    return $pdf->stream('Laporan-Kualitas-Bayi-' . Carbon::now()->format('Y-m') . '.pdf');
 }
 }

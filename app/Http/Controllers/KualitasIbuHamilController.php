@@ -136,122 +136,114 @@ class KualitasIbuHamilController extends Controller
     /**
      * Export laporan analisis kualitas ibu hamil ke PDF
      */
-    public function exportPdf()
+  public function exportPdf()
 {
-    $data = DataKualitasIbuHamil::all();
-    $master = MasterKualitasIbuHamil::all();
-    $totalKeluarga = $data->count();
+    // Mapping nomor pertanyaan ke label yang akan ditampilkan di laporan
+    $pertanyaan = [
+        1  => 'posyandu',              // Ibu hamil periksa di POSYANDU
+        2  => 'puskesmas',             // Ibu hamil periksa di PUSKESMAS
+        3  => 'rumahsakit',            // Ibu hamil periksa di rumah sakit
+        4  => 'dokter',                // Ibu hamil periksa di dokter praktek
+        5  => 'bidan',                 // ibu hamil periksa di bidan praktek
+        6  => 'dukun',                 // Ibu hamil periksa di dukun terlatih
+        7  => 'tidak_periksa',         // Ibu hamil tidak periksa kesehatan
+        8  => 'meninggal',             // Ibu hamil yang meninggal
+        9  => 'melahirkan',            // Ibu hamil melahirkan
+        10 => 'nifas_sakit',           // Ibu nifas sakit
+        11 => 'kematian_nifas',        // Kematian ibu nifas
+        12 => 'nifas_sehat',           // Ibu nifas sehat
+        13 => 'kematian_melahirkan',   // Kematian ibu saat melahirkan
+    ];
 
-    if ($totalKeluarga === 0) {
-        return back()->with('error', 'Tidak ada data kualitas ibu hamil untuk dianalisis.');
+    $data = [];
+
+    foreach ($pertanyaan as $nomor => $key) {
+        $kolom = "kualitasibuhamil_{$nomor}"; // Nama kolom sebenarnya di tabel
+
+        $counts = DataKualitasIbuHamil::selectRaw("
+            SUM(CASE WHEN {$kolom} = 1 THEN 1 ELSE 0 END) as ada,
+            SUM(CASE WHEN {$kolom} = 2 THEN 1 ELSE 0 END) as pernah_ada,
+            SUM(CASE WHEN {$kolom} = 3 THEN 1 ELSE 0 END) as tidak_ada,
+            SUM(CASE WHEN {$kolom} = 0 OR {$kolom} IS NULL THEN 1 ELSE 0 END) as tidak_diisi
+        ")->first();
+
+        $data["{$key}_ada"]      = $counts->ada ?? 0;
+        $data["{$key}_pernah"]   = $counts->pernah_ada ?? 0;
+        $data["{$key}_tidak"]    = $counts->tidak_ada ?? 0;
+        $data["{$key}_kosong"]   = $counts->tidak_diisi ?? 0;
     }
 
-    // =============================
-    // ✅ HITUNG PERSENTASE PER INDIKATOR
-    // =============================
+    // Total data ibu hamil yang terisi (memiliki record di tabel data_kualitasibuhamil)
+    $totalData = DataKualitasIbuHamil::count();
 
-    $persen = [];
-
-    foreach ($master as $item) {
-        $kode = $item->kdkualitasibuhamil;
-        $count = $data->where("kualitasibuhamil_$kode", 2)->count();
-        $persen[$kode] = round(($count / $totalKeluarga) * 100, 1);
+    // Deteksi kolom desa
+    $kolomDesa = null;
+    if (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'nama_desa')) {
+        $kolomDesa = 'nama_desa';
+    } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'desa')) {
+        $kolomDesa = 'desa';
+    } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'kelurahan')) {
+        $kolomDesa = 'kelurahan';
     }
 
-    // =============================
-    // ✅ ANALISIS UTAMA DAN SKOR
-    // =============================
+    $desaTertinggi = 'Tidak Ada Data';
+    if ($kolomDesa && $totalData > 0) {
+        $desaTerbanyak = DataKualitasIbuHamil::join('data_keluarga', 'data_keluarga.no_kk', '=', 'data_kualitasibuhamil.no_kk')
+            ->select("data_keluarga.{$kolomDesa} as nama_desa")
+            ->groupBy("data_keluarga.{$kolomDesa}")
+            ->orderByRaw('COUNT(*) DESC')
+            ->first();
 
-    $tidakPeriksa   = $persen[7]  ?? 0;
-    $dukun         = $persen[6]  ?? 0;
-    $meninggal     = ($persen[8] ?? 0) + ($persen[11] ?? 0) + ($persen[13] ?? 0);
-    $nifasSakit    = $persen[10] ?? 0;
-
-    $pemeriksaanMedis = (
-        ($persen[1] ?? 0) +
-        ($persen[2] ?? 0) +
-        ($persen[3] ?? 0) +
-        ($persen[4] ?? 0) +
-        ($persen[5] ?? 0)
-    ) / 5;
-
-    $skor = 100;
-    $skor -= $tidakPeriksa * 1.2;
-    $skor -= $dukun * 1.5;
-    $skor -= $meninggal * 3.0;
-    $skor -= $nifasSakit * 1.0;
-    $skor += $pemeriksaanMedis * 0.8;
-
-    $skor = max(0, min(100, round($skor, 1)));
-
-    // =============================
-    // ✅ KATEGORI & REKOMENDASI
-    // =============================
-
-    if ($skor < 40 || $meninggal > 1) {
-        $kategori = "Risiko Sangat Tinggi";
-        $rekomendasi = [
-            "Percepatan rujukan ibu hamil risiko tinggi.",
-            "Program ambulance desa & posko persalinan darurat.",
-            "Pendampingan intensif oleh bidan desa.",
-            "Prioritaskan keluarga miskin untuk subsidi persalinan."
-        ];
-    }
-    elseif ($skor < 70 || $tidakPeriksa > 20 || $dukun > 10) {
-        $kategori = "Risiko Sedang";
-        $rekomendasi = [
-            "Program posyandu keliling untuk wilayah sulit akses.",
-            "Edukasi ANC rutin oleh kader & PKK.",
-            "Pemberian makanan tambahan untuk ibu hamil.",
-        ];
-    }
-    else {
-        $kategori = "Baik";
-        $rekomendasi = [
-            "Pertahankan pemeriksaan ANC minimal 4 kali.",
-            "Perkuat kelas ibu hamil & edukasi gizi.",
-            "Peningkatan layanan posyandu dan bidan desa."
-        ];
+        $desaTertinggi = $desaTerbanyak?->nama_desa ?? 'Tidak Ada Data';
     }
 
-    // =============================
-    // ✅ TOP 5 INDIKATOR
-    // =============================
+    // Hitung indikator risiko
+    $persenTidakPeriksa = $totalData > 0 
+        ? round(($data['tidak_periksa_ada'] ?? 0) / $totalData * 100, 2) 
+        : 0;
 
-    $kualitasCount = [];
+    $totalKematian = ($data['meninggal_ada'] ?? 0) + ($data['meninggal_pernah'] ?? 0) +
+                     ($data['kematian_nifas_ada'] ?? 0) + ($data['kematian_nifas_pernah'] ?? 0) +
+                     ($data['kematian_melahirkan_ada'] ?? 0) + ($data['kematian_melahirkan_pernah'] ?? 0);
 
-    foreach ($master as $item) {
-        $kode = $item->kdkualitasibuhamil;
-        $jumlah = $data->where("kualitasibuhamil_$kode", 2)->count();
+    $persenKematian = $totalData > 0 ? round($totalKematian / $totalData * 100, 2) : 0;
 
-        $kualitasCount[$kode] = [
-            'nama'   => $item->kualitasibuhamil,
-            'jumlah' => $jumlah
-        ];
+    // Tentukan kategori risiko
+    if ($persenKematian > 2 || $persenTidakPeriksa > 30) {
+        $kategori = 'Risiko Tinggi';
+    } elseif ($persenKematian > 0 || $persenTidakPeriksa > 15) {
+        $kategori = 'Risiko Sedang';
+    } else {
+        $kategori = 'Risiko Rendah';
     }
 
-    usort($kualitasCount, fn($a, $b) => $b['jumlah'] <=> $a['jumlah']);
-    $topKualitas = array_slice($kualitasCount, 0, 5);
+    // Rekomendasi otomatis
+    $rekomendasi = [];
 
-    // =============================
-    // ✅ GENERATE PDF
-    // =============================
+    if ($data['tidak_periksa_ada'] ?? 0 > 5) {
+        $rekomendasi[] = 'Segera tingkatkan sosialisasi pentingnya pemeriksaan kehamilan rutin di fasilitas kesehatan resmi.';
+    }
+    if ($data['dukun_ada'] ?? 0 > 3) {
+        $rekomendasi[] = 'Lakukan edukasi intensif tentang bahaya persalinan dengan dukun non-medis.';
+    }
+    if ($totalKematian > 0) {
+        $rekomendasi[] = 'Lakukan audit maternal segera dan perkuat sistem rujukan kasus berisiko tinggi.';
+    }
+    if (($data['posyandu_ada'] ?? 0) + ($data['puskesmas_ada'] ?? 0) + ($data['rumahsakit_ada'] ?? 0) < $totalData * 0.6) {
+        $rekomendasi[] = 'Optimalkan peran Posyandu, Puskesmas, dan rumah sakit dalam pelayanan Antenatal Care (ANC).';
+    }
+    if (empty($rekomendasi)) {
+        $rekomendasi[] = 'Kondisi kesehatan ibu hamil relatif baik. Tetap lakukan pemantauan dan edukasi rutin.';
+    }
 
     $pdf = Pdf::loadView('laporan.kualitasibuhamil', [
-        'data'            => $data,
-        'master'          => $master,
-        'persen'          => $persen,
-        'skor'            => $skor,
-        'kategori'        => $kategori,
-        'rekomendasi'     => $rekomendasi,
-        'kualitasCount'   => $kualitasCount,
-        'topKualitas'     => $topKualitas,
-        'total'           => $totalKeluarga,
-        'pemeriksaanMedis'=> $pemeriksaanMedis,
-        'periode'         => Carbon::now()->translatedFormat('F Y'),
-        'tanggal'         => Carbon::now()->translatedFormat('d F Y'),
+        'data'          => $data,
+        'totalData'     => $totalData,
+        'desaTertinggi' => $desaTertinggi,
+        'kategori'      => $kategori,
+        'rekomendasi'   => $rekomendasi,
     ])->setPaper('a4', 'portrait');
 
-    return $pdf->stream('Laporan-Analisis-Kualitas-Ibu-Hamil.pdf');
+    return $pdf->stream('Laporan-Kualitas-Ibu-Hamil-' . \Carbon\Carbon::now()->format('Y-m') . '.pdf');
 }
-}   
+}
