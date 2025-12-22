@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataBangunKeluarga;
 use App\Models\DataKonflikSosial;
 use App\Models\DataKeluarga;
 use App\Models\MasterKonflikSosial;
@@ -104,73 +105,110 @@ class KonflikSosialController extends Controller
 
 
     public function exportPdf()
-    {
-        $groups = [
-            'konflik_sara' => [1, 2, 3, 4],
-            'kekerasan_fisik' => [5, 6, 13, 14],
-            'kriminalitas' => [7, 8, 9],
-            'penyimpangan_perilaku' => [10, 11, 12],
-            'kejahatan_seksual' => [15, 16, 17, 18],
-            'kehamilan_rentan' => [19, 20, 21],
-            'pertengkaran_keluarga' => [22, 23, 24, 25, 26],
-            'kdrt' => [27, 28, 29, 30, 31, 32],
-        ];
+{
+    $groups = [
+        'konflik_sara' => [1, 2, 3, 4],
+        'kekerasan_fisik' => [5, 6, 13, 14],
+        'kriminalitas' => [7, 8, 9],
+        'penyimpangan_perilaku' => [10, 11, 12],
+        'kejahatan_seksual' => [15, 16, 17, 18],
+        'kehamilan_rentan' => [19, 20, 21],
+        'pertengkaran_keluarga' => [22, 23, 24, 25, 26],
+        'kdrt' => [27, 28, 29, 30, 31, 32],
+    ];
 
-        $data = [];
-        foreach ($groups as $key => $indices) {
-            $query = DataKonflikSosial::query();
-            $query->where(function ($q) use ($indices) {
-                foreach ($indices as $i) {
-                    $q->orWhere("konfliksosial_{$i}", '>', 0);
-                }
-            });
-            $data[$key] = $query->count();
-        }
+    $data = [];
+    $totalKeluarga = DataKonflikSosial::count();
 
-        $totalKasus = array_sum($data);
+    foreach ($groups as $key => $indices) {
+        $query = DataKonflikSosial::query();
+        $query->where(function ($q) use ($indices) {
+            foreach ($indices as $i) {
+                // HITUNG HANYA YANG ADA (1)
+                $q->orWhere("konfliksosial_{$i}", 1);
+            }
+        });
 
-        // deteksi kolom desa
-        $kolomDesa = null;
-        if (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'nama_desa')) {
-            $kolomDesa = 'nama_desa';
-        } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'desa')) {
-            $kolomDesa = 'desa';
-        } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'kelurahan')) {
-            $kolomDesa = 'kelurahan';
-        }
-
-        $desaTertinggi = 'Tidak Ada Data';
-        if ($kolomDesa) {
-            $desaTerbanyak = DataKonflikSosial::join('data_keluarga', 'data_keluarga.no_kk', '=', 'data_konfliksosial.no_kk')
-                ->select("data_keluarga.$kolomDesa as nama_desa", DB::raw('COUNT(data_konfliksosial.no_kk) as total'))
-                ->groupBy("data_keluarga.$kolomDesa")
-                ->orderByDesc('total')
-                ->first();
-
-            $desaTertinggi = $desaTerbanyak->nama_desa ?? 'Tidak Ada Data';
-        }
-
-        if ($totalKasus > 60) $kategori = 'Risiko Sangat Tinggi';
-        elseif ($totalKasus > 30) $kategori = 'Risiko Tinggi';
-        elseif ($totalKasus > 10) $kategori = 'Risiko Sedang';
-        else $kategori = 'Risiko Rendah';
-
-        $rekomendasi = [];
-        if ($data['konflik_sara'] > 3) $rekomendasi[] = 'Perkuat kegiatan lintas agama dan toleransi masyarakat.';
-        if ($data['kdrt'] > 5) $rekomendasi[] = 'Perlu program perlindungan korban KDRT & konseling keluarga.';
-        if ($data['kriminalitas'] > 3) $rekomendasi[] = 'Tingkatkan koordinasi dengan aparat keamanan desa.';
-        if ($data['kehamilan_rentan'] > 2) $rekomendasi[] = 'Edukasi kesehatan reproduksi remaja.';
-        if ($data['penyimpangan_perilaku'] > 2) $rekomendasi[] = 'Adakan penyuluhan bahaya miras/narkoba.';
-        if (empty($rekomendasi)) $rekomendasi[] = 'Kondisi sosial relatif aman. Tetap lakukan pembinaan dan monitoring.';
-
-        $pdf = Pdf::loadView('laporan.konfliksosial', [
-            'data' => $data,
-            'totalKasus' => $totalKasus,
-            'desaTertinggi' => $desaTertinggi,
-            'kategori' => $kategori,
-            'rekomendasi' => $rekomendasi,
-        ])->setPaper('a4', 'portrait');
-
-        return $pdf->stream('Laporan-Analisis-Konflik-Sosial.pdf');
+        // dihitung per KK, bukan per kolom
+        $data[$key] = $query->distinct('no_kk')->count('no_kk');
     }
+
+    $totalKasus = array_sum($data);
+
+    /* ===============================
+       DETEKSI KOLOM DESA
+    ================================ */
+    $kolomDesa = null;
+    if (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'nama_desa')) {
+        $kolomDesa = 'nama_desa';
+    } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'desa')) {
+        $kolomDesa = 'desa';
+    } elseif (DB::getSchemaBuilder()->hasColumn('data_keluarga', 'kelurahan')) {
+        $kolomDesa = 'kelurahan';
+    }
+
+    $desaTertinggi = 'Tidak Ada Data';
+    if ($kolomDesa) {
+        $desaTerbanyak = DataKonflikSosial::join(
+                'data_keluarga',
+                'data_keluarga.no_kk',
+                '=',
+                'data_konfliksosial.no_kk'
+            )
+            ->where(function ($q) {
+                for ($i = 1; $i <= 32; $i++) {
+                    $q->orWhere("data_konfliksosial.konfliksosial_$i", 1);
+                }
+            })
+            ->select("data_keluarga.$kolomDesa as nama_desa", DB::raw('COUNT(DISTINCT data_konfliksosial.no_kk) as total'))
+            ->groupBy("data_keluarga.$kolomDesa")
+            ->orderByDesc('total')
+            ->first();
+
+        $desaTertinggi = $desaTerbanyak->nama_desa ?? 'Tidak Ada Data';
+    }
+
+    /* ===============================
+       KATEGORI RISIKO (REALISTIS)
+    ================================ */
+    if ($totalKasus >= 15) $kategori = 'Risiko Tinggi';
+    elseif ($totalKasus >= 7) $kategori = 'Risiko Sedang';
+    elseif ($totalKasus >= 1) $kategori = 'Risiko Rendah';
+    else $kategori = 'Sangat Aman';
+
+    /* ===============================
+       REKOMENDASI DINAMIS
+    ================================ */
+    $rekomendasi = [];
+
+    if ($data['konflik_sara'] > 0)
+        $rekomendasi[] = 'Penguatan nilai toleransi dan deteksi dini konflik sosial berbasis masyarakat.';
+
+    if ($data['kdrt'] > 0)
+        $rekomendasi[] = 'Perlu layanan konseling keluarga dan mekanisme perlindungan korban KDRT.';
+
+    if ($data['kriminalitas'] > 1)
+        $rekomendasi[] = 'Peningkatan koordinasi keamanan lingkungan dan ronda warga.';
+
+    if ($data['penyimpangan_perilaku'] > 1)
+        $rekomendasi[] = 'Edukasi bahaya miras, narkoba, dan judi bagi keluarga.';
+
+    if ($data['kehamilan_rentan'] > 0)
+        $rekomendasi[] = 'Penyuluhan kesehatan reproduksi remaja dan ketahanan keluarga.';
+
+    if (empty($rekomendasi))
+        $rekomendasi[] = 'Kondisi sosial relatif aman. Monitoring rutin tetap diperlukan.';
+
+    $pdf = Pdf::loadView('laporan.konfliksosial', compact(
+        'data',
+        'totalKasus',
+        'desaTertinggi',
+        'kategori',
+        'rekomendasi',
+        'totalKeluarga'
+    ))->setPaper('a4', 'portrait');
+
+    return $pdf->stream('Laporan-Analisis-Konflik-Sosial.pdf');
+}
+
 }

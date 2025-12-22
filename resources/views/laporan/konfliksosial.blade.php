@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -9,42 +8,54 @@
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
             color: #111;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        .header { text-align: center; margin-bottom: 12px; }
-        .title { font-size: 18px; font-weight: bold; margin: 0; text-transform: uppercase; }
-        .subtitle { font-size: 13px; margin: 4px 0 10px; }
+
+        .header {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            margin-top: 4px;
+        }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
+
         th, td {
             border: 1px solid #d1d5db;
             padding: 8px;
             font-size: 12px;
-            vertical-align: top;
         }
+
         th {
             background-color: #f3f4f6;
             text-align: center;
             font-weight: bold;
         }
-        tr:nth-child(even) { background: #fafafa; }
 
-        .summary {
-            border: 1px solid #d1d5db;
-            padding: 10px;
-            background: #f9fafb;
-            border-radius: 5px;
-            margin-bottom: 12px;
+        tr:nth-child(even) {
+            background-color: #fafafa;
         }
 
-        .footer {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #6b7280;
+        .box {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #f9fafb;
+            margin-bottom: 12px;
         }
 
         h3 {
@@ -54,97 +65,136 @@
         }
 
         .rekomendasi {
-            border: 1px solid #d1d5db;
-            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            background-color: #f0fdf4;
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 6px;
             margin-top: 10px;
         }
+
         .rekomendasi h4 {
             margin: 0 0 6px;
             font-size: 13px;
             color: #166534;
         }
-        .rekomendasi ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-        .rekomendasi li {
-            margin-bottom: 4px;
+
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #6b7280;
         }
     </style>
 </head>
 <body>
+
     <div class="header">
         <p class="title">Laporan Analisis Konflik Sosial</p>
-        <p class="subtitle">Periode: {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</p>
-    </div>
-
-    <div class="summary">
-        <p><strong>Total Kasus Konflik Sosial Terdata:</strong> {{ number_format($totalKasus ?? 0) }}</p>
-        <p><strong>Desa dengan Kasus Tertinggi:</strong> 
-            {{ !empty($desaTertinggi) && $desaTertinggi !== '-' ? $desaTertinggi : 'Tidak ada data' }}
+        <p class="subtitle">
+            Periode {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}
         </p>
-        <p><strong>Kategori Risiko:</strong> {{ $kategori ?? 'Tidak Diketahui' }}</p>
     </div>
 
-    <h3>Distribusi Kasus Berdasarkan Jenis Konflik</h3>
+    {{-- RINGKASAN --}}
+    <div class="box">
+        <p><strong>Total Keluarga:</strong>{{ number_format($totalKeluarga) }} KK</p>
+        <p><strong>Total Keluarga Terindikasi Konflik:</strong>{{ number_format($totalKasus) }} KK</p>
+        <p><strong>Kategori Risiko Sosial:</strong>{{ $kategori }}</p>
+    </div>
+
+
+    {{-- TABEL DISTRIBUSI --}}
+    <h3>Distribusi Konflik Sosial Berdasarkan Kategori</h3>
     <table>
         <thead>
             <tr>
                 <th style="width:40px;">No</th>
-                <th>Jenis Konflik</th>
-                <th style="width:100px;">Jumlah Kasus</th>
+                <th>Jenis Konflik Sosial</th>
+                <th style="width:120px;">Jumlah Keluarga</th>
             </tr>
         </thead>
         <tbody>
-            <tr><td align="center">1</td><td>Konflik SARA (1–4)</td><td align="center">{{ $data['konflik_sara'] ?? 0 }}</td></tr>
-            <tr><td align="center">2</td><td>Kekerasan Fisik (5–6,13–14)</td><td align="center">{{ $data['kekerasan_fisik'] ?? 0 }}</td></tr>
-            <tr><td align="center">3</td><td>Kriminalitas (7–9)</td><td align="center">{{ $data['kriminalitas'] ?? 0 }}</td></tr>
-            <tr><td align="center">4</td><td>Penyimpangan Perilaku (10–12)</td><td align="center">{{ $data['penyimpangan_perilaku'] ?? 0 }}</td></tr>
-            <tr><td align="center">5</td><td>Kejahatan Seksual (15–18)</td><td align="center">{{ $data['kejahatan_seksual'] ?? 0 }}</td></tr>
-            <tr><td align="center">6</td><td>Kehamilan Rentan (19–21)</td><td align="center">{{ $data['kehamilan_rentan'] ?? 0 }}</td></tr>
-            <tr><td align="center">7</td><td>Pertengkaran Keluarga (22–26)</td><td align="center">{{ $data['pertengkaran_keluarga'] ?? 0 }}</td></tr>
-            <tr><td align="center">8</td><td>KDRT dan Kekerasan Dalam Rumah Tangga (27–32)</td><td align="center">{{ $data['kdrt'] ?? 0 }}</td></tr>
+            <tr>
+                <td align="center">1</td>
+                <td>Konflik Sosial Berlatar Belakang SARA</td>
+                <td align="center">{{ $data['konflik_sara'] }}</td>
+            </tr>
+            <tr>
+                <td align="center">2</td>
+                <td>Kekerasan Fisik dalam Lingkup Keluarga</td>
+                <td align="center">{{ $data['kekerasan_fisik'] }}</td>
+            </tr>
+            <tr>
+                <td align="center">3</td>
+                <td>Kriminalitas dan Tindak Kejahatan</td>
+                <td align="center">{{ $data['kriminalitas'] }}</td>
+            </tr>
+            <tr>
+                <td align="center">4</td>
+                <td>Penyimpangan Perilaku Sosial (Judi, Miras, Narkoba)</td>
+                <td align="center">{{ $data['penyimpangan_perilaku'] }}</td>
+            </tr>
+            <tr>
+                <td align="center">5</td>
+                <td>Kejahatan Seksual</td>
+                <td align="center">{{ $data['kejahatan_seksual'] }}</td>
+            </tr>
+            <tr>
+                <td align="center">6</td>
+                <td>Kehamilan Rentan & Tidak Sah</td>
+                <td align="center">{{ $data['kehamilan_rentan'] }}</td>
+            </tr>
+            <tr>
+                <td align="center">7</td>
+                <td>Pertengkaran dalam Rumah Tangga</td>
+                <td align="center">{{ $data['pertengkaran_keluarga'] }}</td>
+            </tr>
+            <tr>
+                <td align="center">8</td>
+                <td>KDRT dan Kekerasan Domestik</td>
+                <td align="center">{{ $data['kdrt'] }}</td>
+            </tr>
         </tbody>
     </table>
 
-    <h3>Analisis Interpretatif</h3>
-    <div class="summary">
-        <p>• <strong>Persentase Kekerasan Fisik:</strong> 
-            {{ round((($data['kekerasan_fisik'] ?? 0) / max($totalKasus ?? 1, 1)) * 100, 2) }}%
+    {{-- ANALISIS --}}
+    <h3>Analisis Kondisi Sosial Masyarakat</h3>
+    <div class="box">
+        <p>
+            Berdasarkan hasil pengolahan data, teridentifikasi sebanyak 
+            <strong>{{ $totalKasus }}</strong> keluarga yang mengalami atau berpotensi mengalami
+            konflik sosial. Sebagian besar konflik yang muncul bersifat
+            <em>internal keluarga</em>, seperti pertengkaran rumah tangga dan
+            penyimpangan perilaku.
         </p>
-        <p>• <strong>Persentase Kriminalitas:</strong> 
-            {{ round((($data['kriminalitas'] ?? 0) / max($totalKasus ?? 1, 1)) * 100, 2) }}%
-        </p>
-        <p>• <strong>Persentase Pertengkaran Keluarga & KDRT:</strong> 
-            {{ round(((($data['pertengkaran_keluarga'] ?? 0) + ($data['kdrt'] ?? 0)) / max($totalKasus ?? 1, 1)) * 100, 2) }}%
-        </p>
-        <p>• <strong>Interpretasi Umum:</strong> 
-            @if(($kategori ?? '') === 'Risiko Tinggi')
-                Kondisi sosial desa sangat rawan konflik dan membutuhkan intervensi lintas sektor.
-            @elseif(($kategori ?? '') === 'Risiko Sedang')
-                Diperlukan peningkatan program pembinaan sosial dan patroli keamanan.
-            @else
-                Kondisi relatif aman, tetap lakukan monitoring berkala.
-            @endif
+
+        <p>
+            Tingkat risiko sosial secara umum berada pada kategori
+            <strong>{{ $kategori }}</strong>. Kondisi ini menunjukkan bahwa
+            konflik masih dapat dikendalikan melalui upaya preventif dan
+            pembinaan berkelanjutan oleh pemerintah desa bersama masyarakat.
         </p>
     </div>
 
+    {{-- REKOMENDASI --}}
     <div class="rekomendasi">
-        <h4>Rekomendasi Kebijakan Pemerintah</h4>
+        <h4>Rekomendasi Kebijakan dan Tindak Lanjut</h4>
         <ul>
-            @forelse($rekomendasi ?? [] as $item)
+            @foreach($rekomendasi as $item)
                 <li>{{ $item }}</li>
-            @empty
-                <li>Tidak ada rekomendasi khusus.</li>
-            @endforelse
+            @endforeach
         </ul>
     </div>
 
+    {{-- FOOTER --}}
     <div class="footer">
-        <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Pembangunan Keluarga</strong>.</p>
-        <p><em>Tanggal Cetak:</em> {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+        <p>
+            Laporan ini dihasilkan secara otomatis oleh
+            <strong>Sistem Informasi Ketahanan Keluarga</strong>.
+        </p>
+        <p>
+            Dicetak pada {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
+        </p>
     </div>
+
 </body>
 </html>
