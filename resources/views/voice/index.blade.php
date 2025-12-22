@@ -383,10 +383,20 @@
             let html='';
 
             if(currentModul===3&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">YA</strong> / <strong class="mx-2">TIDAK</strong> / <strong class="mx-2">KOSONG</strong></div>`;
-            if(currentModul===4&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong>"tidak punya"</strong> atau <strong>angka hektar</strong></div>`;
+            if(currentModul===4&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong>"Tidak Memiliki"</strong> atau <strong>angka hektar</strong></div>`;
             if(currentModul===5&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka jumlah ekor, atau "tidak ada"</div>`;
             if(currentModul===6&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka jumlah atau "tidak ada"</div>`;
-            if(currentModul===7&&step===0) html+=`<div class="bg-blue-50 border border-blue-300 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan huruf <strong>a</strong> sampai <strong>f</strong> saja</div>`;
+            if(currentModul===7&&step===0) html+=`<div class="bg-blue-50 border border-blue-300 text-blue-800 p-5 rounded-xl text-center font-medium mb-6 leading-relaxed">
+                <strong class="block mb-2">Jawab dengan angka 1 sampai 6 saja:</strong>
+                <div class="text-sm grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">
+                    <span>1. Milik sendiri (bagus)</span>
+                    <span>2. Milik sendiri (jelek)</span>
+                    <span>3. Milik kelompok (sewa gratis)</span>
+                    <span>4. Milik orang lain (sewa bayar)</span>
+                    <span>5. Milik orang lain (sewa gratis)</span>
+                    <span>6. Tidak memiliki</span>
+                </div>
+            </div>`;
             if(currentModul===8&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">YA</strong> / <strong class="mx-2">TIDAK</strong></div>`;
             if(currentModul===9&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka saja atau "tidak ada"</div>`;
             if(currentModul===10&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2"></strong>ADA <strong class="mx-2">atau</strong> TIDAK ADA</div>`;
@@ -402,7 +412,7 @@
             html+=`<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
 
             if(q.type==="select"){
-                let cols = currentModul===3?2:(currentModul===7?3:(currentModul===8?3:(currentModul===10?2:3)));
+                let cols = currentModul===3?2:(currentModul===8?2:(currentModul===7?3:(currentModul===8?3:(currentModul===10?2:3))));
                 let gridClass = `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto`;
                 html+=`<div class="${gridClass}">`;
                 Object.entries(q.options).forEach(([id,nama])=>{
@@ -435,16 +445,17 @@
 
             const q = questions[currentModul][step];
 
-            // HANYA SEKALI DI AWAL MODUL 7 — JELASKAN PILIHAN a-f
+            // MODUL 7: Jelaskan pilihan 1-6 HANYA SEKALI DI AWAL
             if(currentModul === 7 && step === 0){
-                await speak("Jawab dengan huruf a sampai f sesuai pilihan berikut.");
-                await speak("a. Milik sendiri bagus");
-                await speak("b. Milik sendiri jelek");
-                await speak("c. Milik kelompok");
-                await speak("d. Milik orang lain sewa bayar");
-                await speak("e. Milik orang lain sewa tidak bayar");
-                await speak("f. Tidak memiliki");
-                await new Promise(r=>setTimeout(r, 2500));
+                await speak("Modul Sarpras Kerja dimulai.");
+                await speak("Untuk setiap pertanyaan, jawab dengan angka 1 sampai 6 sesuai pilihan berikut:");
+                await speak("1. Milik sendiri kondisi baik");
+                await speak("2. Milik sendiri kondisi tidak baik");
+                await speak("3. Milik kelompok sewa tidak bayar");
+                await speak("4. Milik orang lain sewa bayar");
+                await speak("5. Milik orang lain sewa tidak bayar");
+                await speak("6. Tidak memiliki");
+                await new Promise(r => setTimeout(r, 4000)); // beri waktu user menghafal
             }
 
             // Hint suara biasa untuk modul lain
@@ -476,6 +487,12 @@
                 .replace(/\//g, ' atau ')
                 .replace(/\&/g, ' dan ')
                 .replace(/SARA/g, 'sara')
+                .replace(/MEUBLER/g, 'meubler')
+                .replace(/TERAPHY/g, 'terapi')
+                .replace(/KONTRUKSI/g, 'konstruksi')
+                .replace(/AKSES/g, 'akses')
+                .replace(/SANITASI/g, 'sanitasi')
+                .replace(/BAB/g, 'b a b')
                 .replace(/HIV\/AIDS/g, 'HIV AIDS')
                 .replace(/\s+/g, ' ')
                 .trim();
@@ -483,7 +500,7 @@
             await speak(pertanyaanDibaca);
 
             // Baca pilihan hanya untuk modul yang butuh (kecuali modul 7, dan skip untuk wilayah datang)
-            if(q.type==="select" && currentModul !== 7 && ![3,8,10,11].includes(currentModul) && !["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].includes(q.field)){
+            if(q.type==="select" && currentModul !== 7 && ![3,8,10,11,7].includes(currentModul) && !["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].includes(q.field)){
                 const opts=Object.values(q.options);
                 for(let i=0;i<opts.length;i++){
                     await speak(`${i+1}. ${cleanOptionText(opts[i])}`);
@@ -533,18 +550,48 @@
                 return;
             }
 
-            if(currentModul === 7){
+            else if(currentModul === 7){
                 const n = normalize(text);
-                const map = {
-                    'a': '2', 'b': '3', 'c': '4', 'd': '5', 'e': '6', 'f': '7',
-                    'satu': '2', 'dua': '3', 'tiga': '4', 'empat': '5', 'lima': '6', 'enam': '7'
-                };
-                const firstChar = n.charAt(0);
-                if(map[firstChar]){
-                    value = map[firstChar];
-                }else{
-                    await speak("Ulangi dengan huruf a sampai f saja");
+                if (n.includes('milik sendiri') && (n.includes('jelek') || n.includes('tidak baik') || n.includes('rusak') || n.includes('buruk') || n.includes('kondisi jelek'))) {
+                    value = '2'; // MILIK SENDIRI (JELEK)
+                }
+                else if (n.includes('milik sendiri') && (n.includes('bagus') || n.includes('baik') || n.includes('kondisi baik') || n.includes('kondisi bagus'))) {
+                    value = '1'; // MILIK SENDIRI (BAGUS)
+                }
+                else if (n.includes('milik sendiri')) {
+                    value = '1';
+                }
+                else if (n.includes('milik kelompok') || (n.includes('kelompok') && n.includes('sewa tidak bayar'))) {
+                    value = '3';
+                }
+                else if (n.includes('milik orang lain') && (n.includes('sewa tidak bayar') || n.includes('gratis') || n.includes('tidak bayar'))) {
+                    value = '5'; // SEWA TIDAK BAYAR dulu, karena lebih spesifik
+                }
+                else if (n.includes('milik orang lain') && (n.includes('sewa bayar') || n.includes('bayar'))) {
+                    value = '4';
+                }
+                else if (n.includes('milik orang lain')) {
+                    value = '4';
+                }
+                else if (n.includes('tidak memiliki') || n.includes('tidak punya') || n.includes('nggak punya') || n.includes('ga punya') || n.includes('kosong') || n.includes('tidak ada')) {
+                    value = '6';
+                }
+                else {
+                    await speak("Maaf, jawaban tidak dikenali. Ulangi dengan lebih jelas, contoh: 'milik sendiri jelek', 'milik orang lain sewa gratis', atau 'tidak memiliki'.");
                     return;
+                }
+
+                // Tampilkan teks jawaban yang lebih informatif di input readonly (jika ada)
+                const jawabanTeks = {
+                    '1': 'Milik sendiri (bagus)',
+                    '2': 'Milik sendiri (jelek)',
+                    '3': 'Milik kelompok (sewa tidak bayar)',
+                    '4': 'Milik orang lain (sewa bayar)',
+                    '5': 'Milik orang lain (sewa tidak bayar)',
+                    '6': 'Tidak memiliki'
+                };
+                if (document.getElementById('inputAnswer')) {
+                    document.getElementById('inputAnswer').value = jawabanTeks[value];
                 }
             }
             // SEMUA LOGIKA LAIN TETAP SAMA
@@ -969,7 +1016,7 @@
                 document.getElementById('loadingText').innerText = `Menyimpan data... ${progress}%`;
             }, 100);
             try{
-                const res=await fetch("{{ route('voice.store-all') }}",{
+                const res=await fetch("{{ route('voice.keluarga.store-all') }}",{
                     method:"POST", headers:{"X-CSRF-TOKEN":token,"Accept":"application/json"}, body:fd
                 });
                 const data=await res.json();
@@ -1036,6 +1083,94 @@
             renderQuestion();
         });
 
+        // ==================== VALIDASI FREKUENSI SUARA (ANTI-MANIPULASI) ====================
+        let voiceFingerprint = null;
+        const FINGERPRINT_KEY = 'voiceFingerprint';
+        const SIMILARITY_THRESHOLD = 0.90; // 90% kemiripan dianggap suara sama
+
+        function generateFingerprintFromDataArray(dataArray) {
+            // Ambil sampel dari 32 bin pertama (suara manusia biasanya di frekuensi rendah-menengah)
+            const sample = dataArray.slice(0, 32);
+            const sum = sample.reduce((a, b) => a + b, 0);
+            const avg = sum / sample.length;
+            const variance = sample.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / sample.length;
+            
+            // Buat string fingerprint sederhana
+            return btoa(String.fromCharCode(...sample)) + '|' + avg.toFixed(2) + '|' + variance.toFixed(2);
+        }
+
+        function compareFingerprints(fp1, fp2) {
+            if (!fp1 || !fp2) return 0;
+            const [hash1, avg1, var1] = fp1.split('|');
+            const [hash2, avg2, var2] = fp2.split('|');
+            
+            const avgDiff = Math.abs(parseFloat(avg1) - parseFloat(avg2));
+            const varDiff = Math.abs(parseFloat(var1) - parseFloat(var2));
+            
+            // Semakin kecil diff, semakin mirip
+            const avgSimilarity = 1 - (avgDiff / 255);
+            const varSimilarity = 1 - (varDiff / 10000);
+            
+            return (avgSimilarity + varSimilarity) / 2;
+        }
+
+        async function validateVoiceUniqueness() {
+            if (!analyser || !dataArray) return true;
+
+            // Ambil 50 frame sampel untuk akurasi
+            const samples = [];
+            for (let i = 0; i < 50; i++) {
+                analyser.getByteFrequencyData(dataArray);
+                samples.push([...dataArray]); // copy array
+                await new Promise(r => setTimeout(r, 50)); // 50ms x 50 = 2.5 detik sampling
+            }
+
+            // Hitung fingerprint dari rata-rata semua sampel
+            const avgSample = new Uint8Array(dataArray.length);
+            for (let i = 0; i < dataArray.length; i++) {
+                avgSample[i] = samples.reduce((sum, arr) => sum + arr[i], 0) / samples.length;
+            }
+
+            voiceFingerprint = generateFingerprintFromDataArray(avgSample);
+
+            const savedFp = localStorage.getItem(FINGERPRINT_KEY);
+            if (savedFp) {
+                const similarity = compareFingerprints(voiceFingerprint, savedFp);
+                if (similarity >= SIMILARITY_THRESHOLD) {
+                    await speak("Peringatan: Suara Anda terdeteksi sudah pernah digunakan untuk pendataan sebelumnya. Manipulasi pendataan tidak diperbolehkan.");
+                    alert("⚠️ DETEKSI SUARA SAMA!\n\nSuara Anda sudah pernah digunakan untuk pendataan di perangkat ini.\nIni dapat dianggap sebagai manipulasi data.\n\nProses dihentikan untuk menjaga integritas pendataan.");
+                    stopListening();
+                    document.getElementById('voice-status').innerText = 'Pendataan dihentikan karena suara terdeteksi sama.';
+                    return false;
+                }
+            }
+
+            // Simpan fingerprint baru (hanya jika lolos validasi)
+            localStorage.setItem(FINGERPRINT_KEY, voiceFingerprint);
+            return true;
+        }
+
+        // Modifikasi speakQuestionAndOptions untuk menjalankan validasi hanya di pertanyaan pertama modul 1
+        const originalSpeakQuestionAndOptions = speakQuestionAndOptions;
+        speakQuestionAndOptions = async function() {
+            const q = questions[currentModul][step];
+
+            // Hanya jalankan validasi di pertanyaan pertama modul 1
+            if (currentModul === 1 && step === 0 && q.field === "no_kk") {
+                document.getElementById('voice-status').innerText = 'Memvalidasi suara Anda... Harap bicara sebentar...';
+                
+                const valid = await validateVoiceUniqueness();
+                if (!valid) {
+                    return; // hentikan proses
+                }
+                
+                document.getElementById('voice-status').innerText = 'Suara valid. Lanjutkan menjawab...';
+                await new Promise(r => setTimeout(r, 1000));
+            }
+
+            // Lanjutkan membaca pertanyaan seperti biasa
+            await originalSpeakQuestionAndOptions();
+        };
         initFresh();
     </script>
 < /x-app-layout>

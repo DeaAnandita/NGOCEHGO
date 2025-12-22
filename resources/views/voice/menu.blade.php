@@ -36,7 +36,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 
                 {{-- 🎧 MENU KELUARGA --}}
-                <a href="{{ route('voice.index') }}"
+                <a href="{{ route('voice.keluarga.index') }}"
                    class="group bg-gradient-to-br from-blue-100 to-blue-50 
                           hover:from-blue-200 hover:to-blue-100 
                           border border-blue-200 p-6 rounded-2xl shadow 
@@ -60,7 +60,7 @@
                 </a>
 
                 {{-- 🎙️ MENU PENDUDUK --}}
-                <a href="{{ route('voice.penduduk') }}"
+                <a href="{{ route('voice.penduduk.index') }}"
                    class="group bg-gradient-to-br from-green-100 to-green-50 
                           hover:from-green-200 hover:to-green-100 
                           border border-green-200 p-6 rounded-2xl shadow 

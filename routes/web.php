@@ -10,7 +10,7 @@ use App\Http\Controllers\{
 };
 use App\Http\Controllers\Voice\{
     VoiceKeluargaController, WilayahController, VoicePrasaranaController, MenuVoiceController, VoiceController,
-    VoicePendudukController
+    VoicePendudukController,VoiceFingerprintController
 };
 use App\Exports\{
     DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,
@@ -20,24 +20,6 @@ use App\Exports\{
     DataAsetTernakExport, DataAsetPerikananExport, DataSarprasKerjaExport, DataBangunKeluargaExport
 };
 
-// ===============================
-// VOICE ROUTES
-// ===============================
-// Voice Keluarga (Admin Area)
-Route::get('/admin/voice', [VoiceKeluargaController::class, 'index'])->name('voice.menu');
-Route::prefix('admin/voice')->name('voice.')->group(function () {
-    Route::get('/', [MenuVoiceController::class, 'index'])->name('menu');
-    Route::get('/keluarga', [VoiceKeluargaController::class, 'index'])->name('index');
-    Route::post('/store-all', [VoiceKeluargaController::class, 'storeAll'])->name('store-all');
-});
-
-// Voice Penduduk (Admin Area)
-Route::get('/admin/voice', [VoicePendudukController::class, 'index'])->name('voice.menu');
-Route::prefix('admin/voice')->name('voice.')->group(function () {
-    Route::get('/', [MenuVoiceController::class, 'index'])->name('menu');
-    Route::get('/penduduk', [VoicePendudukController::class, 'index'])->name('penduduk');
-    Route::post('/store-all', [VoicePendudukController::class, 'storeAll'])->name('store-all');
-});
 
 // AJAX Wilayah (untuk keluarga)
 Route::get('/get-kabupaten/{kdprovinsi}', [VoiceKeluargaController::class, 'getKabupaten']);
@@ -49,6 +31,38 @@ Route::get('/voice/get-kabupaten/{kdprovinsi}', [VoicePendudukController::class,
 Route::get('/voice/get-kecamatan/{kdkabupaten}', [VoicePendudukController::class, 'getKecamatan']);
 Route::get('/voice/get-desa/{kdkecamatan}', [VoicePendudukController::class, 'getDesa']);
    
+// ===============================
+// VOICE ROUTES
+// ===============================
+Route::prefix('admin/voice')->name('voice.')->middleware('auth')->group(function () {
+
+    // Menu utama
+    Route::get('/', [MenuVoiceController::class, 'index'])->name('menu');
+
+    // -----------------------------
+    // Voice Keluarga
+    // -----------------------------
+    Route::get('/keluarga', [VoiceKeluargaController::class, 'index'])->name('keluarga.index');
+    Route::post('/check-voice-duplicate', [VoiceFingerprintController::class, 'checkDuplicate']);
+    Route::post('/keluarga/store-all', [VoiceKeluargaController::class, 'storeAll'])
+        ->name('keluarga.store-all'); // ← ROUTE KHUSUS KELUARGA
+
+    // -----------------------------
+    // Voice Penduduk
+    // -----------------------------
+    Route::get('/penduduk', [VoicePendudukController::class, 'index'])->name('penduduk.index');
+    Route::post('/penduduk/store-all', [VoicePendudukController::class, 'storeAll'])
+        ->name('penduduk.store-all'); // ← ROUTE KHUSUS PENDUDUK
+
+    // AJAX Wilayah (bisa dipakai bersama)
+    Route::get('/get-kabupaten/{kdprovinsi}', [VoiceKeluargaController::class, 'getKabupaten']);
+    Route::get('/get-kecamatan/{kdkabupaten}', [VoiceKeluargaController::class, 'getKecamatan']);
+    Route::get('/get-desa/{kdkecamatan}', [VoiceKeluargaController::class, 'getDesa']);
+
+    Route::get('/penduduk/get-kabupaten/{kdprovinsi}', [VoicePendudukController::class, 'getKabupaten']);
+    Route::get('/penduduk/get-kecamatan/{kdkabupaten}', [VoicePendudukController::class, 'getKecamatan']);
+    Route::get('/penduduk/get-desa/{kdkecamatan}', [VoicePendudukController::class, 'getDesa']);
+});
 
 // ===============================
 // HALAMAN AWAL
@@ -115,6 +129,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     // Routes untuk Keluarga
     Route::resource('keluarga', KeluargaController::class)->except(['show'])->names('dasar-keluarga');
+    // AJAX Wilayah (bisa dipakai bersama)
+    Route::get('/get-kabupaten/{kdprovinsi}', [KeluargaController::class, 'getKabupaten']);
+    Route::get('/get-kecamatan/{kdkabupaten}', [KeluargaController::class, 'getKecamatan']);
+    Route::get('/get-desa/{kdkecamatan}', [KeluargaController::class, 'getDesa']);
 
     // Kelompok route berdasarkan kategori
     $keluargaControllers = [

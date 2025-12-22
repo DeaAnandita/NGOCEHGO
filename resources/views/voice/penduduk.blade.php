@@ -1527,7 +1527,7 @@ function mapPendapatanToCode(pendapatan) {
                 document.getElementById('loadingText').innerText = `Menyimpan data... ${progress}%`;
             }, 100);
             try{
-                const res=await fetch("{{ route('voice.store-all') }}",{
+                const res=await fetch("{{ route('voice.penduduk.store-all') }}",{
                     method:"POST",
                     headers:{"X-CSRF-TOKEN":token,"Accept":"application/json"},
                     body:fd

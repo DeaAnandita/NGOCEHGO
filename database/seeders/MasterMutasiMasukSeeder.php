@@ -17,9 +17,10 @@ class MasterMutasiMasukSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         
         DB::table('master_mutasimasuk')->insert([
-            ['kdmutasimasuk' => 1, 'mutasimasuk' => 'TETAP'],
+            ['kdmutasimasuk' => 1, 'mutasimasuk' => 'MUTASI TETAP'],
             ['kdmutasimasuk' => 2, 'mutasimasuk' => 'MUTASI LAHIR'],
             ['kdmutasimasuk' => 3, 'mutasimasuk' => 'MUTASI DATANG'],
+            ['kdmutasimasuk' => 4, 'mutasimasuk' => 'MUTASI KELUAR'],
         ]);
     }
 }

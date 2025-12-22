@@ -48,7 +48,7 @@
                             Data Keluarga
                         </h4>
                         <p class="text-gray-600 text-sm mt-2">
-                            Tabel lengkap berdasarkan Nomor Kartu Keluarga (NO_KK).
+                            Tabel lengkap berdasarkan Nomor Kartu Keluarga (NO KK).
                         </p>
                         <button class="mt-4 w-full bg-blue-600 text-white font-medium py-2.5 rounded-lg 
                                       hover:bg-blue-700 transition text-sm">

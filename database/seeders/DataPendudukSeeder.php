@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Faker\Factory as Faker;
 
 class DataPendudukSeeder extends Seeder
@@ -77,24 +76,31 @@ class DataPendudukSeeder extends Seeder
 
                 $dusunNama = $this->dusunList[array_rand($this->dusunList)];
                 $kddusunId = $this->dusunMap[$dusunNama];
-                $rw = str_pad(rand(1, 12), 2, '0', STR_PAD_LEFT);
+                $rw = str_pad(rand(1, 12), 3, '0', STR_PAD_LEFT);
                 $rt = str_pad(rand(1, 15), 3, '0', STR_PAD_LEFT);
 
-                // Mutasi masuk: 70% lahir, 20% tetap, 10% datang dari luar
+                // Distribusi mutasi sesuai 4 jenis
+                // 70% MUTASI LAHIR (kd = 2)
+                // 20% MUTASI TETAP (kd = 1)
+                // 8% MUTASI DATANG (kd = 3)
+                // 2% MUTASI KELUAR (kd = 4) — tetap dianggap ada di KK untuk data historis
                 $randMutasi = rand(1, 100);
                 if ($randMutasi <= 70) {
-                    $kdmutasimasuk = 2; // Lahir
+                    $kdmutasimasuk = 2; // MUTASI LAHIR
                     $provinsiAsal = $kabupatenAsal = $kecamatanAsal = $desaAsal = null;
                 } elseif ($randMutasi <= 90) {
-                    $kdmutasimasuk = 1; // Tetap / pindah dalam wilayah
+                    $kdmutasimasuk = 1; // MUTASI TETAP
                     $provinsiAsal = $kabupatenAsal = $kecamatanAsal = $desaAsal = null;
-                } else {
-                    $kdmutasimasuk = 3; // Datang dari luar
+                } elseif ($randMutasi <= 98) {
+                    $kdmutasimasuk = 3; // MUTASI DATANG
                     $luar = $wilayahLuar[array_rand($wilayahLuar)];
                     $provinsiAsal = $luar['prov'];
                     $kabupatenAsal = $luar['kab'];
                     $kecamatanAsal = $luar['kec'];
                     $desaAsal = $luar['desa'];
+                } else {
+                    $kdmutasimasuk = 4; // MUTASI KELUAR (tetap ada di KK untuk data)
+                    $provinsiAsal = $kabupatenAsal = $kecamatanAsal = $desaAsal = null;
                 }
 
                 $isKKLaki = rand(1, 100) <= 78;

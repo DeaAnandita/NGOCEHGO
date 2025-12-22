@@ -68,15 +68,23 @@ class KeluargaController extends Controller
 
     public function edit($id)
     {
-        $keluarga  = DataKeluarga::findOrFail($id);
-        $mutasis   = MasterMutasiMasuk::select('kdmutasimasuk', 'mutasimasuk')->get();
-        $dusuns    = MasterDusun::select('kddusun', 'dusun')->get();
-        $provinsis = MasterProvinsi::select('kdprovinsi', 'provinsi')->orderBy('provinsi')->get();
+        $keluarga = DataKeluarga::findOrFail($id);
+        $mutasis = MasterMutasiMasuk::all();
+        $dusuns = MasterDusun::all();
+        $provinsis = MasterProvinsi::orderBy('provinsi')->get();
 
-        // Tambahkan ini 3 baris
-        $kabupatens = $keluarga->kdprovinsi ? MasterKabupaten::where('kdprovinsi', $keluarga->kdprovinsi)->orderBy('kabupaten')->get() : collect();
-        $kecamatans = $keluarga->kdkabupaten ? MasterKecamatan::where('kdkabupaten', $keluarga->kdkabupaten)->orderBy('kecamatan')->get() : collect();
-        $desas      = $keluarga->kdkecamatan ? MasterDesa::where('kdkecamatan', $keluarga->kdkecamatan)->orderBy('desa')->get() : collect();
+        // Load data wilayah asal untuk edit
+        $kabupatens = $keluarga->kdprovinsi 
+            ? \DB::table('master_kabupaten')->where('kdprovinsi', $keluarga->kdprovinsi)->orderBy('kabupaten')->get(['kdkabupaten', 'kabupaten'])
+            : collect();
+
+        $kecamatans = $keluarga->kdkabupaten 
+            ? \DB::table('master_kecamatan')->where('kdkabupaten', $keluarga->kdkabupaten)->orderBy('kecamatan')->get(['kdkecamatan', 'kecamatan'])
+            : collect();
+
+        $desas = $keluarga->kdkecamatan 
+            ? \DB::table('master_desa')->where('kdkecamatan', $keluarga->kdkecamatan)->orderBy('desa')->get(['kddesa', 'desa'])
+            : collect();
 
         return view('keluarga.edit', compact('keluarga', 'mutasis', 'dusuns', 'provinsis', 'kabupatens', 'kecamatans', 'desas'));
     }
@@ -114,32 +122,32 @@ class KeluargaController extends Controller
         return redirect()->route('dasar-keluarga.index')
             ->with('success', 'Data keluarga berhasil dihapus.');
     }
-    public function kabupaten($kdprovinsi)
+    public function getKabupaten($kdprovinsi)
     {
-        $kabupatens = MasterKabupaten::where('kdprovinsi', $kdprovinsi)
-            ->select('kdkabupaten', 'kabupaten')
+        $kabupatens = \DB::table('master_kabupaten')
+            ->where('kdprovinsi', $kdprovinsi)
             ->orderBy('kabupaten')
-            ->get();
+            ->get(['kdkabupaten', 'kabupaten']); // ambil sebagai collection of objects
 
         return response()->json($kabupatens);
     }
 
-    public function kecamatan($kdkabupaten)
+    public function getKecamatan($kdkabupaten)
     {
-        $kecamatans = MasterKecamatan::where('kdkabupaten', $kdkabupaten)
-            ->select('kdkecamatan', 'kecamatan')
+        $kecamatans = \DB::table('master_kecamatan')
+            ->where('kdkabupaten', $kdkabupaten)
             ->orderBy('kecamatan')
-            ->get();
+            ->get(['kdkecamatan', 'kecamatan']);
 
         return response()->json($kecamatans);
     }
 
-    public function desa($kdkecamatan)
+    public function getDesa($kdkecamatan)
     {
-        $desas = MasterDesa::where('kdkecamatan', $kdkecamatan)
-            ->select('kddesa', 'desa')
+        $desas = \DB::table('master_desa')
+            ->where('kdkecamatan', $kdkecamatan)
             ->orderBy('desa')
-            ->get();
+            ->get(['kddesa', 'desa']);
 
         return response()->json($desas);
     }

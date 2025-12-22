@@ -53,6 +53,8 @@ use App\Models\MasterKualitasIbuHamil;
 use App\Models\MasterJawabKualitasIbuHamil;
 use App\Models\MasterKualitasBayi;
 use App\Models\MasterJawabKualitasBayi;
+use App\Models\VoiceFingerprint; 
+use App\Http\Controllers\Voice\VoiceFingerprintController;
 use Illuminate\Support\Facades\DB;
 
 class VoiceKeluargaController extends Controller
@@ -148,7 +150,7 @@ class VoiceKeluargaController extends Controller
             $data = $request->all();
 
             // Mulai transaksi
-            return DB::transaction(function () use ($data) {
+            return DB::transaction(function () use ($data, $request) {
                 // Simpan Data Keluarga
                 $keluarga = DataKeluarga::create([
                     'no_kk' => $data['no_kk'],
@@ -271,7 +273,32 @@ class VoiceKeluargaController extends Controller
                 }
                 DataKualitasBayi::create($kualitasBayiData);
 
+                // ==================== SIMPAN VOICE FINGERPRINT ====================
+                if ($request->has('voice_fingerprint')) {
+                    $fingerprint = json_decode($request->voice_fingerprint, true);
+                    
+                    // Validasi fingerprint valid (array dengan minimal 20 elemen numeric)
+                    if (is_array($fingerprint) && count($fingerprint) >= 20) {
+                        VoiceFingerprint::create([
+                            'keluarga_id' => $keluarga->id,  // Foreign key ke DataKeluarga
+                            'fingerprint' => $fingerprint    // JSON array otomatis di-cast oleh model
+                        ]);
+                        
+                        \Log::info('Voice fingerprint tersimpan', [
+                            'no_kk' => $keluarga->no_kk,
+                            'keluarga_id' => $keluarga->id,
+                            'fingerprint_length' => count($fingerprint)
+                        ]);
+                    } else {
+                        \Log::warning('Voice fingerprint invalid', [
+                            'no_kk' => $keluarga->no_kk,
+                            'fingerprint' => $fingerprint
+                        ]);
+                    }
+                }
+
                 return response()->json(['success' => true, 'message' => 'Data berhasil disimpan']);
+
             });
         } catch (\Illuminate\Validation\ValidationException $e) {
             $errors = [];
