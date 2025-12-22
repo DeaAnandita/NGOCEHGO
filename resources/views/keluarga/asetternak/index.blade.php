@@ -91,7 +91,7 @@
                                     <th class="border border-gray-200 px-4 py-3 text-left">No</th>
                                     <th class="border border-gray-200 px-4 py-3 w-36 text-left">No KK</th>
                                     <th class="border border-gray-200 px-4 py-3 w-44 text-left">Kepala Keluarga</th>
-                                    @for ($i = 1; $i <= 24; $i++)
+                                    @for ($i = 1; $i <= 15; $i++)
                                         <th class="border border-gray-200 px-4 py-3 w-[100px] text-left">
                                             <span title="{{ $masterAset[$i] ?? '' }}">
                                                 {{ Str::limit(Str::replace('Jumlah ', '', $masterAset[$i] ?? ''), 20) }}
@@ -107,7 +107,7 @@
                                         <td class="border border-gray-200 px-4 py-3">{{ $asetternaks->firstItem() + $loop->index }}</td>
                                         <td class="border border-gray-200 px-4 py-2 truncate">{{ $aset->no_kk }}</td>
                                         <td class="border border-gray-200 px-4 py-2 truncate">{{ $aset->keluarga->keluarga_kepalakeluarga ?? '-' }}</td>
-                                        @for ($i = 1; $i <= 24; $i++)
+                                        @for ($i = 1; $i <= 15; $i++)
                                             <td class="border border-gray-200 px-2 py-2 text-left truncate">
                                                 {{ $aset->{"asetternak_$i"} ?? 0 }} ekor
                                             </td>

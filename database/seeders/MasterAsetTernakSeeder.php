@@ -30,15 +30,7 @@ class MasterAsetTernakSeeder extends Seeder
             ['kdasetternak' => 13, 'asetternak' => 'BURUNG WALET'],
             ['kdasetternak' => 14, 'asetternak' => 'ANJING'],
             ['kdasetternak' => 15, 'asetternak' => 'KUCING'],
-            ['kdasetternak' => 16, 'asetternak' => 'ULAR COBRA'],
-            ['kdasetternak' => 17, 'asetternak' => 'BURUNG ONTA'],
-            ['kdasetternak' => 18, 'asetternak' => 'ULAR PYTHON'],
-            ['kdasetternak' => 19, 'asetternak' => 'BURUNG CENDRAWASIH'],
-            ['kdasetternak' => 20, 'asetternak' => 'BURUNG KAKATUA'],
-            ['kdasetternak' => 21, 'asetternak' => 'BURUNG BEO'],
-            ['kdasetternak' => 22, 'asetternak' => 'BURUNG MERAK'],
-            ['kdasetternak' => 23, 'asetternak' => 'BURUNG LANGKA LAINYA'],
-            ['kdasetternak' => 24, 'asetternak' => 'BUAYA'],
+            
         ]);
     }
 }

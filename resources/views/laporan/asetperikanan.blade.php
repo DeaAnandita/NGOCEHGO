@@ -11,143 +11,105 @@
             line-height: 1.5;
         }
         .header { text-align: center; margin-bottom: 12px; }
-        .title { font-size: 18px; font-weight: bold; margin: 0; text-transform: uppercase; }
-        .subtitle { font-size: 13px; margin: 4px 0 10px; }
+        .title { font-size: 18px; font-weight: bold; text-transform: uppercase; }
+        .subtitle { font-size: 13px; margin-top: 4px; }
+
+        .summary {
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
+
         th, td {
             border: 1px solid #d1d5db;
             padding: 8px;
             font-size: 12px;
-            vertical-align: top;
         }
-        th {
-            background-color: #f3f4f6;
-            text-align: center;
-            font-weight: bold;
-        }
-        tr:nth-child(even) { background: #fafafa; }
 
-        .summary {
+        th { background: #f3f4f6; text-align: center; }
+
+        h3 { font-size: 13px; margin-top: 16px; }
+
+        .analysis {
             border: 1px solid #d1d5db;
-            background: #f9fafb;
+            background: #f0f9ff;
             padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
         }
+
+        .rekomendasi {
+            border: 1px solid #d1d5db;
+            background: #f0fdf4;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
         .footer {
             margin-top: 20px;
             font-size: 11px;
             color: #6b7280;
         }
-        h3 {
-            font-size: 13px;
-            margin-top: 16px;
-            margin-bottom: 6px;
-        }
-        .analysis {
-            border: 1px solid #d1d5db;
-            background: #f0f9ff;
-            padding: 10px;
-            border-radius: 6px;
-        }
-        .rekomendasi {
-            border: 1px solid #d1d5db;
-            background: #f0fdf4;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-        .rekomendasi h4 {
-            margin: 0 0 6px;
-            font-size: 13px;
-            color: #166534;
-        }
-        .rekomendasi ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-        .rekomendasi li {
-            margin-bottom: 4px;
-        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <p class="title">Laporan Analisis Aset Perikanan</p>
-        <p class="subtitle">Periode: {{ $periode }}</p>
-    </div>
 
-    <div class="summary">
-        <p><strong>Total Keluarga Terdata:</strong> {{ number_format($totalKeluarga) }}</p>
-        <p><strong>Skor Kepemilikan Aset Rata-rata:</strong> {{ number_format($skorRataRata, 2) }} / 100</p>
-        <p><strong>Kategori Keluarga Dominan:</strong> {{ $dominan }}</p>
-        <p><strong>Distribusi Kategori:</strong> 
-            Tinggi {{ $persenTinggi }}%, Sedang {{ $persenSedang }}%, Rendah {{ $persenRendah }}%
-        </p>
-    </div>
+<div class="header">
+    <div class="title">Laporan Analisis Aset Perikanan</div>
+    <div class="subtitle">Periode {{ $periode }}</div>
+</div>
 
-    <h3>Rata-rata Kepemilikan Aset Perikanan</h3>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 40px;">No</th>
-                <th>Jenis Aset Perikanan</th>
-                <th style="width: 140px;">Nilai Rata-rata</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($indikator as $index => $item)
-                <tr>
-                    <td align="center">{{ $index + 1 }}</td>
-                    <td>{{ $item['nama'] }}</td>
-                    <td align="center">{{ number_format($item['nilai'], 2) }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+<div class="summary">
+    <p><strong>Total Keluarga Terdata:</strong> {{ $totalKeluarga }}</p>
+    <p><strong>Keluarga Memiliki Aset Perikanan:</strong> {{ $keluargaPunyaPerikanan }}</p>
+    <p><strong>Keluarga Tanpa Aset Perikanan:</strong> {{ $keluargaTanpaPerikanan }}</p>
+</div>
 
-    <h3>Analisis Interpretatif</h3>
-    <div class="analysis">
-        <p>• <strong>Kondisi Umum:</strong> {{ $interpretasi }}</p>
+<h3>Distribusi Kepemilikan Aset Perikanan</h3>
+<table>
+    <thead>
+        <tr>
+            <th style="width:40px">No</th>
+            <th>Jenis Aset Perikanan</th>
+            <th style="width:150px">Jumlah Keluarga</th>
+            <th style="width:120px">Total Aset</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($indikator as $index => $item)
+        <tr>
+            <td align="center">{{ $index + 1 }}</td>
+            <td>{{ $item['nama'] }}</td>
+            <td align="center">{{ $item['jumlah_keluarga'] }}</td>
+            <td align="center">{{ $item['total_perikanan'] }}</td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
 
-        <p>• <strong>Distribusi Aset:</strong>
-            @if($persenTinggi > 60)
-                Kepemilikan aset perikanan tergolong sangat merata di kalangan keluarga nelayan.
-            @elseif($persenSedang > 50)
-                Distribusi aset cukup seimbang antar keluarga.
-            @else
-                Sebagian besar keluarga masih memiliki aset terbatas.
-            @endif
-        </p>
+<h3>Analisis Interpretatif</h3>
+<div class="analysis">
+    <p>{{ $interpretasi }}</p>
+</div>
 
-        <p>• <strong>Potensi Ekonomi:</strong>
-            @if($dominan === 'Tinggi')
-                Desa berpotensi menjadi sentra ekonomi berbasis perikanan produktif.
-            @elseif($dominan === 'Sedang')
-                Cukup potensial dikembangkan melalui pelatihan dan modernisasi alat tangkap.
-            @else
-                Perlu intervensi program bantuan dan pembinaan nelayan kecil.
-            @endif
-        </p>
-    </div>
+<div class="rekomendasi">
+    <h3>Rekomendasi Kebijakan Pemerintah Desa</h3>
+    <ul>
+        @foreach($rekomendasi as $item)
+            <li>{{ $item }}</li>
+        @endforeach
+    </ul>
+</div>
 
-    <div class="rekomendasi">
-        <h4>Rekomendasi Kebijakan Pemerintah</h4>
-        <ul>
-            @foreach($rekomendasi as $item)
-                <li>{{ $item }}</li>
-            @endforeach
-        </ul>
-    </div>
+<div class="footer">
+    <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Informasi Desa Kaliwungu</strong>.</p>
+    <p><em>Tanggal Cetak:</em> {{ $tanggal }}</p>
+</div>
 
-    <div class="footer">
-        <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Informasi Desa Kaliwungu</strong>.</p>
-        <p><em>Tanggal Cetak:</em> {{ $tanggal }}</p>
-    </div>
 </body>
 </html>

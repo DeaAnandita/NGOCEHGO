@@ -12,9 +12,7 @@ use Carbon\Carbon;
 
 class AsetPerikananController extends Controller
 {
-    /** 
-     * 🟢 INDEX - Menampilkan daftar aset perikanan 
-     */
+    /** 🟢 INDEX */
     public function index(Request $request)
     {
         $search  = $request->input('search');
@@ -33,23 +31,24 @@ class AsetPerikananController extends Controller
 
         $masterAset = MasterAsetPerikanan::pluck('asetperikanan', 'kdasetperikanan')->toArray();
 
-        return view('keluarga.asetperikanan.index', compact('asetperikanans', 'masterAset', 'search', 'perPage'));
+        return view('keluarga.asetperikanan.index', compact(
+            'asetperikanans',
+            'masterAset',
+            'search',
+            'perPage'
+        ));
     }
 
-    /** 
-     * 🟢 CREATE - Form tambah data baru 
-     */
+    /** 🟢 CREATE */
     public function create()
     {
-        $keluargas  = DataKeluarga::all();
-        $masterAset = MasterAsetPerikanan::all();
-
-        return view('keluarga.asetperikanan.create', compact('keluargas', 'masterAset'));
+        return view('keluarga.asetperikanan.create', [
+            'keluargas' => DataKeluarga::all(),
+            'masterAset' => MasterAsetPerikanan::all()
+        ]);
     }
 
-    /** 
-     * 🟢 STORE - Simpan data baru 
-     */
+    /** 🟢 STORE */
     public function store(Request $request)
     {
         $request->validate([
@@ -67,21 +66,17 @@ class AsetPerikananController extends Controller
             ->with('success', 'Data aset perikanan berhasil ditambahkan.');
     }
 
-    /** 
-     * 🟢 EDIT - Form ubah data 
-     */
+    /** 🟢 EDIT */
     public function edit($no_kk)
     {
-        $asetperikanan = DataAsetPerikanan::where('no_kk', $no_kk)->firstOrFail();
-        $keluargas     = DataKeluarga::all();
-        $masterAset    = MasterAsetPerikanan::all();
-
-        return view('keluarga.asetperikanan.edit', compact('asetperikanan', 'keluargas', 'masterAset'));
+        return view('keluarga.asetperikanan.edit', [
+            'asetperikanan' => DataAsetPerikanan::where('no_kk', $no_kk)->firstOrFail(),
+            'keluargas' => DataKeluarga::all(),
+            'masterAset' => MasterAsetPerikanan::all(),
+        ]);
     }
 
-    /** 
-     * 🟢 UPDATE - Simpan perubahan data 
-     */
+    /** 🟢 UPDATE */
     public function update(Request $request, $no_kk)
     {
         $request->validate([
@@ -101,103 +96,69 @@ class AsetPerikananController extends Controller
             ->with('success', 'Data aset perikanan berhasil diperbarui.');
     }
 
-    /** 
-     * 🟢 DESTROY - Hapus data 
-     */
+    /** 🟢 DESTROY */
     public function destroy($no_kk)
     {
-        $asetperikanan = DataAsetPerikanan::where('no_kk', $no_kk)->firstOrFail();
-        $asetperikanan->delete();
+        DataAsetPerikanan::where('no_kk', $no_kk)->firstOrFail()->delete();
 
         return redirect()->route('keluarga.asetperikanan.index')
             ->with('success', 'Data aset perikanan berhasil dihapus.');
     }
 
-    /** 
-     * 🧾 EXPORT PDF - Laporan Analisis Aset Perikanan (Format Laporan Sejahtera)
-     */
+    /** 🧾 EXPORT PDF (SAMA DENGAN ASET TERNAK) */
     public function exportPdf()
     {
         $data = DataAsetPerikanan::all();
         $totalKeluarga = $data->count();
 
         if ($totalKeluarga === 0) {
-            return back()->with('error', 'Tidak ada data aset perikanan untuk dianalisis.');
+            return back()->with('error', 'Tidak ada data aset perikanan.');
         }
 
-        // 🔹 Hitung skor per keluarga
-        $skorTotal = [];
-        foreach ($data as $row) {
-            $skor = 0;
+        $keluargaPunyaPerikanan = $data->filter(function ($row) {
             for ($i = 1; $i <= 6; $i++) {
-                $skor += (int) $row->{"asetperikanan_$i"};
+                if ($row->{"asetperikanan_$i"} > 0) return true;
             }
-            $skorTotal[] = $skor;
-        }
+            return false;
+        })->count();
 
-        $skorRataRata = round(array_sum($skorTotal) / $totalKeluarga, 2);
+        $keluargaTanpaPerikanan = $totalKeluarga - $keluargaPunyaPerikanan;
 
-        // 🔹 Kategori kesejahteraan aset
-        $rendah = $sedang = $tinggi = 0;
-        foreach ($skorTotal as $skor) {
-            if ($skor >= 15) $tinggi++;
-            elseif ($skor >= 8) $sedang++;
-            else $rendah++;
-        }
-
-        $persenRendah = round(($rendah / $totalKeluarga) * 100, 1);
-        $persenSedang = round(($sedang / $totalKeluarga) * 100, 1);
-        $persenTinggi = round(($tinggi / $totalKeluarga) * 100, 1);
-
-        // 🔹 Tentukan kategori dominan
-        $kategori = ['Rendah' => $rendah, 'Sedang' => $sedang, 'Tinggi' => $tinggi];
-        arsort($kategori);
-        $dominan = array_key_first($kategori);
-
-        // 🔹 Total rata-rata tiap jenis aset
         $master = MasterAsetPerikanan::pluck('asetperikanan', 'kdasetperikanan')->toArray();
         $indikator = [];
+
         foreach ($master as $kode => $nama) {
-            $rata = round($data->avg("asetperikanan_$kode"), 2);
             $indikator[] = [
                 'kode' => $kode,
                 'nama' => Str::replaceFirst('Jumlah ', '', $nama),
-                'nilai' => $rata,
+                'jumlah_keluarga' => DataAsetPerikanan::where("asetperikanan_$kode", '>', 0)->count(),
+                'total_perikanan' => DataAsetPerikanan::sum("asetperikanan_$kode"),
             ];
         }
 
-        // 🔹 Analisis ringkas
-        $interpretasi = match ($dominan) {
-            'Tinggi' => 'Sebagian besar keluarga memiliki aset perikanan produktif dalam jumlah besar.',
-            'Sedang' => 'Kepemilikan aset tergolong cukup, namun perlu peningkatan kapasitas produksi.',
-            default  => 'Kepemilikan aset rendah, masyarakat masih rentan dalam sektor perikanan.',
-        };
+        $interpretasi =
+            $keluargaTanpaPerikanan > $totalKeluarga * 0.6
+                ? 'Mayoritas keluarga belum memiliki aset perikanan produktif.'
+                : ($keluargaPunyaPerikanan > $totalKeluarga * 0.6
+                    ? 'Sebagian besar keluarga telah memanfaatkan aset perikanan.'
+                    : 'Kepemilikan aset perikanan belum merata.');
 
         $rekomendasi = [
-            'Pelatihan teknis budidaya dan tangkap ikan bagi keluarga nelayan kecil.',
-            'Bantuan sarana perikanan (keramba, jaring, alat tangkap modern) bagi kelompok rendah.',
-            'Pembentukan koperasi nelayan untuk memperkuat akses pasar dan modal.',
-            'Pendataan aset perikanan secara berkala untuk pemantauan potensi desa.',
+            'Pemberian bantuan sarana perikanan bagi keluarga tanpa aset.',
+            'Pengembangan usaha perikanan rumah tangga.',
+            'Pelatihan budidaya dan penangkapan ikan.',
+            'Pendataan aset perikanan terintegrasi.'
         ];
 
-        // 🔹 Generate PDF
-        $pdf = Pdf::loadView('laporan.asetperikanan', [
-            'periode'        => Carbon::now()->translatedFormat('F Y'),
-            'tanggal'        => Carbon::now()->translatedFormat('d F Y'),
-            'totalKeluarga'  => $totalKeluarga,
-            'skorRataRata'   => $skorRataRata,
-            'rendah'         => $rendah,
-            'sedang'         => $sedang,
-            'tinggi'         => $tinggi,
-            'persenRendah'   => $persenRendah,
-            'persenSedang'   => $persenSedang,
-            'persenTinggi'   => $persenTinggi,
-            'dominan'        => $dominan,
-            'indikator'      => $indikator,
-            'interpretasi'   => $interpretasi,
-            'rekomendasi'    => $rekomendasi,
-        ])->setPaper('a4', 'portrait');
-
-        return $pdf->stream('Laporan-Analisis-Aset-Perikanan.pdf');
+        return Pdf::loadView('laporan.asetperikanan', [
+            'periode' => Carbon::now()->translatedFormat('F Y'),
+            'tanggal' => Carbon::now()->translatedFormat('d F Y'),
+            'totalKeluarga' => $totalKeluarga,
+            'keluargaPunyaPerikanan' => $keluargaPunyaPerikanan,
+            'keluargaTanpaPerikanan' => $keluargaTanpaPerikanan,
+            'indikator' => $indikator,
+            'interpretasi' => $interpretasi,
+            'rekomendasi' => $rekomendasi,
+        ])->setPaper('a4')->stream('Laporan-Aset-Perikanan.pdf');
     }
 }
