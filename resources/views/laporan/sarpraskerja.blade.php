@@ -10,9 +10,20 @@
             color: #111;
             line-height: 1.5;
         }
-        .header { text-align: center; margin-bottom: 12px; }
-        .title { font-size: 18px; font-weight: bold; margin: 0; text-transform: uppercase; }
-        .subtitle { font-size: 13px; margin: 4px 0 10px; }
+        .header {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .subtitle {
+            font-size: 13px;
+            margin-top: 6px;
+        }
 
         table {
             width: 100%;
@@ -30,37 +41,37 @@
             text-align: center;
             font-weight: bold;
         }
-        tr:nth-child(even) { background: #fafafa; }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
 
         .summary {
             border: 1px solid #d1d5db;
-            background: #f9fafb;
+            background-color: #f9fafb;
             padding: 10px;
             border-radius: 6px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
-        .footer {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #6b7280;
-        }
+
         h3 {
             font-size: 13px;
-            margin-top: 16px;
+            margin-top: 18px;
             margin-bottom: 6px;
         }
+
         .analysis {
             border: 1px solid #d1d5db;
-            background: #f0f9ff;
+            background-color: #f0f9ff;
             padding: 10px;
             border-radius: 6px;
         }
+
         .rekomendasi {
             border: 1px solid #d1d5db;
-            background: #f0fdf4;
+            background-color: #f0fdf4;
             padding: 10px;
             border-radius: 6px;
-            margin-top: 10px;
+            margin-top: 12px;
         }
         .rekomendasi h4 {
             margin: 0 0 6px;
@@ -74,30 +85,47 @@
         .rekomendasi li {
             margin-bottom: 4px;
         }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #6b7280;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+
+    {{-- ================= HEADER ================= --}}
     <div class="header">
         <p class="title">Laporan Analisis Sarana dan Prasarana Kerja</p>
-        <p class="subtitle">Periode: {{ $periode }}</p>
-    </div>
-
-    <div class="summary">
-        <p><strong>Total Keluarga Terdata:</strong> {{ number_format($totalKeluarga) }}</p>
-        <p><strong>Skor Ketersediaan Sarpras Rata-rata:</strong> {{ number_format($skorRataRata, 2) }} / 100</p>
-        <p><strong>Kategori Keluarga Dominan:</strong> {{ $dominan }}</p>
-        <p><strong>Distribusi Kategori:</strong> 
-            Tinggi {{ $persenTinggi }}%, Sedang {{ $persenSedang }}%, Rendah {{ $persenRendah }}%
+        <p class="subtitle">
+            Periode {{ $periode }}
         </p>
     </div>
 
-    <h3>Rata-rata Ketersediaan Sarana dan Prasarana Kerja</h3>
+    {{-- ================= RINGKASAN ================= --}}
+    <div class="summary">
+        <p><strong>Total Keluarga Terdata:</strong> {{ number_format($totalKeluarga) }} KK</p>
+        <p><strong>Skor Kepemilikan Sarpras Rata-rata:</strong> {{ number_format($skorRataRata, 2) }}</p>
+        <p><strong>Kategori Keluarga Dominan:</strong> {{ $dominan }}</p>
+        <p>
+            <strong>Distribusi Kategori:</strong><br>
+            Tinggi {{ $persenTinggi }}% &nbsp;|&nbsp;
+            Sedang {{ $persenSedang }}% &nbsp;|&nbsp;
+            Rendah {{ $persenRendah }}%
+        </p>
+    </div>
+
+    {{-- ================= TABEL SARPRAS ================= --}}
+    <h3>Jumlah Keluarga yang Memiliki Sarana dan Prasarana Kerja</h3>
+
     <table>
         <thead>
             <tr>
                 <th style="width: 40px;">No</th>
-                <th>Jenis Sarana/Prasarana</th>
-                <th style="width: 140px;">Nilai Rata-rata</th>
+                <th>Jenis Sarana / Prasarana Kerja</th>
+                <th style="width: 160px;">Jumlah Keluarga</th>
             </tr>
         </thead>
         <tbody>
@@ -105,39 +133,46 @@
                 <tr>
                     <td align="center">{{ $index + 1 }}</td>
                     <td>{{ $item['nama'] }}</td>
-                    <td align="center">{{ number_format($item['nilai'], 2) }}</td>
+                    <td align="center">{{ $item['nilai'] }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
+    {{-- ================= ANALISIS ================= --}}
     <h3>Analisis Interpretatif</h3>
     <div class="analysis">
-        <p>• <strong>Kondisi Umum:</strong> {{ $interpretasi }}</p>
+        <p>
+            <strong>Kondisi Umum:</strong><br>
+            {{ $interpretasi }}
+        </p>
 
-        <p>• <strong>Distribusi Ketersediaan:</strong>
+        <p>
+            <strong>Distribusi Kepemilikan Sarpras:</strong><br>
             @if($persenTinggi > 60)
-                Sarana dan prasarana kerja sudah merata di sebagian besar keluarga.
+                Kepemilikan sarana dan prasarana kerja sudah cukup merata pada sebagian besar keluarga.
             @elseif($persenSedang > 50)
-                Ketersediaan sarpras cukup seimbang antar keluarga, meski masih ada ketimpangan kecil.
+                Kepemilikan sarpras berada pada tingkat menengah dan belum sepenuhnya merata.
             @else
-                Sebagian besar keluarga masih memiliki keterbatasan akses terhadap sarana dan prasarana kerja.
+                Sebagian besar keluarga masih mengalami keterbatasan dalam kepemilikan sarana kerja.
             @endif
         </p>
 
-        <p>• <strong>Potensi Ekonomi dan Produktivitas:</strong>
+        <p>
+            <strong>Implikasi terhadap Produktivitas Ekonomi:</strong><br>
             @if($dominan === 'Tinggi')
-                Desa memiliki potensi ekonomi kerja tinggi berkat kelengkapan sarpras dan fasilitas usaha.
+                Kondisi ini menunjukkan potensi ekonomi desa yang baik dan dapat dikembangkan lebih lanjut.
             @elseif($dominan === 'Sedang')
-                Potensi ekonomi dapat meningkat dengan optimalisasi pemanfaatan sarpras yang sudah ada.
+                Produktivitas ekonomi masih dapat ditingkatkan melalui intervensi sarana kerja yang tepat.
             @else
-                Diperlukan dukungan pemerintah dalam bentuk bantuan sarana kerja dan infrastruktur dasar.
+                Rendahnya kepemilikan sarana kerja berpotensi menghambat produktivitas dan pendapatan keluarga.
             @endif
         </p>
     </div>
 
+    {{-- ================= REKOMENDASI ================= --}}
     <div class="rekomendasi">
-        <h4>Rekomendasi Kebijakan Pemerintah</h4>
+        <h4>Rekomendasi Kebijakan Pemerintah Desa</h4>
         <ul>
             @foreach($rekomendasi as $item)
                 <li>{{ $item }}</li>
@@ -145,9 +180,16 @@
         </ul>
     </div>
 
+    {{-- ================= FOOTER ================= --}}
     <div class="footer">
-        <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Informasi Desa Kaliwungu</strong>.</p>
-        <p><em>Tanggal Cetak:</em> {{ $tanggal }}</p>
+        <p>
+            Laporan ini dihasilkan secara otomatis oleh
+            <strong>Sistem Informasi Desa Kaliwungu</strong>
+        </p>
+        <p>
+            <em>Tanggal Cetak:</em> {{ $tanggal }}
+        </p>
     </div>
+
 </body>
 </html>

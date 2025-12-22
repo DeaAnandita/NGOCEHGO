@@ -126,54 +126,119 @@ class BangunKeluargaController extends Controller
         return redirect()->route('keluarga.bangunkeluarga.index')->with('success', 'Data Bangun Keluarga berhasil dihapus.');
     }
 
-    /**
-     * Export PDF analisis Bangun Keluarga
-     */
+
     public static function exportPDF()
-    {
-        $master = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(1, 51))->get();
-        $data = DataBangunKeluarga::with('keluarga')->get();
+{
+    $master = MasterPembangunanKeluarga::whereIn('kdpembangunankeluarga', range(1, 51))->get();
+    $data = DataBangunKeluarga::with('keluarga')->get();
 
-        // Hitung rata-rata tiap indikator (anggap nilai numerik)
-        $indikator = [];
-        foreach (range(1, 51) as $i) {
-            $indikator["indikator_$i"] = round(DataBangunKeluarga::avg(DB::raw("CAST(bangunkeluarga_$i AS DECIMAL(10,2))")), 2);
-        }
+    $totalKeluarga = $data->count();
 
-        $totalSkor = round(collect($indikator)->avg() * 100, 2);
+    /* ===============================
+    REKAP PER INDIKATOR (1–51)
+    =============================== */
+    $indikator = [];
 
-        if ($totalSkor < 40) {
-            $kategori = 'Keluarga Rentan / Belum Mandiri';
-            $rekomendasi = [
-                'Perlu peningkatan kesejahteraan dasar (pangan, sandang, papan).',
-                'Dorong keluarga mengikuti kegiatan sosial dan kesehatan.',
-                'Fasilitasi tabungan keluarga dan pelatihan ekonomi produktif.'
-            ];
-        } elseif ($totalSkor < 70) {
-            $kategori = 'Keluarga Berkembang';
-            $rekomendasi = [
-                'Fokus pada peningkatan ketahanan ekonomi dan kesehatan keluarga.',
-                'Dorong partisipasi aktif dalam kegiatan masyarakat.',
-                'Perlu pembinaan rutin dan edukasi keluarga tangguh.'
-            ];
-        } else {
-            $kategori = 'Keluarga Tangguh dan Mandiri';
-            $rekomendasi = [
-                'Pertahankan praktik baik sosial dan ekonomi keluarga.',
-                'Dorong keterlibatan dalam pembangunan desa.',
-                'Kembangkan program keluarga pelopor ketahanan sosial.'
-            ];
-        }
+    foreach (range(1, 51) as $i) {
+        $jumlahYa = DataBangunKeluarga::where("bangunkeluarga_$i", 1)->count();
+        $persen = $totalKeluarga > 0
+            ? round(($jumlahYa / $totalKeluarga) * 100, 2)
+            : 0;
 
-        $pdf = Pdf::loadView('laporan.bangunkeluarga', [
-            'data' => $data,
-            'master' => $master,
-            'indikator' => $indikator,
-            'skor' => $totalSkor,
-            'kategori' => $kategori,
-            'rekomendasi' => $rekomendasi,
-        ])->setPaper('a4', 'portrait');
-
-        return $pdf->download('Laporan_Analisis_Bangun_Keluarga.pdf');
+        $indikator["indikator_$i"] = [
+            'jumlah' => $jumlahYa,
+            'persen' => $persen
+        ];
     }
+
+    /* ===============================
+    KELOMPOK VARIABEL ANALISIS
+    =============================== */
+    $kelompokVariabel = [
+        'Ketahanan Ekonomi Keluarga' => [1,2,3,4,5,6,7,8],
+        'Kesehatan dan Gizi Keluarga' => [9,10,11,12,13,14],
+        'Pendidikan dan Kualitas SDM' => [15,16,17,18,19],
+        'Ketahanan Sosial dan Partisipasi' => [20,21,22,23,24],
+        'Lingkungan dan Kelayakan Hunian' => [25,26,27,28,29],
+        'Pengasuhan dan Perlindungan Anak' => [30,31,32,33],
+        'Perencanaan dan Kemandirian Keluarga' => [34,35,36,37,38],
+    ];
+
+    /* ===============================
+    ANALISIS PER VARIABEL
+    =============================== */
+    $analisisVariabel = [];
+
+    foreach ($kelompokVariabel as $namaVariabel => $daftarIndikator) {
+        $totalPersen = 0;
+
+        foreach ($daftarIndikator as $i) {
+            $totalPersen += $indikator["indikator_$i"]['persen'] ?? 0;
+        }
+
+        $rataVariabel = round($totalPersen / count($daftarIndikator), 2);
+
+        if ($rataVariabel < 40) {
+            $kategori = 'Rendah';
+            $interpretasi = 'Variabel ini menunjukkan kondisi yang masih lemah dan menjadi faktor utama kerentanan keluarga.';
+        } elseif ($rataVariabel < 70) {
+            $kategori = 'Sedang';
+            $interpretasi = 'Variabel ini berada pada tahap berkembang, namun pemenuhannya belum merata di seluruh keluarga.';
+        } else {
+            $kategori = 'Baik';
+            $interpretasi = 'Variabel ini tergolong kuat dan telah dipenuhi oleh sebagian besar keluarga.';
+        }
+
+        $analisisVariabel[] = [
+            'nama' => $namaVariabel,
+            'skor' => $rataVariabel,
+            'kategori' => $kategori,
+            'interpretasi' => $interpretasi,
+        ];
+    }
+
+    /* ===============================
+    SKOR & INTERPRETASI UMUM DESA
+    =============================== */
+    $skorDesa = collect($analisisVariabel)->avg('skor');
+
+    if ($skorDesa < 40) {
+        $kategoriDesa = 'Mayoritas Keluarga Rentan';
+    } elseif ($skorDesa < 70) {
+        $kategoriDesa = 'Keluarga Berkembang';
+    } else {
+        $kategoriDesa = 'Keluarga Relatif Mandiri';
+    }
+
+    /* ===============================
+    ANALISIS UMUM (DESKRIPTIF)
+    =============================== */
+    $analisisUmum = [
+        'Hasil analisis menunjukkan bahwa tingkat pemenuhan indikator bangun keluarga bersifat tidak merata antar variabel pembangunan keluarga.',
+        'Variabel dengan skor rendah mengindikasikan adanya kerentanan struktural yang berpotensi memengaruhi kesejahteraan keluarga secara berkelanjutan.',
+        'Sementara itu, variabel dengan capaian tinggi mencerminkan keberhasilan program pembangunan keluarga yang telah berjalan dan dapat direplikasi.'
+    ];
+
+    /* ===============================
+    REKOMENDASI KEBIJAKAN
+    =============================== */
+    $rekomendasi = [
+        'Memprioritaskan intervensi pada variabel dengan skor rendah, khususnya ketahanan ekonomi, kesehatan, dan lingkungan keluarga.',
+        'Mengintegrasikan hasil analisis bangun keluarga sebagai dasar perencanaan program pembangunan desa berbasis data.',
+        'Mempertahankan dan memperluas praktik baik dari keluarga yang telah mencapai kategori mandiri.'
+    ];
+
+    $pdf = Pdf::loadView('laporan.bangunkeluarga', [
+        'data' => $data,
+        'master' => $master,
+        'indikator' => $indikator,
+        'skor' => $skorDesa,
+        'kategori' => $kategoriDesa,
+        'analisisVariabel' => $analisisVariabel,
+        'analisisUmum' => $analisisUmum,
+        'rekomendasi' => $rekomendasi,
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->download('Laporan_Analisis_Bangun_Keluarga.pdf');
+}
 }
