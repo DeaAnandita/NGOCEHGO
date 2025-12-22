@@ -34,23 +34,22 @@
             <div id="quizArea" class="space-y-6"></div>
 
             <div class="flex items-center justify-center mt-10 space-x-4">
+                <!-- Tombol Mic / Stop -->
+                <button id="recordBtn" class="relative w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 z-10">
+                    <svg id="recordIcon" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
+                    </svg>
+                    <span class="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-75 hidden" id="pulseRing"></span>
+                </button>
 
-            <!-- Tombol Mic / Stop -->
-            <button id="recordBtn" class="relative w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 z-10">
-                <svg id="recordIcon" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
-                </svg>
-                <span class="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-75 hidden" id="pulseRing"></span>
-            </button>
-
-            <!-- Visualizer + Placeholder Text -->
-            <div class="relative w-72 h-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-full shadow-inner overflow-hidden flex items-center justify-center">
-                <canvas id="visualizer" class="absolute inset-0 w-full h-full px-6 hidden"></canvas>
-                <div id="visualizerPlaceholder" class="absolute text-gray-500 text-sm font-medium pointer-events-none">
-                    Klik mic untuk mulai merekam
+                <!-- Visualizer + Placeholder Text -->
+                <div class="relative w-72 h-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-full shadow-inner overflow-hidden flex items-center justify-center">
+                    <canvas id="visualizer" class="absolute inset-0 w-full h-full px-6 hidden"></canvas>
+                    <div id="visualizerPlaceholder" class="absolute text-gray-500 text-sm font-medium pointer-events-none">
+                        Klik mic untuk mulai merekam
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
 
         <div id="reviewForm" class="hidden bg-white rounded-2xl shadow-lg p-6 mt-6">
@@ -1173,4 +1172,4 @@
         };
         initFresh();
     </script>
-< /x-app-layout>
+</x-app-layout>
