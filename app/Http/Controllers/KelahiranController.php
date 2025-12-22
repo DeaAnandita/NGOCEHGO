@@ -174,165 +174,175 @@ class KelahiranController extends Controller
          * Export laporan analisis data kelahiran ke PDF
          */
         public function exportPdf()
-        {
-            $bulan = request('bulan', Carbon::now()->month);
-            $tahun = request('tahun', Carbon::now()->year);
+    {
+        $totalKelahiran = DB::table('data_kelahiran')->count();
 
-            $periode = Carbon::create($tahun, $bulan)->translatedFormat('F Y');
-            $tanggal = Carbon::now()->translatedFormat('d F Y');
-
-            // =====================================================
-            // 🔹 Ambil data kelahiran berdasarkan tanggal lahir dari data_penduduk
-            // =====================================================
-            $data = DB::table('data_kelahiran as k')
-                ->leftJoin('data_penduduk as p', 'k.nik', '=', 'p.nik')
-                ->whereYear('p.penduduk_tanggallahir', $tahun)
-                ->whereMonth('p.penduduk_tanggallahir', $bulan)
-                ->select(
-                    'k.*',
-                    'p.penduduk_tanggallahir',
-                    'p.kdjeniskelamin'
-                )
-                ->get();
-
-            $totalKelahiran = $data->count();
-            if ($totalKelahiran === 0) {
-                return back()->with('error', 'Tidak ada data kelahiran untuk periode tersebut.');
-            }
-
-            // =====================================================
-            // 🔹 Statistik Tempat Persalinan
-            // =====================================================
-            $tempatStat = DB::table('data_kelahiran as k')
-                ->leftJoin('master_tempatpersalinan as mt', 'k.kdtempatpersalinan', '=', 'mt.kdtempatpersalinan')
-                ->leftJoin('data_penduduk as p', 'k.nik', '=', 'p.nik')
-                ->whereYear('p.penduduk_tanggallahir', $tahun)
-                ->whereMonth('p.penduduk_tanggallahir', $bulan)
-                ->select(DB::raw("COALESCE(mt.tempatpersalinan, 'Tidak Diketahui') as kategori"), DB::raw('COUNT(*) as jumlah'))
-                ->groupBy('kategori')
-                ->get()
-                ->map(fn($r) => [
-                    'kategori' => $r->kategori,
-                    'jumlah' => $r->jumlah,
-                    'persen' => round(($r->jumlah / $totalKelahiran) * 100, 1)
-                ])
-                ->toArray();
-
-            // =====================================================
-            // 🔹 Statistik Jenis Kelahiran
-            // =====================================================
-            $jenisStat = DB::table('data_kelahiran as k')
-                ->leftJoin('master_jeniskelahiran as mj', 'k.kdjeniskelahiran', '=', 'mj.kdjeniskelahiran')
-                ->leftJoin('data_penduduk as p', 'k.nik', '=', 'p.nik')
-                ->whereYear('p.penduduk_tanggallahir', $tahun)
-                ->whereMonth('p.penduduk_tanggallahir', $bulan)
-                ->select(DB::raw("COALESCE(mj.jeniskelahiran, 'Tidak Diketahui') as kategori"), DB::raw('COUNT(*) as jumlah'))
-                ->groupBy('kategori')
-                ->get()
-                ->map(fn($r) => [
-                    'kategori' => $r->kategori,
-                    'jumlah' => $r->jumlah,
-                    'persen' => round(($r->jumlah / $totalKelahiran) * 100, 1)
-                ])
-                ->toArray();
-
-            // =====================================================
-            // 🔹 Statistik Pertolongan Persalinan
-            // =====================================================
-            $tolongStat = DB::table('data_kelahiran as k')
-                ->leftJoin('master_pertolonganpersalinan as mp', 'k.kdpertolonganpersalinan', '=', 'mp.kdpertolonganpersalinan')
-                ->leftJoin('data_penduduk as p', 'k.nik', '=', 'p.nik')
-                ->whereYear('p.penduduk_tanggallahir', $tahun)
-                ->whereMonth('p.penduduk_tanggallahir', $bulan)
-                ->select(DB::raw("COALESCE(mp.pertolonganpersalinan, 'Tidak Diketahui') as kategori"), DB::raw('COUNT(*) as jumlah'))
-                ->groupBy('kategori')
-                ->get()
-                ->map(fn($r) => [
-                    'kategori' => $r->kategori,
-                    'jumlah' => $r->jumlah,
-                    'persen' => round(($r->jumlah / $totalKelahiran) * 100, 1)
-                ])
-                ->toArray();
-
-            // =====================================================
-            // 🔹 Jenis Kelamin Bayi
-            // =====================================================
-            $laki = $data->where('kdjeniskelamin', 1)->count();  // 1 = laki-laki
-            $perempuan = $data->where('kdjeniskelamin', 2)->count(); // 2 = perempuan
-            $persenLaki = round(($laki / $totalKelahiran) * 100, 1);
-            $persenPerempuan = 100 - $persenLaki;
-
-            // =====================================================
-            // 🔹 Kelahiran Ke-
-            // =====================================================
-            $kelahiranKe = DB::table('data_kelahiran as k')
-                ->leftJoin('data_penduduk as p', 'k.nik', '=', 'p.nik')
-                ->whereYear('p.penduduk_tanggallahir', $tahun)
-                ->whereMonth('p.penduduk_tanggallahir', $bulan)
-                ->select('k.kelahiran_kelahiranke as kelahiran_ke', DB::raw('COUNT(*) as jumlah'))
-                ->groupBy('kelahiran_ke')
-                ->orderBy('kelahiran_ke')
-                ->get()
-                ->map(fn($r) => [
-                    'kategori' => 'Anak ke-' . $r->kelahiran_ke,
-                    'jumlah' => $r->jumlah,
-                    'persen' => round(($r->jumlah / $totalKelahiran) * 100, 1)
-                ])
-                ->toArray();
-
-            // =====================================================
-            // 🔹 Berat & Panjang Lahir
-            // =====================================================
-            $beratStat = [
-                ['kategori' => '<2500 (BBLR)', 'jumlah' => $data->where('kelahiran_berat', '<', 2500)->count()],
-                ['kategori' => '2500–4000', 'jumlah' => $data->whereBetween('kelahiran_berat', [2500, 4000])->count()],
-                ['kategori' => '>4000', 'jumlah' => $data->where('kelahiran_berat', '>', 4000)->count()],
-            ];
-            $panjangStat = [
-                ['kategori' => '<45 cm', 'jumlah' => $data->where('kelahiran_panjang', '<', 45)->count()],
-                ['kategori' => '45–50 cm', 'jumlah' => $data->whereBetween('kelahiran_panjang', [45, 50])->count()],
-                ['kategori' => '>50 cm', 'jumlah' => $data->where('kelahiran_panjang', '>', 50)->count()],
-            ];
-            foreach ($beratStat as &$b) $b['persen'] = round(($b['jumlah'] / $totalKelahiran) * 100, 1);
-            foreach ($panjangStat as &$p) $p['persen'] = round(($p['jumlah'] / $totalKelahiran) * 100, 1);
-
-            // =====================================================
-            // 🔹 Wilayah
-            // =====================================================
-            $wilayahStat = DB::table('data_kelahiran as k')
-                ->leftJoin('data_penduduk as p', 'k.nik', '=', 'p.nik')
-                ->leftJoin('master_provinsi as prov', 'k.kdprovinsi', '=', 'prov.kdprovinsi')
-                ->leftJoin('master_kabupaten as kab', 'k.kdkabupaten', '=', 'kab.kdkabupaten')
-                ->leftJoin('master_kecamatan as kec', 'k.kdkecamatan', '=', 'kec.kdkecamatan')
-                ->leftJoin('master_desa as desa', 'k.kddesa', '=', 'desa.kddesa')
-                ->whereYear('p.penduduk_tanggallahir', $tahun)
-                ->whereMonth('p.penduduk_tanggallahir', $bulan)
-                ->select(
-                    DB::raw("CONCAT(COALESCE(prov.provinsi,''), ' → ', COALESCE(kab.kabupaten,''), ' → ', COALESCE(kec.kecamatan,''), ' → ', COALESCE(desa.desa,'')) as wilayah"),
-                    DB::raw('COUNT(k.kdkelahiran) as jumlah')
-                )
-                ->groupBy('wilayah')
-                ->orderBy('jumlah', 'desc')
-                ->get()
-                ->map(fn($r) => [
-                    'kategori' => $r->wilayah,
-                    'jumlah' => $r->jumlah,
-                    'persen' => round(($r->jumlah / $totalKelahiran) * 100, 1)
-                ])
-                ->toArray();
-
-            // =====================================================
-            // 🔹 Generate PDF
-            // =====================================================
-            $pdf = Pdf::loadView('laporan.kelahiran', compact(
-                'periode', 'tanggal', 'totalKelahiran',
-                'tempatStat', 'jenisStat', 'tolongStat',
-                'laki', 'perempuan', 'persenLaki', 'persenPerempuan',
-                'kelahiranKe', 'beratStat', 'panjangStat', 'wilayahStat'
-            ))->setPaper('a4', 'portrait');
-
-            return $pdf->stream("Laporan-Analisis-Data-Kelahiran.pdf");
+        if ($totalKelahiran === 0) {
+            return back()->with('error', 'Tidak ada data kelahiran untuk dianalisis.');
         }
+
+        // 1. Statistik Jenis Kelamin
+        $laki = DB::table('data_kelahiran')
+            ->join('data_penduduk', 'data_kelahiran.nik', '=', 'data_penduduk.nik')
+            ->where('data_penduduk.kdjeniskelamin', 1) // 1 = Laki-laki
+            ->count();
+
+        $perempuan = $totalKelahiran - $laki;
+
+        $persenLaki = round(($laki / $totalKelahiran) * 100, 1);
+        $persenPerempuan = round(($perempuan / $totalKelahiran) * 100, 1);
+
+        // 2. Tempat Persalinan
+        $tempatStat = DB::table('master_tempatpersalinan')
+            ->leftJoin('data_kelahiran', 'master_tempatpersalinan.kdtempatpersalinan', '=', 'data_kelahiran.kdtempatpersalinan')
+            ->select('master_tempatpersalinan.tempatpersalinan as nama', DB::raw('COALESCE(COUNT(data_kelahiran.nik), 0) as jumlah'))
+            ->groupBy('master_tempatpersalinan.kdtempatpersalinan', 'master_tempatpersalinan.tempatpersalinan')
+            ->get()
+            ->map(fn($row) => [
+                'nama'   => $row->nama,
+                'jumlah' => $row->jumlah,
+                'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+            ])->toArray();
+
+        // 3. Jenis Kelahiran
+        $jenisStat = DB::table('master_jeniskelahiran')
+            ->leftJoin('data_kelahiran', 'master_jeniskelahiran.kdjeniskelahiran', '=', 'data_kelahiran.kdjeniskelahiran')
+            ->select('master_jeniskelahiran.jeniskelahiran as nama', DB::raw('COALESCE(COUNT(data_kelahiran.nik), 0) as jumlah'))
+            ->groupBy('master_jeniskelahiran.kdjeniskelahiran', 'master_jeniskelahiran.jeniskelahiran')
+            ->get()
+            ->map(fn($row) => [
+                'nama'   => $row->nama,
+                'jumlah' => $row->jumlah,
+                'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+            ])->toArray();
+
+        // 4. Pertolongan Persalinan
+        $tolongStat = DB::table('master_pertolonganpersalinan')
+            ->leftJoin('data_kelahiran', 'master_pertolonganpersalinan.kdpertolonganpersalinan', '=', 'data_kelahiran.kdpertolonganpersalinan')
+            ->select('master_pertolonganpersalinan.pertolonganpersalinan as nama', DB::raw('COALESCE(COUNT(data_kelahiran.nik), 0) as jumlah'))
+            ->groupBy('master_pertolonganpersalinan.kdpertolonganpersalinan', 'master_pertolonganpersalinan.pertolonganpersalinan')
+            ->get()
+            ->map(fn($row) => [
+                'nama'   => $row->nama,
+                'jumlah' => $row->jumlah,
+                'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+            ])->toArray();
+
+        // 5. Statistik Lengkap Berat & Panjang Lahir + Persentase
+        $statsLahir = DB::table('data_kelahiran')
+            ->selectRaw("
+                AVG(kelahiran_berat) as rata_berat,
+                AVG(kelahiran_panjang) as rata_panjang,
+
+                -- Berat Lahir
+                COUNT(CASE WHEN kelahiran_berat < 2500 AND kelahiran_berat IS NOT NULL THEN 1 END) as jumlah_bblr,
+                COUNT(CASE WHEN kelahiran_berat >= 2500 AND kelahiran_berat IS NOT NULL THEN 1 END) as jumlah_normal_berat,
+                COUNT(CASE WHEN kelahiran_berat IS NOT NULL THEN 1 END) as total_berat_terisi,
+
+                -- Panjang Lahir
+                COUNT(CASE WHEN kelahiran_panjang < 48 AND kelahiran_panjang IS NOT NULL THEN 1 END) as jumlah_pendek,
+                COUNT(CASE WHEN kelahiran_panjang >= 48 AND kelahiran_panjang IS NOT NULL THEN 1 END) as jumlah_normal_panjang,
+                COUNT(CASE WHEN kelahiran_panjang IS NOT NULL THEN 1 END) as total_panjang_terisi
+            ")
+            ->first();
+
+        // Hitung nilai
+        $rataBerat            = $statsLahir->rata_berat ? round($statsLahir->rata_berat, 1) : 0;
+        $rataPanjang          = $statsLahir->rata_panjang ? round($statsLahir->rata_panjang, 1) : 0;
+
+        $jumlahBBLR           = $statsLahir->jumlah_bblr ?? 0;
+        $jumlahNormalBerat    = $statsLahir->jumlah_normal_berat ?? 0;
+        $jumlahPendek         = $statsLahir->jumlah_pendek ?? 0;
+        $jumlahNormalPanjang  = $statsLahir->jumlah_normal_panjang ?? 0;
+
+        $totalBeratTerisi     = $statsLahir->total_berat_terisi ?? 0;
+        $totalPanjangTerisi   = $statsLahir->total_panjang_terisi ?? 0;
+
+        // Hitung persentase (berdasarkan total kelahiran tercatat)
+        $persenBBLR           = $totalKelahiran > 0 ? round(($jumlahBBLR / $totalKelahiran) * 100, 1) : 0;
+        $persenNormalBerat    = $totalKelahiran > 0 ? round(($jumlahNormalBerat / $totalKelahiran) * 100, 1) : 0;
+        $persenPendek         = $totalKelahiran > 0 ? round(($jumlahPendek / $totalKelahiran) * 100, 1) : 0;
+        $persenNormalPanjang  = $totalKelahiran > 0 ? round(($jumlahNormalPanjang / $totalKelahiran) * 100, 1) : 0;
+
+        // Persentase kelengkapan data
+        $persenDataBeratTerisi    = $totalKelahiran > 0 ? round(($totalBeratTerisi / $totalKelahiran) * 100, 1) : 0;
+        $persenDataPanjangTerisi  = $totalKelahiran > 0 ? round(($totalPanjangTerisi / $totalKelahiran) * 100, 1) : 0;
+
+        // 6. Urutan Kelahiran (ke-)
+        $kelahiranKeStat = DB::table('data_kelahiran')
+            ->select('kelahiran_kelahiranke', DB::raw('count(*) as jumlah'))
+            ->groupBy('kelahiran_kelahiranke')
+            ->orderBy('kelahiran_kelahiranke')
+            ->get()
+            ->map(function ($row) use ($totalKelahiran) {
+                $ke = $row->kelahiran_kelahiranke ?? 'Tidak diisi';
+                return [
+                    'ke'     => $ke,
+                    'jumlah' => $row->jumlah,
+                    'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+                ];
+            })->toArray();
+
+        // 7. Distribusi Kelahiran per Wilayah → dari data_penduduk (kdprovinsi, kdkabupaten, dll)
+        $kelahiranPerWilayah = DB::table('data_kelahiran')
+            ->join('data_penduduk', 'data_kelahiran.nik', '=', 'data_penduduk.nik')
+            ->leftJoin('master_desa', 'data_penduduk.kddesa', '=', 'master_desa.kddesa')
+            ->leftJoin('master_kecamatan', 'data_penduduk.kdkecamatan', '=', 'master_kecamatan.kdkecamatan')
+            ->selectRaw("
+                COALESCE(
+                    master_desa.desa,
+                    master_kecamatan.kecamatan,
+                    'Wilayah Tidak Tercantum'
+                ) as nama_wilayah,
+                COUNT(*) as jumlah
+            ")
+            ->groupBy('data_penduduk.kddesa', 'master_desa.desa', 'master_kecamatan.kecamatan')
+            ->orderByDesc('jumlah')
+            ->get()
+            ->map(function ($row) use ($totalKelahiran) {
+                return [
+                    'wilayah' => $row->nama_wilayah,
+                    'jumlah'  => $row->jumlah,
+                    'persen'  => round(($row->jumlah / $totalKelahiran) * 100, 1),
+                ];
+            })->toArray();
+
+        // Pastikan periode dan tanggal
+        $periode = Carbon::now()->translatedFormat('F Y');
+        $tanggal = Carbon::now()->translatedFormat('d F Y');
+
+        $pdf = Pdf::loadView('laporan.kelahiran', [
+    'periode'                  => $periode,
+    'tanggal'                  => $tanggal,
+    'totalKelahiran'           => $totalKelahiran,
+    'laki'                     => $laki,
+    'perempuan'                => $perempuan,
+    'persenLaki'               => $persenLaki,
+    'persenPerempuan'          => $persenPerempuan,
+    'tempatStat'               => $tempatStat,
+    'jenisStat'                => $jenisStat,
+    'tolongStat'               => $tolongStat,
+
+    // === Tambahkan semua variabel baru ini ===
+    'rataBerat'                => $rataBerat,
+    'rataPanjang'              => $rataPanjang,
+    'jumlahBBLR'               => $jumlahBBLR,
+    'persenBBLR'               => $persenBBLR,
+    'jumlahNormalBerat'        => $jumlahNormalBerat,
+    'persenNormalBerat'        => $persenNormalBerat,
+    'jumlahPendek'             => $jumlahPendek,
+    'persenPendek'             => $persenPendek,
+    'jumlahNormalPanjang'      => $jumlahNormalPanjang,
+    'persenNormalPanjang'      => $persenNormalPanjang,
+    'persenDataBeratTerisi'    => $persenDataBeratTerisi,
+    'persenDataPanjangTerisi'  => $persenDataPanjangTerisi,
+
+    'kelahiranKeStat'          => $kelahiranKeStat,
+    'kelahiranPerWilayah'      => $kelahiranPerWilayah,
+])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('Laporan-Analisis-Kelahiran-' . Carbon::now()->format('Y-m-d') . '.pdf');
+    }
 }
 
     //  public function getKabupatens($kdprovinsi)

@@ -6,7 +6,17 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-6">Tambah Data Penduduk</h3>
 
-                <form action="{{ route('dasar-penduduk.store') }}" method="POST">
+                <form action="{{ route('dasar-penduduk.store') }}" method="POST"
+                      x-data="{
+                          isDatang: false,
+                          checkMutasi(event) {
+                              const text = event.target.options[event.target.selectedIndex].text.toLowerCase();
+                              this.isDatang = text.includes('datang');
+                          }
+                      }"
+                      x-init="isDatang = false"
+                      class="space-y-8">
+
                     @csrf
 
                     <!-- Informasi Pribadi -->
@@ -247,76 +257,131 @@
                         </div>
                     </div>
 
-                    <!-- Wilayah Mutasi -->
-                    <div class="mb-8">
-                        <h4 class="text-sm font-semibold text-gray-700 mb-4">Wilayah Mutasi</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Mutasi Masuk & Tanggal -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Mutasi Masuk</label>
+                            <select name="kdmutasimasuk" @change="checkMutasi($event)"
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Pilih Mutasi --</option>
+                                @foreach($mutasi_masuks as $item)
+                                    <option value="{{ $item->kdmutasimasuk }}">{{ $item->mutasimasuk }}</option>
+                                @endforeach
+                            </select>
+                            @error('kdmutasimasuk') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Tanggal Mutasi</label>
+                            <input type="date" name="penduduk_tanggalmutasi"
+                                   value="{{ old('penduduk_tanggalmutasi', date('Y-m-d')) }}"
+                                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @error('penduduk_tanggalmutasi') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    {{-- ===== WILAYAH DATANG (sama persis dengan form keluarga) ===== --}}
+                    <div x-show="isDatang" x-transition class="mt-8">
+                        <h3 class="text-gray-700 font-semibold mb-4">Wilayah Asal (Datang Dari)</h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                             x-data="{
+                                 provinsi: '{{ old('kdprovinsi') }}',
+                                 kabupaten: '{{ old('kdkabupaten') }}',
+                                 kecamatan: '{{ old('kdkecamatan') }}',
+                                 desa: '{{ old('kddesa') }}',
+
+                                 kabupatens: [],
+                                 kecamatans: [],
+                                 desas: [],
+
+                                 async loadKabupaten() {
+                                     if (!this.provinsi) {
+                                         this.kabupatens = []; this.kabupaten = ''; this.resetLower(); return;
+                                     }
+                                     const res = await fetch(`/api/wilayah/kabupaten/${this.provinsi}`);
+                                     this.kabupatens = await res.json();
+                                     this.kabupaten = '';
+                                     this.resetLower();
+                                 },
+                                 async loadKecamatan() {
+                                     if (!this.kabupaten) {
+                                         this.kecamatans = []; this.kecamatan = ''; this.desas = []; this.desa = ''; return;
+                                     }
+                                     const res = await fetch(`/api/wilayah/kecamatan/${this.kabupaten}`);
+                                     this.kecamatans = await res.json();
+                                     this.kecamatan = '';
+                                     this.desas = []; this.desa = '';
+                                 },
+                                 async loadDesa() {
+                                     if (!this.kecamatan) { this.desas = []; this.desa = ''; return; }
+                                     const res = await fetch(`/api/wilayah/desa/${this.kecamatan}`);
+                                     this.desas = await res.json();
+                                 },
+                                 resetLower() {
+                                     this.kecamatans = []; this.kecamatan = '';
+                                     this.desas = []; this.desa = '';
+                                 }
+                             }"
+                             x-init="provinsi && loadKabupaten(); kabupaten && loadKecamatan(); kecamatan && loadDesa();">
+
+                            <!-- Provinsi -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Mutasi Masuk</label>
-                                <select name="kdmutasimasuk" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Mutasi --</option>
-                                    @foreach($mutasi_masuks as $item)
-                                        <option value="{{ $item->kdmutasimasuk }}" {{ old('kdmutasimasuk') == $item->kdmutasimasuk ? 'selected' : '' }}>{{ $item->mutasimasuk }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kdmutasimasuk')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Tanggal Mutasi</label>
-                                <input type="date" name="penduduk_tanggalmutasi" value="{{ old('penduduk_tanggalmutasi', now()->toDateString()) }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                @error('penduduk_tanggalmutasi')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Provinsi</label>
-                                <select name="kdprovinsi" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
+                                <select x-model="provinsi" @change="loadKabupaten()"
+                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                     <option value="">-- Pilih Provinsi --</option>
-                                    @foreach($provinsis as $item)
-                                        <option value="{{ $item->kdprovinsi }}" {{ old('kdprovinsi') == $item->kdprovinsi ? 'selected' : '' }}>{{ $item->provinsi }}</option>
+                                    @foreach($provinsis as $p)
+                                        <option value="{{ $p->kdprovinsi }}">{{ $p->provinsi }}</option>
                                     @endforeach
                                 </select>
-                                @error('kdprovinsi')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
+                                <input type="hidden" name="kdprovinsi" :value="provinsi">
+                                @error('kdprovinsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
+
+                            <!-- Kabupaten/Kota -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Kabupaten</label>
-                                <select name="kdkabupaten" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Kabupaten --</option>
-                                    @foreach($kabupatens as $item)
-                                        <option value="{{ $item->kdkabupaten }}" {{ old('kdkabupaten') == $item->kdkabupaten ? 'selected' : '' }}>{{ $item->kabupaten }}</option>
-                                    @endforeach
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota</label>
+                                <select x-model="kabupaten" @change="loadKecamatan()"
+                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        :disabled="!provinsi">
+                                    <option value="">-- Pilih Kabupaten/Kota --</option>
+                                    <template x-for="kab in kabupatens" :key="kab.kdkabupaten">
+                                        <option :value="kab.kdkabupaten" x-text="kab.kabupaten"></option>
+                                    </template>
                                 </select>
-                                @error('kdkabupaten')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
+                                <input type="hidden" name="kdkabupaten" :value="kabupaten">
+                                @error('kdkabupaten') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
+
+                            <!-- Kecamatan -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Kecamatan</label>
-                                <select name="kdkecamatan" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
+                                <select x-model="kecamatan" @change="loadDesa()"
+                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        :disabled="!kabupaten">
                                     <option value="">-- Pilih Kecamatan --</option>
-                                    @foreach($kecamatans as $item)
-                                        <option value="{{ $item->kdkecamatan }}" {{ old('kdkecamatan') == $item->kdkecamatan ? 'selected' : '' }}>{{ $item->kecamatan }}</option>
-                                    @endforeach
+                                    <template x-for="kec in kecamatans" :key="kec.kdkecamatan">
+                                        <option :value="kec.kdkecamatan" x-text="kec.kecamatan"></option>
+                                    </template>
                                 </select>
-                                @error('kdkecamatan')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
+                                <input type="hidden" name="kdkecamatan" :value="kecamatan">
+                                @error('kdkecamatan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
+
+                            <!-- Desa/Kelurahan -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Desa</label>
-                                <select name="kddesa" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Desa --</option>
-                                    @foreach($desas as $item)
-                                        <option value="{{ $item->kddesa }}" {{ old('kddesa') == $item->kddesa ? 'selected' : '' }}>{{ $item->desa }}</option>
-                                    @endforeach
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan</label>
+                                <select x-model="desa"
+                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                        :disabled="!kecamatan">
+                                    <option value="">-- Pilih Desa/Kelurahan --</option>
+                                    <template x-for="d in desas" :key="d.kddesa">
+                                        <option :value="d.kddesa" x-text="d.desa"></option>
+                                    </template>
                                 </select>
-                                @error('kddesa')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
+                                <input type="hidden" name="kddesa" :value="desa">
+                                @error('kddesa') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
                     </div>

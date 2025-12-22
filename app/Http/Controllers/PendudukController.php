@@ -69,7 +69,6 @@ class PendudukController extends Controller
         ]);
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -88,10 +87,7 @@ class PendudukController extends Controller
             'status_tinggals' => MasterStatusTinggal::all(),
             'kartu_identitass' => MasterKartuIdentitas::all(),
             'pekerjaans' => MasterPekerjaan::all(),
-            'provinsis' => MasterProvinsi::all(),
-            'kabupatens' => MasterKabupaten::all(),
-            'kecamatans' => MasterKecamatan::all(),
-            'desas' => MasterDesa::all(),
+            'provinsis' => MasterProvinsi::select('kdprovinsi', 'provinsi')->orderBy('provinsi')->get(), // Hanya provinsi seperti keluarga
         ]);
     }
 
@@ -125,7 +121,7 @@ class PendudukController extends Controller
             'penduduk_namaayah' => 'nullable|string|max:255',
             'penduduk_namaibu' => 'nullable|string|max:255',
             'penduduk_namatempatbekerja' => 'nullable|string|max:255',
-            'kdprovinsi' => 'nullable|integer|exists:master_provinsi,kdprovinsi',
+            'kdprovinsi' => 'nullable|integer|exists:master_provinsi,kdprovinsi', // Nullable seperti keluarga
             'kdkabupaten' => 'nullable|integer|exists:master_kabupaten,kdkabupaten',
             'kdkecamatan' => 'nullable|integer|exists:master_kecamatan,kdkecamatan',
             'kddesa' => 'nullable|integer|exists:master_desa,kddesa',
@@ -160,10 +156,10 @@ class PendudukController extends Controller
             'status_tinggals' => MasterStatusTinggal::all(),
             'kartu_identitass' => MasterKartuIdentitas::all(),
             'pekerjaans' => MasterPekerjaan::all(),
-            'provinsis' => MasterProvinsi::all(),
-            'kabupatens' => MasterKabupaten::all(),
-            'kecamatans' => MasterKecamatan::all(),
-            'desas' => MasterDesa::all(),
+            'provinsis' => MasterProvinsi::select('kdprovinsi', 'provinsi')->orderBy('provinsi')->get(),
+            'kabupatens' => $penduduk->kdprovinsi ? MasterKabupaten::where('kdprovinsi', $penduduk->kdprovinsi)->orderBy('kabupaten')->get() : collect(),
+            'kecamatans' => $penduduk->kdkabupaten ? MasterKecamatan::where('kdkabupaten', $penduduk->kdkabupaten)->orderBy('kecamatan')->get() : collect(),
+            'desas' => $penduduk->kdkecamatan ? MasterDesa::where('kdkecamatan', $penduduk->kdkecamatan)->orderBy('desa')->get() : collect(),
         ]);
     }
 
@@ -224,7 +220,7 @@ class PendudukController extends Controller
         return redirect()->route('dasar-penduduk.index')->with('success', 'Data penduduk berhasil dihapus.');
     }
 
-     /**
+    /**
      * Export Laporan Lengkap Penduduk & Intervensi Kemiskinan ke PDF
      */
     public function exportPdf()
@@ -258,6 +254,83 @@ class PendudukController extends Controller
         $persenLakiTidakBekerja = round(($lakiTidakBekerja / $laki) * 100, 1);
         $persenPerempuanTidakBekerja = round(($perempuanTidakBekerja / $perempuan) * 100, 1);
 
+        // ==========================
+        // Detail Alasan Tidak Bekerja (sesuai master_pekerjaan dari rancangan)
+        // ==========================
+
+        // Kode sesuai rancangan: 
+        // 3 → PELAJAR/MAHASISWA (masih sekolah)
+        // 4 → PENSIUNAN
+        // 2 → MENGURUS RUMAH TANGGA
+        $kdSekolah     = 3; // PELAJAR/MAHASISWA
+        $kdPensiunan   = 4; // PENSIUNAN
+        $kdRumahTangga = 2; // MENGURUS RUMAH TANGGA
+
+        // Hitung per jenis kelamin untuk masing-masing alasan
+        $sekolahLaki = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdSekolah)
+            ->where('kdjeniskelamin', 1)
+            ->count();
+
+        $sekolahPerempuan = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdSekolah)
+            ->where('kdjeniskelamin', 2)
+            ->count();
+
+        $pensiunanLaki = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdPensiunan)
+            ->where('kdjeniskelamin', 1)
+            ->count();
+
+        $pensiunanPerempuan = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdPensiunan)
+            ->where('kdjeniskelamin', 2)
+            ->count();
+
+        $rumahTanggaLaki = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdRumahTangga)
+            ->where('kdjeniskelamin', 1)
+            ->count();
+
+        $rumahTanggaPerempuan = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdRumahTangga)
+            ->where('kdjeniskelamin', 2)
+            ->count();
+
+        // Total masing-masing alasan
+        $totalSekolah     = $sekolahLaki + $sekolahPerempuan;
+        $totalPensiunan   = $pensiunanLaki + $pensiunanPerempuan;
+        $totalRumahTangga = $rumahTanggaLaki + $rumahTanggaPerempuan;
+
+        // ==========================
+        // Breakdown Tidak Bekerja Murni & Lainnya
+        // ==========================
+
+        // Kode 1 = BELUM/TIDAK BEKERJA (pengangguran murni, bukan karena alasan lain)
+        $kdBelumBekerja = 1;
+
+        $belumBekerjaLaki = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdBelumBekerja)
+            ->where('kdjeniskelamin', 1)
+            ->count();
+
+        $belumBekerjaPerempuan = DB::table('data_penduduk')
+            ->where('kdpekerjaan', $kdBelumBekerja)
+            ->where('kdjeniskelamin', 2)
+            ->count();
+
+        $totalBelumBekerja = $belumBekerjaLaki + $belumBekerjaPerempuan;
+
+        // Hitung "Lainnya" = total tidak bekerja (kode 1) dikurangi 3 alasan utama di atas
+        // Catatan: kode 1 adalah kategori umum "BELUM/TIDAK BEKERJA" yang mencakup pengangguran murni
+        // Sedangkan kode 2,3,4 adalah alasan spesifik yang juga termasuk tidak bekerja
+        // Di beberapa sistem, kode 1 digunakan untuk pengangguran murni, dan 2-4 terpisah.
+        // Karena di master_pekerjaan rancanganmu kode 1 adalah BELUM/TIDAK BEKERJA (umum),
+        // maka kita anggap kode 1 = pengangguran murni.
+
+        $totalLainnya = $tidakBekerja - ($totalSekolah + $totalPensiunan + $totalRumahTangga);
+        $lainnyaLaki = $lakiTidakBekerja - ($sekolahLaki + $pensiunanLaki + $rumahTanggaLaki);
+        $lainnyaPerempuan = $perempuanTidakBekerja - ($sekolahPerempuan + $pensiunanPerempuan + $rumahTanggaPerempuan);
         // ==========================
         // Mutasi
         // ==========================
@@ -339,8 +412,49 @@ class PendudukController extends Controller
             'agamaStat' => $agamaStat,
             'hubunganStat' => $hubunganStat,
             'dataKK' => $dataKK,
+            // Tambahkan variabel baru
+            'sekolahLaki'          => $sekolahLaki,
+            'sekolahPerempuan'     => $sekolahPerempuan,
+            'totalSekolah'         => $totalSekolah,
+            'pensiunanLaki'        => $pensiunanLaki,
+            'pensiunanPerempuan'   => $pensiunanPerempuan,
+            'totalPensiunan'       => $totalPensiunan,
+            'rumahTanggaLaki'      => $rumahTanggaLaki,
+            'rumahTanggaPerempuan' => $rumahTanggaPerempuan,
+            'totalRumahTangga'     => $totalRumahTangga,
+            
         ])->setPaper('a4', 'portrait');
 
         return $pdf->stream('Laporan-Analisis-Data-Penduduk.pdf');
+    }
+
+    public function kabupaten($kdprovinsi)
+    {
+        $kabupatens = MasterKabupaten::where('kdprovinsi', $kdprovinsi)
+            ->select('kdkabupaten', 'kabupaten')
+            ->orderBy('kabupaten')
+            ->get();
+
+        return response()->json($kabupatens);
+    }
+
+    public function kecamatan($kdkabupaten)
+    {
+        $kecamatans = MasterKecamatan::where('kdkabupaten', $kdkabupaten)
+            ->select('kdkecamatan', 'kecamatan')
+            ->orderBy('kecamatan')
+            ->get();
+
+        return response()->json($kecamatans);
+    }
+
+    public function desa($kdkecamatan)
+    {
+        $desas = MasterDesa::where('kdkecamatan', $kdkecamatan)
+            ->select('kddesa', 'desa')
+            ->orderBy('desa')
+            ->get();
+
+        return response()->json($desas);
     }
 }

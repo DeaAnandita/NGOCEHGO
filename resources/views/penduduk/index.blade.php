@@ -45,18 +45,20 @@
                     <div class="flex flex-wrap items-center gap-3">
                         {{-- Form Search + Dropdown --}}
                         <form method="GET" action="{{ route('dasar-penduduk.index') }}" class="flex flex-wrap sm:flex-nowrap items-center gap-2">
-                            <input type="text" name="search" value="{{ request('search') }}"
+                            <label for="per_page" class="text-sm text-gray-600">Tampilkan</label>
+                            <select name="per_page" onchange="this.form.submit()"
+                                class="border border-gray-300 rounded-md px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-20 sm:w-24">
+                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                                <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
+                                <option value="200" {{ $perPage == 200 ? 'selected' : '' }}>200</option>
+                            </select>
+                        </form>
+
+                            <form method="GET" action="{{ route('dasar-penduduk.index') }}" class="flex flex-wrap sm:flex-nowrap items-center">
+                                 <input type="text" name="search" value="{{ request('search') }}"
                                 placeholder="Cari nama, NIK, atau No KK..."
                                 class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-full sm:w-56">
-
-                            <select name="per_page" onchange="this.form.submit()"
-                                class="border border-gray-300 rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-full sm:w-50">
-                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                                <option value="25" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
-                                <option value="50" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
-                                <option value="100" {{ $perPage == 200 ? 'selected' : '' }}>200</option>
-                            </select>
-
                             <button type="submit"
                                 class="bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700 transition duration-200 w-full sm:w-auto">
                                 Cari

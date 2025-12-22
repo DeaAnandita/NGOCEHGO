@@ -154,7 +154,7 @@
             {type:"number",label:"Berat lahir bayi dalam gram?",field:"kelahiran_berat"},
             {type:"number",label:"Panjang lahir bayi dalam cm?",field:"kelahiran_panjang"},
             {type:"text",label:"Sebutkan NIK ibu kandung",field:"kelahiran_nikibu"},
-            {type:"text",label:"Sebutkan NIK ayah (jika ada)",field:"kelahiran_nikayah", required:false}
+            {type:"text",label:"Sebutkan NIK ayah",field:"kelahiran_nikayah", required:false}
         ];
         // MODUL 3: SOSIAL EKONOMI
         questions[3] = [
