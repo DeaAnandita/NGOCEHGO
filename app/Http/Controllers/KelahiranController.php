@@ -173,6 +173,7 @@ class KelahiranController extends Controller
         /**
          * Export laporan analisis data kelahiran ke PDF
          */
+<<<<<<< HEAD
         public function exportPdf()
     {
         $totalKelahiran = DB::table('data_kelahiran')->count();
@@ -343,6 +344,182 @@ class KelahiranController extends Controller
 
         return $pdf->stream('Laporan-Analisis-Kelahiran-' . Carbon::now()->format('Y-m-d') . '.pdf');
     }
+=======
+/**
+ * Export laporan analisis data kelahiran ke PDF
+ * Hanya data bayi yang lahir tahun 2025
+ */
+public function exportPdf()
+{
+    // Base query: hanya kelahiran tahun 2025 berdasarkan tanggal lahir di data_penduduk
+    $kelahiranQuery = DB::table('data_kelahiran')
+        ->join('data_penduduk', 'data_kelahiran.nik', '=', 'data_penduduk.nik')
+        ->whereYear('data_penduduk.penduduk_tanggallahir', 1985);
+
+    $totalKelahiran = $kelahiranQuery->count();
+
+    if ($totalKelahiran === 0) {
+        return back()->with('error', 'Tidak ada data kelahiran tahun 2025 untuk dianalisis.');
+    }
+
+    // 1. Statistik Jenis Kelamin
+    $laki = $kelahiranQuery->clone()
+        ->where('data_penduduk.kdjeniskelamin', 1) // 1 = Laki-laki
+        ->count();
+
+    $perempuan = $totalKelahiran - $laki;
+
+    $persenLaki = round(($laki / $totalKelahiran) * 100, 1);
+    $persenPerempuan = round(($perempuan / $totalKelahiran) * 100, 1);
+
+    // 2. Tempat Persalinan
+    $tempatStat = DB::table('master_tempatpersalinan')
+        ->leftJoin('data_kelahiran', 'master_tempatpersalinan.kdtempatpersalinan', '=', 'data_kelahiran.kdtempatpersalinan')
+        ->join('data_penduduk', 'data_kelahiran.nik', '=', 'data_penduduk.nik')
+        ->whereYear('data_penduduk.penduduk_tanggallahir', 2025)
+        ->select('master_tempatpersalinan.tempatpersalinan as nama', DB::raw('COALESCE(COUNT(data_kelahiran.nik), 0) as jumlah'))
+        ->groupBy('master_tempatpersalinan.kdtempatpersalinan', 'master_tempatpersalinan.tempatpersalinan')
+        ->get()
+        ->map(fn($row) => [
+            'nama'   => $row->nama,
+            'jumlah' => $row->jumlah,
+            'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+        ])->toArray();
+
+    // 3. Jenis Kelahiran
+    $jenisStat = DB::table('master_jeniskelahiran')
+        ->leftJoin('data_kelahiran', 'master_jeniskelahiran.kdjeniskelahiran', '=', 'data_kelahiran.kdjeniskelahiran')
+        ->join('data_penduduk', 'data_kelahiran.nik', '=', 'data_penduduk.nik')
+        ->whereYear('data_penduduk.penduduk_tanggallahir', 2025)
+        ->select('master_jeniskelahiran.jeniskelahiran as nama', DB::raw('COALESCE(COUNT(data_kelahiran.nik), 0) as jumlah'))
+        ->groupBy('master_jeniskelahiran.kdjeniskelahiran', 'master_jeniskelahiran.jeniskelahiran')
+        ->get()
+        ->map(fn($row) => [
+            'nama'   => $row->nama,
+            'jumlah' => $row->jumlah,
+            'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+        ])->toArray();
+
+    // 4. Pertolongan Persalinan
+    $tolongStat = DB::table('master_pertolonganpersalinan')
+        ->leftJoin('data_kelahiran', 'master_pertolonganpersalinan.kdpertolonganpersalinan', '=', 'data_kelahiran.kdpertolonganpersalinan')
+        ->join('data_penduduk', 'data_kelahiran.nik', '=', 'data_penduduk.nik')
+        ->whereYear('data_penduduk.penduduk_tanggallahir', 2025)
+        ->select('master_pertolonganpersalinan.pertolonganpersalinan as nama', DB::raw('COALESCE(COUNT(data_kelahiran.nik), 0) as jumlah'))
+        ->groupBy('master_pertolonganpersalinan.kdpertolonganpersalinan', 'master_pertolonganpersalinan.pertolonganpersalinan')
+        ->get()
+        ->map(fn($row) => [
+            'nama'   => $row->nama,
+            'jumlah' => $row->jumlah,
+            'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+        ])->toArray();
+
+    // 5. Statistik Berat & Panjang Lahir
+    $statsLahir = $kelahiranQuery->clone()
+        ->selectRaw("
+            AVG(kelahiran_berat) as rata_berat,
+            AVG(kelahiran_panjang) as rata_panjang,
+
+            COUNT(CASE WHEN kelahiran_berat < 2500 AND kelahiran_berat IS NOT NULL THEN 1 END) as jumlah_bblr,
+            COUNT(CASE WHEN kelahiran_berat >= 2500 AND kelahiran_berat IS NOT NULL THEN 1 END) as jumlah_normal_berat,
+            COUNT(CASE WHEN kelahiran_berat IS NOT NULL THEN 1 END) as total_berat_terisi,
+
+            COUNT(CASE WHEN kelahiran_panjang < 48 AND kelahiran_panjang IS NOT NULL THEN 1 END) as jumlah_pendek,
+            COUNT(CASE WHEN kelahiran_panjang >= 48 AND kelahiran_panjang IS NOT NULL THEN 1 END) as jumlah_normal_panjang,
+            COUNT(CASE WHEN kelahiran_panjang IS NOT NULL THEN 1 END) as total_panjang_terisi
+        ")
+        ->first();
+
+    $rataBerat            = $statsLahir->rata_berat ? round($statsLahir->rata_berat, 1) : 0;
+    $rataPanjang          = $statsLahir->rata_panjang ? round($statsLahir->rata_panjang, 1) : 0;
+
+    $jumlahBBLR           = $statsLahir->jumlah_bblr ?? 0;
+    $jumlahNormalBerat    = $statsLahir->jumlah_normal_berat ?? 0;
+    $jumlahPendek         = $statsLahir->jumlah_pendek ?? 0;
+    $jumlahNormalPanjang  = $statsLahir->jumlah_normal_panjang ?? 0;
+
+    $totalBeratTerisi     = $statsLahir->total_berat_terisi ?? 0;
+    $totalPanjangTerisi   = $statsLahir->total_panjang_terisi ?? 0;
+
+    $persenBBLR               = round(($jumlahBBLR / $totalKelahiran) * 100, 1);
+    $persenNormalBerat        = round(($jumlahNormalBerat / $totalKelahiran) * 100, 1);
+    $persenPendek             = round(($jumlahPendek / $totalKelahiran) * 100, 1);
+    $persenNormalPanjang      = round(($jumlahNormalPanjang / $totalKelahiran) * 100, 1);
+    $persenDataBeratTerisi    = round(($totalBeratTerisi / $totalKelahiran) * 100, 1);
+    $persenDataPanjangTerisi  = round(($totalPanjangTerisi / $totalKelahiran) * 100, 1);
+
+    // 6. Urutan Kelahiran (ke-)
+    $kelahiranKeStat = $kelahiranQuery->clone()
+        ->select('kelahiran_kelahiranke', DB::raw('count(*) as jumlah'))
+        ->groupBy('kelahiran_kelahiranke')
+        ->orderBy('kelahiran_kelahiranke')
+        ->get()
+        ->map(function ($row) use ($totalKelahiran) {
+            $ke = $row->kelahiran_kelahiranke ?? 'Tidak diisi';
+            return [
+                'ke'     => $ke,
+                'jumlah' => $row->jumlah,
+                'persen' => round(($row->jumlah / $totalKelahiran) * 100, 1),
+            ];
+        })->toArray();
+
+    // 7. Distribusi Kelahiran per Wilayah
+    $kelahiranPerWilayah = $kelahiranQuery->clone()
+        ->leftJoin('master_desa', 'data_penduduk.kddesa', '=', 'master_desa.kddesa')
+        ->leftJoin('master_kecamatan', 'data_penduduk.kdkecamatan', '=', 'master_kecamatan.kdkecamatan')
+        ->selectRaw("
+            COALESCE(
+                master_desa.desa,
+                master_kecamatan.kecamatan,
+                'Wilayah Tidak Tercantum'
+            ) as nama_wilayah,
+            COUNT(*) as jumlah
+        ")
+        ->groupBy('data_penduduk.kddesa', 'master_desa.desa', 'master_kecamatan.kecamatan')
+        ->orderByDesc('jumlah')
+        ->get()
+        ->map(function ($row) use ($totalKelahiran) {
+            return [
+                'wilayah' => $row->nama_wilayah,
+                'jumlah'  => $row->jumlah,
+                'persen'  => round(($row->jumlah / $totalKelahiran) * 100, 1),
+            ];
+        })->toArray();
+
+    // Periode laporan
+    $periode = 'Tahun 2025';
+    $tanggal = Carbon::now()->translatedFormat('d F Y');
+
+    $pdf = Pdf::loadView('laporan.kelahiran', [
+        'periode'                  => $periode,
+        'tanggal'                  => $tanggal,
+        'totalKelahiran'           => $totalKelahiran,
+        'laki'                     => $laki,
+        'perempuan'                => $perempuan,
+        'persenLaki'               => $persenLaki,
+        'persenPerempuan'          => $persenPerempuan,
+        'tempatStat'               => $tempatStat,
+        'jenisStat'                => $jenisStat,
+        'tolongStat'               => $tolongStat,
+        'rataBerat'                => $rataBerat,
+        'rataPanjang'              => $rataPanjang,
+        'jumlahBBLR'               => $jumlahBBLR,
+        'persenBBLR'               => $persenBBLR,
+        'jumlahNormalBerat'        => $jumlahNormalBerat,
+        'persenNormalBerat'        => $persenNormalBerat,
+        'jumlahPendek'             => $jumlahPendek,
+        'persenPendek'             => $persenPendek,
+        'jumlahNormalPanjang'      => $jumlahNormalPanjang,
+        'persenNormalPanjang'      => $persenNormalPanjang,
+        'persenDataBeratTerisi'    => $persenDataBeratTerisi,
+        'persenDataPanjangTerisi'  => $persenDataPanjangTerisi,
+        'kelahiranKeStat'          => $kelahiranKeStat,
+        'kelahiranPerWilayah'      => $kelahiranPerWilayah,
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->stream('Laporan-Analisis-Kelahiran-2025-' . Carbon::now()->format('Y-m-d') . '.pdf');
+}
+>>>>>>> e0f04c7 (yaa)
 }
 
     //  public function getKabupatens($kdprovinsi)

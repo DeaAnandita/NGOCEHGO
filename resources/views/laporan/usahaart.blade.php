@@ -1,265 +1,161 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Laporan Analisis Usaha Rumah Tangga</title>
-    <style>
-        @page { margin: 20mm; size: A4; }
-        body { 
-            font-family: 'DejaVu Sans', sans-serif; 
-            color: #000; 
-            font-size: 11pt; 
-            line-height: 1.6; 
-            margin: 0; 
-            padding: 0;
-        }
-        .container { 
-            width: 100%; 
-            max-width: 780px; 
-            margin: 0 auto; 
-        }
-
-        /* HEADER */
-        h1 { 
-            text-align: center; 
-            font-size: 16pt; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            margin: 0 0 5px 0; 
-        }
-        .periode { 
-            text-align: center; 
-            font-size: 12pt; 
-            color: #333; 
-            margin-bottom: 20px; 
-        }
-
-        /* SUMMARY BOX */
-        .summary-box {
-            border: 1px solid #000;
-            padding: 12px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-            font-size: 11pt;
-        }
-        .summary-box p {
-            margin: 6px 0;
-        }
-
-        /* SECTION TITLE */
-        .section-title {
-            font-weight: bold;
-            font-size: 12pt;
-            margin: 20px 0 8px 0;
-        }
-
-        /* TABLE */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-            font-size: 10pt;
-        }
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        /* ANALYSIS BOX */
-        .analysis-box {
-            border: 1px solid #000;
-            padding: 12px;
-            margin: 15px 0;
-            background-color: #f9f9f9;
-        }
-        .analysis-box ul {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
-        .analysis-box li {
-            margin-bottom: 4px;
-        }
-
-        /* RECOMMENDATION BOX */
-        .recommendation-box {
-            border: 2px solid #4CAF50;
-            background-color: #e8f5e9;
-            padding: 12px;
-            margin: 20px 0;
-            border-radius: 6px;
-        }
-        .recommendation-box h3 {
-            margin: 0 0 10px 0;
-            font-size: 12pt;
-            color: #1b5e20;
-        }
-        .recommendation-box ul {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
-        .recommendation-box li {
-            margin-bottom: 6px;
-        }
-
-        /* KESIMPULAN */
-        .conclusion-box {
-            border: 1px solid #000;
-            background-color: #f9f9f9;
-            padding: 12px;
-            margin: 20px 0;
-            font-size: 11pt;
-        }
-
- /* FOOTER & TANGGAL CETAK - BERDEKATAN */
-        .footer {
-            border-top: 1px solid #ccc;
-            padding-top: 6px;
-            font-size: 11px;
-            color: #666;
-            margin-top: 25px;
-            margin-bottom: 6px;
-            line-height: 1.4;
-        }
-        .print-date {
-            font-size: 11px;
-            color: #666;
-            margin: 0;
-            line-height: 1.4;
-        }
-        
-    </style>
+<meta charset="UTF-8">
+<style>
+@page { margin: 20px 25px; }
+body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #111; line-height: 1.5; }
+.header { text-align:center; margin-bottom:12px; }
+.title { font-size:18px; font-weight:bold; text-transform:uppercase; }
+.subtitle { font-size:13px; margin-top:4px; }
+.summary { border:1px solid #d1d5db; background:#f9fafb; padding:10px; border-radius:5px; margin-bottom:12px; }
+h3 { font-size:13px; margin:16px 0 6px; }
+table { width:100%; border-collapse:collapse; margin-top:8px; }
+th, td { border:1px solid #d1d5db; padding:8px; font-size:12px; }
+th { background:#f3f4f6; text-align:center; }
+.box { border:1px solid #d1d5db; border-radius:5px; padding:10px; margin-top:12px; }
+.analisis { background:#fff7ed; }
+.rekomendasi { background:#f0fdf4; }
+.footer { margin-top:20px; font-size:11px; color:#6b7280; }
+</style>
 </head>
 <body>
-<div class="container">
-    
 
-    <!-- PAGE 1 -->
-    <h1>LAPORAN ANALISIS USAHA RUMAH TANGGA</h1>
-    <div class="periode">Periode: {{ now()->translatedFormat('F Y') }}</div>
+<div class="header">
+    <div class="title">Laporan Analisis Usaha Rumah Tangga</div>
+    <div class="subtitle">Periode: {{ $periode }}</div>
+</div>
 
-    <!-- RINGKASAN -->
-    <div class="summary-box">
-        <p><strong>Total Usaha Terdata:</strong> {{ $summary['total_usaha'] ?? 0 }}</p>
-        <p><strong>Skor Produktivitas Rata-rata:</strong> {{ $summary['score'] ?? 0 }} / 100</p>
-        <p><strong>Kategori Usaha:</strong> 
-            @if(!empty($summary['dominant_sector'][0]['sector']))
-                Mikro - Sektor {{ $summary['dominant_sector'][0]['sector'] }}
-            @else
-                Tidak Tersedia
-            @endif
-        </p>
-    </div>
+<div class="summary">
+    <p><strong>Total Usaha Rumah Tangga Terdata:</strong> {{ $totalUsaha }} usaha</p>
+    <p><strong>Rata-rata Jumlah Pekerja per Usaha:</strong> {{ $rataPekerja }} orang</p>
+    <p><strong>Lapangan Usaha Dominan:</strong> {{ $lapanganDominan }} ({{ $persenLapanganDominan }}%)</p>
+</div>
 
-    <!-- TABEL INDIKATOR -->
-    <div class="section-title">Rata-rata Indikator Usaha Rumah Tangga</div>
-    <table>
+<!-- Tabel-tabel tetap sama seperti sebelumnya -->
+<h3>Distribusi Lapangan Usaha</h3>
+<table>
+    <thead>
         <tr>
-            <th style="width: 8%;">No</th>
-            <th style="width: 50%;">Nama Indikator</th>
-            <th style="width: 42%;">Nilai Rata-rata / Dominan</th>
+            <th style="width:5%;">No</th>
+            <th>Lapangan Usaha</th>
+            <th style="width:20%;">Jumlah Usaha</th>
+            <th style="width:20%;">Persentase (%)</th>
         </tr>
+    </thead>
+    <tbody>
+        @foreach($lapanganUsaha as $nama => $v)
         <tr>
-            <td>1</td>
-            <td>Lapangan Usaha Dominan</td>
-            <td>
-                @forelse($summary['dominant_sector'] ?? [] as $item)
-                    {{ $item['sector'] }} ({{ $item['percentage'] }}%)<br>
-                @empty
-                    Tidak ada data.
-                @endforelse
-            </td>
+            <td align="center">{{ $loop->iteration }}</td>
+            <td>{{ $nama }}</td>
+            <td align="center">{{ $v['jumlah'] }}</td>
+            <td align="center">{{ $v['persen'] }}</td>
         </tr>
+        @endforeach
+    </tbody>
+</table>
+
+<h3>Distribusi Omzet Usaha per Bulan</h3>
+<table>
+    <thead>
         <tr>
-            <td>2</td>
-            <td>Persentase Memiliki Tempat Usaha</td>
-            <td>{{ $summary['place_percentage'] ?? 0 }}%</td>
+            <th style="width:8%;">No</th>
+            <th>Kategori Omzet</th>
+            <th style="width:25%;">Jumlah Usaha</th>
+            <th style="width:25%;">Persentase (%)</th>
         </tr>
+    </thead>
+    <tbody>
+        @foreach($omsetUsaha as $nama => $v)
         <tr>
-            <td>3</td>
-            <td>Kategori Omzet Terbanyak</td>
-            <td>{{ $summary['top_omzet'] ?? '-' }}</td>
+            <td align="center">{{ $loop->iteration }}</td>
+            <td>{{ $nama }}</td>
+            <td align="center">{{ $v['jumlah'] }}</td>
+            <td align="center">{{ $v['persen'] }}</td>
         </tr>
+        @endforeach
+    </tbody>
+</table>
+
+<h3>Status Kepemilikan Tempat Usaha</h3>
+<table>
+    <thead>
         <tr>
-            <td>4</td>
-            <td>Rata-rata Jumlah Pekerja per Usaha</td>
-            <td>{{ $summary['avg_pekerja'] ?? 0 }}</td>
+            <th style="width:8%;">No</th>
+            <th>Status Kepemilikan</th>
+            <th style="width:25%;">Jumlah Usaha</th>
+            <th style="width:25%;">Persentase (%)</th>
         </tr>
-    </table>
+    </thead>
+    <tbody>
+        @foreach($tempatUsaha as $nama => $v)
+        <tr>
+            <td align="center">{{ $loop->iteration }}</td>
+            <td>{{ $nama }}</td>
+            <td align="center">{{ $v['jumlah'] }}</td>
+            <td align="center">{{ $v['persen'] }}</td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
 
-    <!-- ANALISIS INTERPRETATIF -->
-    <div class="section-title">Analisis Interpretatif</div>
-    <div class="analysis-box">
-        <ul>
-            <li><strong>Sektor usaha dominan:</strong>
-                @foreach($summary['dominant_sector'] ?? [] as $item)
-                    {{ $item['sector'] }} ({{ $item['percentage'] }}%),
-                @endforeach
-            </li>
-            <li>{{ $summary['place_percentage'] ?? 0 }}% usaha memiliki tempat produksi atau jualan tetap.</li>
-            <li><strong>Omzet terbanyak:</strong> {{ $summary['top_omzet'] ?? '-' }}.</li>
-            <li><strong>Rata-rata jumlah pekerja:</strong> {{ $summary['avg_pekerja'] ?? 0 }} orang.</li>
-        </ul>
-        <p style="margin-top:10px;">
-           <p><strong>Interpretasi Umum:</strong> {{ $summary['general_interpretation'] }}</p>
-        </p>
-    </div>
+<div class="box analisis">
+    <h4>Analisis Interpretatif</h4>
+    <p>
+        Berdasarkan pengolahan data dari <strong>{{ $totalUsaha }}</strong> usaha rumah tangga terdata pada periode {{ $periode }},
+        sektor <strong>{{ $lapanganDominan }}</strong> menjadi lapangan usaha yang paling dominan dengan kontribusi sebesar 
+        <strong>{{ $persenLapanganDominan }}%</strong> dari total usaha.
+    </p>
+    <p>
+        Karakteristik usaha rumah tangga secara umum masih berskala mikro, terlihat dari rata-rata tenaga kerja 
+        hanya <strong>{{ $rataPekerja }} orang per usaha</strong> dan dominasi kategori omzet 
+        <strong>{{ $omsetDominan }}</strong> ({{ $persenOmsetDominan }}%).
+        @if($persenOmsetTerendah > 20)
+            Khususnya, sekitar <strong>{{ $persenOmsetTerendah }}%</strong> usaha berada pada kategori omzet terendah 
+            ({{ $omsetTerendah }}), menunjukkan masih rendahnya skala pendapatan mayoritas pelaku usaha.
+        @endif
+    </p>
+    <p>
+        Dari sisi kepemilikan tempat usaha, <strong>{{ $tempatDominan }}</strong> menjadi status yang paling banyak 
+        dipilih ({{ $persenTempatDominan }}%).
+        @if($persenMilikSendiri >= 50)
+            Positifnya, sebanyak <strong>{{ $persenMilikSendiri }}%</strong> usaha telah menggunakan tempat milik sendiri, 
+            yang menjadi aset penting untuk stabilitas dan pengembangan usaha jangka panjang.
+        @else
+            Namun, sebagian besar usaha masih bergantung pada tempat non-milik sendiri, sehingga rentan terhadap 
+            risiko kenaikan biaya sewa atau relokasi.
+        @endif
+    </p>
+    <p>
+        Secara keseluruhan, penguatan kapasitas produksi, akses modal, dan perluasan pasar menjadi prioritas 
+        untuk meningkatkan daya saing usaha rumah tangga di desa.
+    </p>
+</div>
 
-    <!-- REKOMENDASI -->
-    <div class="section-title">Rekomendasi Intervensi Pemerintah</div>
-    <div class="recommendation-box">
-        <h3>Program Bantuan Modal dan Peralatan</h3>
-        <ul>
-            <li>Penyaluran bantuan modal mikro melalui Dana Desa atau KUR Mikro.</li>
-            <li>Bantuan alat produksi sederhana untuk usaha kuliner, pertanian, dan kerajinan.</li>
-        </ul>
+<div class="box rekomendasi">
+    <h4>Rekomendasi Penguatan Usaha Rumah Tangga</h4>
+    <ul>
+        <li>Prioritaskan program pemberdayaan pada sektor dominan <strong>{{ $lapanganDominan }}</strong> 
+            melalui pelatihan khusus, bantuan alat produksi, dan pengembangan klaster usaha.</li>
 
-        <h3>Pelatihan Kewirausahaan dan Manajemen Usaha</h3>
-        <ul>
-            <li>Pelatihan pencatatan keuangan sederhana dan strategi pemasaran.</li>
-            <li>Workshop inovasi produk lokal agar memiliki nilai jual lebih tinggi.</li>
-        </ul>
+        <li>Tingkatkan kapasitas pelaku usaha dengan omzet rendah (kategori {{$omsetDominan}}) 
+            melalui pendampingan manajemen keuangan, akses kredit mikro, dan inovasi produk.</li>
 
-        <h3>Digitalisasi dan Akses Pasar Daring</h3>
-        <ul>
-            <li>Pembentukan platform e-marketplace desa (Ngoceh Go).</li>
-            <li>Pendampingan literasi digital agar usaha dapat memasarkan produk secara online.</li>
-        </ul>
+        <li>Dorong kepemilikan tempat usaha tetap melalui fasilitasi sertifikasi tanah, 
+            program kredit lunak untuk renovasi/pembangunan kios, atau penyediaan ruang usaha bersama.</li>
 
-        <h3>Pendampingan Akses Keuangan dan Koperasi Desa</h3>
-        <ul>
-            <li>Fasilitasi pembentukan koperasi usaha rumah tangga.</li>
-            <li>Pendampingan proposal pembiayaan ke lembaga mikro dan BUMDes.</li>
-        </ul>
+        <li>Kembangkan strategi pemasaran digital berbasis desa (marketplace lokal, media sosial kelompok usaha, 
+            live selling) untuk meningkatkan akses pasar produk {{ $lapanganDominan }} dan kategori usaha lainnya.</li>
 
-        <h3>Penguatan Klaster Usaha dan Zona Ekonomi Desa</h3>
-        <ul>
-            <li>Pengelompokan usaha berdasarkan sektor potensial (kuliner, pertanian, kerajinan).</li>
-            <li>Pembangunan pusat promosi produk lokal (galeri desa).</li>
-        </ul>
+        <li>Lakukan monitoring dan evaluasi berkala (setiap 6–12 bulan) terhadap perkembangan usaha 
+            pasca-intervensi untuk mengukur dampak program.</li>
+    </ul>
+</div>
 
-        <h3>Monitoring dan Evaluasi</h3>
-        <ul>
-            <li>Pemantauan kenaikan pendapatan usaha per 6 bulan.</li>
-            <li>Penilaian efektivitas bantuan modal dan pelatihan.</li>
-        </ul>
-    </div>
+<div class="footer">
+    <p>Laporan ini dihasilkan secara otomatis oleh <strong>Sistem NGOCEH GO</strong> berdasarkan data aktual dari website.</p>
+    <p>Tanggal Cetak: {{ $tanggal }}</p>
+</div>
 
-
-<!-- FOOTER + TANGGAL CETAK (BERDEKATAN, SATU HALAMAN) -->
-    <div class="footer">
-        Laporan ini dihasilkan otomatis oleh Sistem Ngoceh Go (Modul: Usaha ART)
-    </div>
-    <div class="print-date">
-        Tanggal Cetak: {{ $tanggal_cetak }}
-    </div>
-
-</div> <!-- end container -->
 </body>
 </html>

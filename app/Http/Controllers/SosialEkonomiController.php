@@ -138,23 +138,23 @@ private function getLaporanData()
     $data = DB::table('data_sosialekonomi as se')
         ->join('data_penduduk as p', 'se.nik', '=', 'p.nik')
         ->leftJoin('master_partisipasisekolah as mps', 'se.kdpartisipasisekolah', '=', 'mps.kdpartisipasisekolah')
-        ->leftJoin('master_tingkatsulitdisabilitas as mtd', 'se.kdtingkatsulitdisabilitas', '=', 'mtd.kdtingkatsulitdisabilitas')
-        ->leftJoin('master_statuskedudukankerja as msk', 'se.kdstatuskedudukankerja', '=', 'msk.kdstatuskedudukankerja')
-        ->leftJoin('master_ijasahterakhir as mij', 'se.kdijasahterakhir', '=', 'mij.kdijasahterakhir')
-        ->leftJoin('master_penyakitkronis as mpk', 'se.kdpenyakitkronis', '=', 'mpk.kdpenyakitkronis')
+        ->leftJoin('master_ijasahterakhir as mij', 'se.kdijasahterakhir', '=', 'mij.kdijasahterakhir')        
+        ->leftJoin('master_jenisdisabilitas as mjd', 'se.kdjenisdisabilitas', '=', 'mjd.kdjenisdisabilitas')	
+	    ->leftJoin('master_tingkatsulitdisabilitas as mtd', 'se.kdtingkatsulitdisabilitas', '=', 'mtd.kdtingkatsulitdisabilitas')
+        ->leftJoin('master_penyakitkronis as mpk', 'se.kdpenyakitkronis', '=', 'mpk.kdpenyakitkronis')       
+ 	    ->leftJoin('master_lapanganusaha as mlu', 'se.kdlapanganusaha', '=', 'mlu.kdlapanganusaha')        
+	    ->leftJoin('master_statuskedudukankerja as msk', 'se.kdstatuskedudukankerja', '=', 'msk.kdstatuskedudukankerja')
         ->leftJoin('master_pendapatanperbulan as mpp', 'se.kdpendapatanperbulan', '=', 'mpp.kdpendapatanperbulan')
-        ->leftJoin('master_jenisdisabilitas as mjd', 'se.kdjenisdisabilitas', '=', 'mjd.kdjenisdisabilitas')
-        ->leftJoin('master_lapanganusaha as mlu', 'se.kdlapanganusaha', '=', 'mlu.kdlapanganusaha')
         ->leftJoin('master_imunisasi as mi', 'se.kdimunisasi', '=', 'mi.kdimunisasi')
         ->select(
-            'se.kdpartisipasisekolah', 'mps.partisipasisekolah',
-            'se.kdtingkatsulitdisabilitas', 'mtd.tingkatsulitdisabilitas',
-            'se.kdstatuskedudukankerja', 'msk.statuskedudukankerja',
-            'se.kdijasahterakhir', 'mij.ijasahterakhir',
-            'se.kdpenyakitkronis', 'mpk.penyakitkronis',
+   'se.kdpartisipasisekolah', 'mps.partisipasisekolah',
+            'se.kdijasahterakhir', 'mij.ijasahterakhir',            
+            'se.kdjenisdisabilitas', 'mjd.jenisdisabilitas',	    
+	        'se.kdtingkatsulitdisabilitas', 'mtd.tingkatsulitdisabilitas',
+            'se.kdpenyakitkronis', 'mpk.penyakitkronis',            
+            'se.kdlapanganusaha', 'mlu.lapanganusaha',	    
+	        'se.kdstatuskedudukankerja', 'msk.statuskedudukankerja',
             'se.kdpendapatanperbulan', 'mpp.pendapatanperbulan',
-            'se.kdjenisdisabilitas', 'mjd.jenisdisabilitas',
-            'se.kdlapanganusaha', 'mlu.lapanganusaha',
             'se.kdimunisasi', 'mi.imunisasi'
         )
         ->get();
@@ -186,13 +186,13 @@ private function getLaporanData()
     $summary = [
         'total_penduduk' => $total,
         'partisipasisekolah' => $groupCount('kdpartisipasisekolah','partisipasisekolah'),
-        'tingkat_sulit' => $groupCount('kdtingkatsulitdisabilitas','tingkatsulitdisabilitas'),
-        'status_kerja' => $groupCount('kdstatuskedudukankerja','statuskedudukankerja'),
         'ijasah_terakhir' => $groupCount('kdijasahterakhir','ijasahterakhir'),
-        'penyakit_kronis' => $groupCount('kdpenyakitkronis','penyakitkronis'),
-        'pendapatan' => $groupCount('kdpendapatanperbulan','pendapatanperbulan'),
         'jenis_disabilitas' => $groupCount('kdjenisdisabilitas','jenisdisabilitas'),
+        'tingkat_sulit' => $groupCount('kdtingkatsulitdisabilitas','tingkatsulitdisabilitas'),
+        'penyakit_kronis' => $groupCount('kdpenyakitkronis','penyakitkronis'),
         'lapangan_usaha' => $groupCount('kdlapanganusaha','lapanganusaha'),
+        'status_kerja' => $groupCount('kdstatuskedudukankerja','statuskedudukankerja'),
+        'pendapatan' => $groupCount('kdpendapatanperbulan','pendapatanperbulan'),
         'imunisasi' => $groupCount('kdimunisasi','imunisasi'),
     ];
 
@@ -240,21 +240,7 @@ foreach ($summary as $field => $items) {
             }
             break;
 
-        // ======================= 2. Tingkat Kesulitan / Disabilitas =======================
-        case 'tingkat_sulit':
-            if (str_contains(strtolower($nama), 'tidak')) {
-                $interpretasi = "Mayoritas tidak memiliki disabilitas berat.";
-                $rekom = "Tidak termasuk target intervensi disabilitas.";
-            } elseif (str_contains(strtolower($nama), 'ringan')) {
-                $interpretasi = "Sebagian mengalami disabilitas ringan.";
-                $rekom = "Pelatihan kerja inklusif & bantuan alat bantu sederhana.";
-            } else {
-                $interpretasi = "Sebagian mengalami kesulitan berat dalam aktivitas sehari-hari.";
-                $rekom = "Program bantuan alat bantu, pelatihan adaptif, tunjangan sosial.";
-            }
-            break;
-
-            // ======================= 3. Ijasah terakhir =======================
+            // ======================= 2. Ijasah terakhir =======================
  case 'ijazah_terakhir':
 
     $namaLower = strtolower($nama);
@@ -316,8 +302,7 @@ foreach ($summary as $field => $items) {
 
     break;
 
-
-        // ======================= 4. Jenis Disabilitas =======================
+        // ======================= 3. Jenis Disabilitas =======================
         case 'jenis_disabilitas':
             if (str_contains(strtolower($nama), 'tidak')) {
                 $interpretasi = "Mayoritas masyarakat tanpa disabilitas.";
@@ -337,55 +322,21 @@ foreach ($summary as $field => $items) {
             }
             break;
 
-        // ======================= 5. Status Kedudukan Kerja =======================
-        case 'status_kerja':
-            if (str_contains(strtolower($nama), 'wirausaha') || str_contains(strtolower($nama), 'usaha sendiri')) {
-                $interpretasi = "Sebagian besar bekerja mandiri atau wirausaha.";
-                $rekom = "Program permodalan UMKM, pelatihan manajemen usaha, digitalisasi pemasaran.";
-            } elseif (str_contains(strtolower($nama), 'buruh') || str_contains(strtolower($nama), 'pekerja')) {
-                $interpretasi = "Mayoritas merupakan buruh atau pekerja lepas.";
-                $rekom = "Program pelatihan skill kerja, jaminan sosial ketenagakerjaan, peningkatan kesejahteraan pekerja.";
-            } elseif (str_contains(strtolower($nama), 'tidak bekerja')) {
-                $interpretasi = "Sebagian penduduk belum bekerja.";
-                $rekom = "Program padat karya, pelatihan kerja, serta fasilitasi penyaluran tenaga kerja lokal.";
+        // ======================= 4. Tingkat Kesulitan / Disabilitas =======================
+        case 'tingkat_sulit':
+            if (str_contains(strtolower($nama), 'tidak')) {
+                $interpretasi = "Mayoritas tidak memiliki disabilitas berat.";
+                $rekom = "Tidak termasuk target intervensi disabilitas.";
+            } elseif (str_contains(strtolower($nama), 'ringan')) {
+                $interpretasi = "Sebagian mengalami disabilitas ringan.";
+                $rekom = "Pelatihan kerja inklusif & bantuan alat bantu sederhana.";
             } else {
-                $interpretasi = "Data status kerja beragam.";
-                $rekom = "Pemantauan kondisi ekonomi rumah tangga dan diversifikasi sumber penghasilan.";
+                $interpretasi = "Sebagian mengalami kesulitan berat dalam aktivitas sehari-hari.";
+                $rekom = "Program bantuan alat bantu, pelatihan adaptif, tunjangan sosial.";
             }
             break;
 
-        // ======================= 6. Pendapatan =======================
-        case 'pendapatan':
-            if (str_contains($nama, '≤') || str_contains($nama, '1 juta')) {
-                $interpretasi = "Sebagian besar penduduk tergolong sangat miskin.";
-                $rekom = "Program BLT, subsidi pangan, bantuan usaha mikro.";
-            } elseif (str_contains($nama, '1-2')) {
-                $interpretasi = "Penduduk rentan miskin dengan penghasilan rendah.";
-                $rekom = "Pelatihan keterampilan, akses kredit mikro, pemberdayaan keluarga produktif.";
-            } elseif (str_contains($nama, '3')) {
-                $interpretasi = "Penduduk menengah ke bawah dengan penghasilan moderat.";
-                $rekom = "Diversifikasi usaha & akses permodalan usaha kecil.";
-            } else {
-                $interpretasi = "Pendapatan masyarakat relatif stabil.";
-                $rekom = "Edukasi investasi, penguatan UMKM.";
-            }
-            break;
-
-        // ======================= 7. Lapangan Usaha =======================
-        case 'lapangan_usaha':
-            if (str_contains(strtolower($nama), 'tani') || str_contains(strtolower($nama), 'pertanian')) {
-                $interpretasi = "Mayoritas bekerja di sektor pertanian.";
-                $rekom = "Pelatihan teknologi pertanian, akses pupuk & irigasi, modernisasi alat tani.";
-            } elseif (str_contains(strtolower($nama), 'dagang') || str_contains(strtolower($nama), 'umkm')) {
-                $interpretasi = "Sebagian besar bekerja di sektor perdagangan dan UMKM.";
-                $rekom = "Digitalisasi UMKM, pelatihan pemasaran online, dukungan modal usaha.";
-            } else {
-                $interpretasi = "Sektor kerja masyarakat beragam.";
-                $rekom = "Pendampingan usaha sesuai potensi dominan.";
-            }
-            break;
-
-        // ======================= 8. Penyakit Kronis =======================
+        // ======================= 5. Penyakit Kronis =======================
         case 'penyakit_kronis':
             if (str_contains(strtolower($nama), 'hipertensi')) {
                 $interpretasi = "Kasus terbanyak adalah hipertensi.";
@@ -402,6 +353,54 @@ foreach ($summary as $field => $items) {
             } else {
                 $interpretasi = "Sebagian masyarakat mengalami penyakit kronis umum lainnya.";
                 $rekom = "Pemeriksaan kesehatan rutin & edukasi gaya hidup sehat.";
+            }
+            break;
+
+        // ======================= 6. Lapangan Usaha =======================
+        case 'lapangan_usaha':
+            if (str_contains(strtolower($nama), 'tani') || str_contains(strtolower($nama), 'pertanian')) {
+                $interpretasi = "Mayoritas bekerja di sektor pertanian.";
+                $rekom = "Pelatihan teknologi pertanian, akses pupuk & irigasi, modernisasi alat tani.";
+            } elseif (str_contains(strtolower($nama), 'dagang') || str_contains(strtolower($nama), 'umkm')) {
+                $interpretasi = "Sebagian besar bekerja di sektor perdagangan dan UMKM.";
+                $rekom = "Digitalisasi UMKM, pelatihan pemasaran online, dukungan modal usaha.";
+            } else {
+                $interpretasi = "Sektor kerja masyarakat beragam.";
+                $rekom = "Pendampingan usaha sesuai potensi dominan.";
+            }
+            break;
+
+        // ======================= 7. Status Kedudukan Kerja =======================
+        case 'status_kerja':
+            if (str_contains(strtolower($nama), 'wirausaha') || str_contains(strtolower($nama), 'usaha sendiri')) {
+                $interpretasi = "Sebagian besar bekerja mandiri atau wirausaha.";
+                $rekom = "Program permodalan UMKM, pelatihan manajemen usaha, digitalisasi pemasaran.";
+            } elseif (str_contains(strtolower($nama), 'buruh') || str_contains(strtolower($nama), 'pekerja')) {
+                $interpretasi = "Mayoritas merupakan buruh atau pekerja lepas.";
+                $rekom = "Program pelatihan skill kerja, jaminan sosial ketenagakerjaan, peningkatan kesejahteraan pekerja.";
+            } elseif (str_contains(strtolower($nama), 'tidak bekerja')) {
+                $interpretasi = "Sebagian penduduk belum bekerja.";
+                $rekom = "Program padat karya, pelatihan kerja, serta fasilitasi penyaluran tenaga kerja lokal.";
+            } else {
+                $interpretasi = "Data status kerja beragam.";
+                $rekom = "Pemantauan kondisi ekonomi rumah tangga dan diversifikasi sumber penghasilan.";
+            }
+            break;
+
+        // ======================= 8. Pendapatan =======================
+        case 'pendapatan':
+            if (str_contains($nama, '≤') || str_contains($nama, '1 juta')) {
+                $interpretasi = "Sebagian besar penduduk tergolong sangat miskin.";
+                $rekom = "Program BLT, subsidi pangan, bantuan usaha mikro.";
+            } elseif (str_contains($nama, '1-2')) {
+                $interpretasi = "Penduduk rentan miskin dengan penghasilan rendah.";
+                $rekom = "Pelatihan keterampilan, akses kredit mikro, pemberdayaan keluarga produktif.";
+            } elseif (str_contains($nama, '3')) {
+                $interpretasi = "Penduduk menengah ke bawah dengan penghasilan moderat.";
+                $rekom = "Diversifikasi usaha & akses permodalan usaha kecil.";
+            } else {
+                $interpretasi = "Pendapatan masyarakat relatif stabil.";
+                $rekom = "Edukasi investasi, penguatan UMKM.";
             }
             break;
 
@@ -432,15 +431,36 @@ foreach ($summary as $field => $items) {
 
 }
     // Hitung persen & rekomendasi otomatis
+    //======================= 1. Partisipasi Sekolah =======================
     $analysis['partisipasisekolah']['persen'] = round($analysis['partisipasisekolah']['jumlah']/$total*100,1);
     $analysis['partisipasisekolah']['tinggi'] = $analysis['partisipasisekolah']['persen'] >= 10;
     $analysis['partisipasisekolah']['rekomendasi'] = $analysis['partisipasisekolah']['tinggi'] ? 'Program kejar paket, subsidi pendidikan, beasiswa, literasi orang tua.' : 'Pemantauan rutin partisipasi sekolah.';
-
+    //======================= 2. Ijasah terakhir =======================
+    $analysis['ijasah_terakhir']['persen'] = round($analysis['ijasah_terakhir']['jumlah']/$total*100,1);
+    $analysis['ijasah_terakhir']['tinggi'] = $analysis['ijasah_terakhir']['persen'] >= 30;
+    $analysis['ijasah_terakhir']['rekomendasi'] = $analysis['ijasah_terakhir']['tinggi'] ? 'Pelatihan skill dasar, literasi, beasiswa, program pendidikan nonformal.' : 'Pemantauan akses pendidikan.';
+    //======================= 3. Jenis Disabilitas =======================
+    $analysis['jenis_disabilitas']['persen'] = round($analysis['jenis_disabilitas']['jumlah']/$total*100,1);
+    $analysis['jenis_disabilitas']['tinggi'] = $analysis['jenis_disabilitas']['persen'] >= 5;
+    $analysis['jenis_disabilitas']['rekomendasi'] = $analysis['jenis_disabilitas']['tinggi'] ? 'Pelatihan kerja sesuai kemampuan, akses fasilitas disabilitas.' : 'Pemantauan inklusi disabilitas.';
+    //======================= 4. Tingkat Sulit Disabilitas =======================
     $analysis['tingkat_sulit']['persen'] = round($analysis['tingkat_sulit']['jumlah']/$total*100,1);
     $analysis['tingkat_sulit']['tinggi'] = $analysis['tingkat_sulit']['persen'] >= 2;
     $analysis['tingkat_sulit']['rekomendasi'] = $analysis['tingkat_sulit']['tinggi'] ? 'Bantuan alat bantu, pelatihan kerja inklusif, tunjangan sosial.' : 'Pemantauan akses layanan disabilitas.';
-
-    // ======================= STATUS KERJA =======================
+    //======================= 5.Penyakit Kronis =======================
+    $analysis['penyakit_kronis']['persen'] = round($analysis['penyakit_kronis']['jumlah']/$total*100,1);
+    $analysis['penyakit_kronis']['tinggi'] = $analysis['penyakit_kronis']['persen'] >= 8;
+    $analysis['penyakit_kronis']['rekomendasi'] = $analysis['penyakit_kronis']['tinggi'] ? 'Program kesehatan preventif, subsidi obat, screening rutin, edukasi hidup sehat.' : 'Pemantauan kesehatan rutin.';
+    //======================= 6. Lapangan Usaha =======================
+    $lapMax = collect($summary['lapangan_usaha'])->sortByDesc('jumlah')->first();
+    if($lapMax){
+        $analysis['lapangan_usaha']['max_nama'] = $lapMax['label'];
+        $analysis['lapangan_usaha']['jumlah'] = $lapMax['jumlah'];
+        $analysis['lapangan_usaha']['persen'] = round($lapMax['jumlah']/$total*100,1);
+        $analysis['lapangan_usaha']['pertanian_dominan'] = str_contains(strtoupper($lapMax['label']),'PERTANIAN') || str_contains(strtoupper($lapMax['label']),'PERIKANAN');
+        $analysis['lapangan_usaha']['rekomendasi'] = $analysis['lapangan_usaha']['pertanian_dominan'] ? 'Modernisasi pertanian, pelatihan usaha, akses pasar, diversifikasi usaha.' : 'Penguatan sektor dominan melalui pelatihan dan akses pasar.';
+    }
+    //======================= 7. Status Kerja =======================
     $tidak_dibayar = $analysis['status_kerja']['tidak_dibayar'] ?? 0;
     $wira = $analysis['status_kerja']['wira'] ?? 0;
 
@@ -451,35 +471,11 @@ foreach ($summary as $field => $items) {
     $analysis['status_kerja']['rekomendasi'] = $analysis['status_kerja']['tinggi']
         ? 'Pelatihan kewirausahaan, akses modal, diversifikasi usaha, jaminan sosial.'
         : 'Pemantauan kesejahteraan pekerja.';
-
-
-    $analysis['ijasah_terakhir']['persen'] = round($analysis['ijasah_terakhir']['jumlah']/$total*100,1);
-    $analysis['ijasah_terakhir']['tinggi'] = $analysis['ijasah_terakhir']['persen'] >= 30;
-    $analysis['ijasah_terakhir']['rekomendasi'] = $analysis['ijasah_terakhir']['tinggi'] ? 'Pelatihan skill dasar, literasi, beasiswa, program pendidikan nonformal.' : 'Pemantauan akses pendidikan.';
-
-    $analysis['penyakit_kronis']['persen'] = round($analysis['penyakit_kronis']['jumlah']/$total*100,1);
-    $analysis['penyakit_kronis']['tinggi'] = $analysis['penyakit_kronis']['persen'] >= 8;
-    $analysis['penyakit_kronis']['rekomendasi'] = $analysis['penyakit_kronis']['tinggi'] ? 'Program kesehatan preventif, subsidi obat, screening rutin, edukasi hidup sehat.' : 'Pemantauan kesehatan rutin.';
-
+    //======================= 8. Pendapatan Per Bulan =======================
     $analysis['pendapatan']['persen'] = round($analysis['pendapatan']['jumlah']/$total*100,1);
     $analysis['pendapatan']['tinggi'] = $analysis['pendapatan']['persen'] >= 25;
     $analysis['pendapatan']['rekomendasi'] = $analysis['pendapatan']['tinggi'] ? 'BLT, subsidi pangan, bantuan modal, pelatihan skill, akses kredit mikro.' : 'Pemantauan kesejahteraan ekonomi.';
-
-    $analysis['jenis_disabilitas']['persen'] = round($analysis['jenis_disabilitas']['jumlah']/$total*100,1);
-    $analysis['jenis_disabilitas']['tinggi'] = $analysis['jenis_disabilitas']['persen'] >= 5;
-    $analysis['jenis_disabilitas']['rekomendasi'] = $analysis['jenis_disabilitas']['tinggi'] ? 'Pelatihan kerja sesuai kemampuan, akses fasilitas disabilitas.' : 'Pemantauan inklusi disabilitas.';
-
-    // Lapangan usaha
-    $lapMax = collect($summary['lapangan_usaha'])->sortByDesc('jumlah')->first();
-    if($lapMax){
-        $analysis['lapangan_usaha']['max_nama'] = $lapMax['label'];
-        $analysis['lapangan_usaha']['jumlah'] = $lapMax['jumlah'];
-        $analysis['lapangan_usaha']['persen'] = round($lapMax['jumlah']/$total*100,1);
-        $analysis['lapangan_usaha']['pertanian_dominan'] = str_contains(strtoupper($lapMax['label']),'PERTANIAN') || str_contains(strtoupper($lapMax['label']),'PERIKANAN');
-        $analysis['lapangan_usaha']['rekomendasi'] = $analysis['lapangan_usaha']['pertanian_dominan'] ? 'Modernisasi pertanian, pelatihan usaha, akses pasar, diversifikasi usaha.' : 'Penguatan sektor dominan melalui pelatihan dan akses pasar.';
-    }
-
-    // Imunisasi
+    //======================= 9. Imunisasi =======================
     $analysis['imunisasi']['persen'] = round($analysis['imunisasi']['jumlah']/$total*100,1);
     $analysis['imunisasi']['tinggi'] = $analysis['imunisasi']['persen'] >= 15;
     $analysis['imunisasi']['rekomendasi'] = $analysis['imunisasi']['tinggi'] ? 'Program imunisasi gratis, edukasi orang tua, integrasi layanan kesehatan dan sosial.' : 'Pemantauan cakupan imunisasi.';
@@ -497,8 +493,6 @@ foreach ($analysis as $key => $val) {
         $auto_summary[] = "**{$judul}**: sebesar {$persen}%, rekomendasi: {$val['rekomendasi']}.";
     }
 }
-
-    
 
     $auto_summary_text = "Berdasarkan hasil analisis data sosial ekonomi penduduk, diperoleh gambaran sebagai berikut:\n\n" .
         implode("\n", $auto_summary) .
@@ -542,6 +536,6 @@ public function exportPdf()  // <-- TAMBAHKAN public
             'isFontSubsettingEnabled' => true,
         ]);
 
-    return $pdf->stream('Laporan-Sosial-Ekonomi' . now('Asia/Singapore')->format('Y-m-d') . '.pdf');        
+    return $pdf->stream('Laporan-Sosial-Ekonomi-' . now('Asia/Singapore')->format('Y-m-d') . '.pdf');        
 }
 }

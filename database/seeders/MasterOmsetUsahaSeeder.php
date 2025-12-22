@@ -15,10 +15,12 @@ class MasterOmsetUsahaSeeder extends Seeder
         //DB::table('master_omsetusaha')->truncate();
 
         DB::table('master_omsetusaha')->insert([
-            ['kdomsetusaha' => 1, 'omsetusaha' => 'KURANG DARI/SAMA DENGAN RP. 1 JUTA'],
-            ['kdomsetusaha' => 2, 'omsetusaha' => 'RP. 1 JUTA S/D RP. 5 JUTA'],
-            ['kdomsetusaha' => 3, 'omsetusaha' => 'RP. 5 JUTA S/D RP. 10 JUTA'],
-            ['kdomsetusaha' => 4, 'omsetusaha' => 'LEBIH DARI/SAMA DENGAN RP. 10 JUTA'],
+            ['kdomsetusaha' => 1, 'omsetusaha' => 'TIDAK BERPENGHASILAN'],
+            ['kdomsetusaha' => 2, 'omsetusaha' => 'KURANG DARI/SAMA DENGAN RP. 1 JUTA'],
+            ['kdomsetusaha' => 3, 'omsetusaha' => 'RP. 1 JUTA S/D RP. 5 JUTA'],
+            ['kdomsetusaha' => 4, 'omsetusaha' => 'RP. 5 JUTA S/D RP. 10 JUTA'],
+            ['kdomsetusaha' => 5, 'omsetusaha' => 'LEBIH DARI/SAMA DENGAN RP. 10 JUTA'],
+
         ]);
     }
 }

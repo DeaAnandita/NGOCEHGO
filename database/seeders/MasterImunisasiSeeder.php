@@ -22,6 +22,7 @@ class MasterImunisasiSeeder extends Seeder
             ['kdimunisasi' => 8, 'imunisasi' => 'CAMPAK'],
             ['kdimunisasi' => 9, 'imunisasi' => 'CACAR'],
             ['kdimunisasi' => 10, 'imunisasi' => 'SUDAH SEMUA'],
+            ['kdimunisasi' => 11, 'imunisasi' => 'BELUM SEMUA'],
         ]);
     }
 }

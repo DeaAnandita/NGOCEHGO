@@ -20,6 +20,8 @@ class MasterStatusKedudukanKerjaSeeder extends Seeder
             ['kdstatuskedudukankerja' => 6, 'statuskedudukankerja' => 'PEKERJA BEBAS PERTANIAN'],
             ['kdstatuskedudukankerja' => 7, 'statuskedudukankerja' => 'PEKERJA BEBAS NON PERTANIAN'],
             ['kdstatuskedudukankerja' => 8, 'statuskedudukankerja' => 'PEKERJA KELUARGA/TIDAK DIBAYAR'],
+            ['kdstatuskedudukankerja' => 9, 'statuskedudukankerja' => 'BELUM/TIDAK BEKERJA'],
+
         ]);
     }
 }

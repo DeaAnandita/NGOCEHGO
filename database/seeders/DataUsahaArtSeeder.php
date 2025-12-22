@@ -13,42 +13,152 @@ class DataUsahaArtSeeder extends Seeder
         DB::table('data_usahaart')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Ambil 15 NIK dari tabel data_penduduk
-        $nikList = DB::table('data_penduduk')->limit(15)->pluck('nik');
-
-        $usahaList = [
-            'Warung Sari Rasa',
-            'Toko Berkah Jaya',
-            'Laundry Bersih Kilat',
-            'Kedai Kopi Nusantara',
-            'CV Fadhila Gorden',
-            'Apiku Stove Craft',
-            'Warung Makan Bu Tini',
-            'Butik Anindya',
-            'Bengkel Motor Jaya',
-            'Toko Elektronik Abadi',
-            'Studio Foto Kenangan',
-            'Percetakan Citra Print',
-            'Usaha Roti Harum',
-            'Kios Sembako Laris',
-            'Warung Sate Maknyus'
-        ];
+        $nikList = DB::table('data_penduduk')->inRandomOrder()->limit(15)->pluck('nik');
 
         $records = [];
-        $i = 0;
 
-        foreach ($nikList as $nik) {
+        foreach ($nikList as $index => $nik) {
+            $profil = $this->getProfilUsaha($index + 1);
+
             $records[] = [
-                'nik' => $nik,
-                'kdlapanganusaha' => fake()->numberBetween(1, 21), // contoh: jasa, industri, perdagangan
-                'kdtempatusaha' => fake()->numberBetween(1, 2),   // rumah sendiri, sewa, kios
-                'kdomsetusaha' => fake()->numberBetween(1, 4),    // <1 jt, 1–3 jt, 3–5 jt, >5 jt
-                'usahaart_jumlahpekerja' => fake()->numberBetween(1, 8),
-                'usahaart_namausaha' => $usahaList[$i] ?? fake()->company(),
+                'nik'                    => $nik,
+                'kdlapanganusaha'        => $profil['kdlapanganusaha'],
+                'kdtempatusaha'          => $profil['kdtempatusaha'],
+                'kdomsetusaha'           => $profil['kdomsetusaha'],
+                'usahaart_jumlahpekerja' => $profil['jumlahpekerja'],
+                'usahaart_namausaha'     => $profil['namausaha'],
             ];
-            $i++;
         }
 
         DB::table('data_usahaart')->insert($records);
+    }
+
+    private function getProfilUsaha($no)
+    {
+        // 15 usaha dengan PETERNAKAN (kode 6) sebagai sektor paling dominan (muncul lebih sering)
+        $profils = [
+
+            1 => [
+                'namausaha'      => 'Peternakan Ayam Petelur Makmur',
+                'kdlapanganusaha'=> 6,  // Peternakan
+                'kdtempatusaha'  => 2,  // Punya tempat tetap
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 4,
+            ],
+
+            2 => [
+                'namausaha'      => 'Kandang Sapi Perah Jaya',
+                'kdlapanganusaha'=> 6,  // Peternakan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 4,
+                'jumlahpekerja'  => 5,
+            ],
+
+            3 => [
+                'namausaha'      => 'Peternakan Kambing Domba Sejahtera',
+                'kdlapanganusaha'=> 6,  // Peternakan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 3,
+            ],
+
+            4 => [
+                'namenaha'       => 'Peternakan Ayam Potong Barokah',
+                'kdlapanganusaha'=> 6,  // Peternakan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 6,
+            ],
+
+            5 => [
+                'namausaha'      => 'Ternak Bebek Pedaging Lestari',
+                'kdlapanganusaha'=> 6,  // Peternakan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 2,
+                'jumlahpekerja'  => 3,
+            ],
+
+            6 => [
+                'namausaha'      => 'Peternakan Ayam Kampung Mandiri',
+                'kdlapanganusaha'=> 6,  // Peternakan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 2,
+                'jumlahpekerja'  => 2,
+            ],
+
+            7 => [
+                'namausaha'      => 'Kandang Babi Modern',
+                'kdlapanganusaha'=> 6,  // Peternakan (disesuaikan konteks lokal jika perlu)
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 4,
+                'jumlahpekerja'  => 4,
+            ],
+
+            8 => [
+                'namausaha'      => 'Usaha Tani Padi Makmur',
+                'kdlapanganusaha'=> 1,  // Pertanian tanaman padi & palawija
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 3,
+            ],
+
+            9 => [
+                'namausaha'      => 'Kebun Sayur Hidroponik Segar',
+                'kdlapanganusaha'=> 2,  // Hortikultura
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 2,
+                'jumlahpekerja'  => 2,
+            ],
+
+            10 => [
+                'namausaha'      => 'Nelayan Laut Harapan',
+                'kdlapanganusaha'=> 4,  // Perikanan tangkap
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 3,
+            ],
+
+            11 => [
+                'namausaha'      => 'Kolam Ikan Nila Jaya',
+                'kdlapanganusaha'=> 5,  // Perikanan budidaya
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 2,
+            ],
+
+            12 => [
+                'namausaha'      => 'Toko Sembako Berkah',
+                'kdlapanganusaha'=> 12, // Perdagangan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 2,
+            ],
+
+            13 => [
+                'namausaha'      => 'Warung Makan Sederhana',
+                'kdlapanganusaha'=> 13, // Hotel & rumah makan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 2,
+                'jumlahpekerja'  => 3,
+            ],
+
+            14 => [
+                'namausaha'      => 'Jasa Angkut Barang Desa',
+                'kdlapanganusaha'=> 14, // Transportasi & pergudangan
+                'kdtempatusaha'  => 1,  // Tidak punya tempat tetap
+                'kdomsetusaha'   => 3,
+                'jumlahpekerja'  => 1,
+            ],
+
+            15 => [
+                'namausaha'      => 'Bakery Rumahan Lezat',
+                'kdlapanganusaha'=> 9,  // Industri pengolahan
+                'kdtempatusaha'  => 2,
+                'kdomsetusaha'   => 2,
+                'jumlahpekerja'  => 3,
+            ],
+        ];
+
+        return $profils[$no] ?? $profils[1];
     }
 }

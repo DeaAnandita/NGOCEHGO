@@ -8,23 +8,22 @@ use App\Models\MasterLapanganUsaha;
 use App\Models\MasterTempatUsaha;
 use App\Models\MasterOmsetUsaha;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class UsahaArtController extends Controller
 {
-    /**
-     * Display a listing of the resource.
+    /* ============================================================
+     *  🔹 INDEX – LIST DATA USAHA ART
+     * ============================================================
      */
     public function index(Request $request)
     {
-        // Ambil semua data usahaart dengan relasi penduduk
-        $search = $request->input('search');
-        $perPage = $request->input('per_page', 10); // default 10
+        $search  = $request->input('search');
+        $perPage = $request->input('per_page', 10);
 
-        $usahaarts = DataUsahaArt::with('penduduk')
+        $usahaarts = DataUsahaArt::with(['penduduk', 'lapanganusaha', 'tempatusaha', 'omsetusaha'])
             ->when($search, function ($query, $search) {
                 $query->where('nik', 'like', "%{$search}%")
                     ->orWhereHas('penduduk', function ($q) use ($search) {
@@ -33,215 +32,215 @@ class UsahaArtController extends Controller
             })
             ->orderBy('nik', 'asc')
             ->paginate($perPage)
-            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+            ->appends([
+                'search' => $search,
+                'per_page' => $perPage
+            ]);
 
-        $penduduks = DataPenduduk::all();
-
-        return view('penduduk.usahaart.index', compact('usahaarts', 'penduduks', 'search', 'perPage'));
+        return view('penduduk.usahaart.index', compact(
+            'usahaarts',
+            'search',
+            'perPage'
+        ));
     }
 
-    /**
-     * Show the form for creating a new resource.
+    /* ============================================================
+     *  🔹 CREATE – FORM INPUT USAHA ART
+     * ============================================================
      */
     public function create()
     {
         return view('penduduk.usahaart.create', [
-            'penduduks' => DataPenduduk::all(),
-            'lapangan_usahas' => MasterLapanganUsaha::all(),
-            'tempat_usahas' => MasterTempatUsaha::all(),
-            'omset_usahas' => MasterOmsetUsaha::all(),
+            'penduduks'        => DataPenduduk::orderBy('penduduk_namalengkap')->get(),
+            'lapangan_usahas'  => MasterLapanganUsaha::orderBy('lapanganusaha')->get(),
+            'tempat_usahas'   => MasterTempatUsaha::all(),
+            'omset_usahas'    => MasterOmsetUsaha::all(),
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
+    /* ============================================================
+     *  🔹 STORE – SIMPAN DATA USAHA ART
+     * ============================================================
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nik' => 'required|string|size:16|exists:data_penduduk,nik|unique:data_usahaart,nik',
-            'kdlapanganusaha' => 'required|integer|exists:master_lapanganusaha,kdlapanganusaha',
-            'usahaart_jumlahpekerja' => 'required|numeric|min:0',
-            'usahaart_namausaha' => 'required|string|max:255',
-            'kdtempatusaha' => 'required|integer|exists:master_tempatusaha,kdtempatusaha',
-            'kdomsetusaha' => 'required|integer|exists:master_omsetusaha,kdomsetusaha',
+        $request->validate([
+            'nik'                     => 'required|size:16|exists:data_penduduk,nik|unique:data_usahaart,nik',
+            'kdlapanganusaha'         => 'required|exists:master_lapanganusaha,kdlapanganusaha',
+            'usahaart_namausaha'      => 'required|string|max:255',
+            'usahaart_jumlahpekerja'  => 'required|integer|min:0',
+            'kdtempatusaha'           => 'required|exists:master_tempatusaha,kdtempatusaha',
+            'kdomsetusaha'            => 'required|exists:master_omsetusaha,kdomsetusaha',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        DataUsahaArt::create([
+            'nik'                    => $request->nik,
+            'kdlapanganusaha'        => $request->kdlapanganusaha,
+            'usahaart_namausaha'     => $request->usahaart_namausaha,
+            'usahaart_jumlahpekerja' => $request->usahaart_jumlahpekerja,
+            'kdtempatusaha'          => $request->kdtempatusaha,
+            'kdomsetusaha'           => $request->kdomsetusaha,
+        ]);
 
-        DataUsahaArt::create($request->all());
-
-        return redirect()->route('penduduk.usahaart.index')->with('success', 'Data usaha artisanal berhasil ditambahkan.');
+        return redirect()
+            ->route('penduduk.usahaart.index')
+            ->with('success', 'Data usaha rumah tangga berhasil ditambahkan.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
+    /* ============================================================
+     *  🔹 EDIT – FORM EDIT USAHA ART
+     * ============================================================
      */
     public function edit($nik)
     {
-        $usahaart = DataUsahaArt::findOrFail($nik);
+        $usahaart = DataUsahaArt::with(['penduduk'])->where('nik', $nik)->firstOrFail();
+
         return view('penduduk.usahaart.edit', [
-            'usahaart' => $usahaart,
-            'penduduks' => DataPenduduk::all(),
-            'lapangan_usahas' => MasterLapanganUsaha::all(),
-            'tempat_usahas' => MasterTempatUsaha::all(),
-            'omset_usahas' => MasterOmsetUsaha::all(),
+            'usahaart'         => $usahaart,
+            'penduduks'        => DataPenduduk::orderBy('penduduk_namalengkap')->get(),
+            'lapangan_usahas'  => MasterLapanganUsaha::orderBy('lapanganusaha')->get(),
+            'tempat_usahas'   => MasterTempatUsaha::all(),
+            'omset_usahas'    => MasterOmsetUsaha::all(),
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
+    /* ============================================================
+     *  🔹 UPDATE – UPDATE DATA USAHA ART
+     * ============================================================
      */
     public function update(Request $request, $nik)
     {
-        $validator = Validator::make($request->all(), [
-            'nik' => 'required|string|size:16|unique:data_usahaart,nik,' . $nik . ',nik',
-            'kdlapanganusaha' => 'required|integer|exists:master_lapanganusaha,kdlapanganusaha',
-            'usahaart_jumlahpekerja' => 'required|numeric|min:0',
-            'usahaart_namausaha' => 'required|string|max:255',
-            'kdtempatusaha' => 'required|integer|exists:master_tempatusaha,kdtempatusaha',
-            'kdomsetusaha' => 'required|integer|exists:master_omsetusaha,kdomsetusaha',
+        $request->validate([
+            'nik'                     => 'required|size:16|exists:data_penduduk,nik|unique:data_usahaart,nik,' . $nik . ',nik',
+            'kdlapanganusaha'         => 'required|exists:master_lapanganusaha,kdlapanganusaha',
+            'usahaart_namausaha'      => 'required|string|max:255',
+            'usahaart_jumlahpekerja'  => 'required|integer|min:0',
+            'kdtempatusaha'           => 'required|exists:master_tempatusaha,kdtempatusaha',
+            'kdomsetusaha'            => 'required|exists:master_omsetusaha,kdomsetusaha',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        $usahaart = DataUsahaArt::where('nik', $nik)->firstOrFail();
 
-        $usahaart = DataUsahaArt::findOrFail($nik);
-        $usahaart->update($request->all());
+        $usahaart->update([
+            'nik'                    => $request->nik,
+            'kdlapanganusaha'        => $request->kdlapanganusaha,
+            'usahaart_namausaha'     => $request->usahaart_namausaha,
+            'usahaart_jumlahpekerja' => $request->usahaart_jumlahpekerja,
+            'kdtempatusaha'          => $request->kdtempatusaha,
+            'kdomsetusaha'           => $request->kdomsetusaha,
+        ]);
 
-        return redirect()->route('penduduk.usahaart.index')->with('success', 'Data usaha artisanal berhasil diperbarui.');
+        return redirect()
+            ->route('penduduk.usahaart.index')
+            ->with('success', 'Data usaha rumah tangga berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
+    /* ============================================================
+     *  🔹 DESTROY – HAPUS DATA USAHA ART
+     * ============================================================
      */
     public function destroy($nik)
     {
-        $usahaart = DataUsahaArt::findOrFail($nik);
+        $usahaart = DataUsahaArt::where('nik', $nik)->firstOrFail();
         $usahaart->delete();
 
-        return redirect()->route('penduduk.usahaart.index')->with('success', 'Data usaha artisanal berhasil dihapus.');
-    }
-      private function getLaporanData()
-    {
-        // Ambil semua data usaha dengan relasi ke tabel master
-        $data = DB::table('data_usahaart')
-            ->leftJoin('master_lapanganusaha', 'data_usahaart.kdlapanganusaha', '=', 'master_lapanganusaha.kdlapanganusaha')
-            ->leftJoin('master_tempatusaha', 'data_usahaart.kdtempatusaha', '=', 'master_tempatusaha.kdtempatusaha')
-            ->leftJoin('master_omsetusaha', 'data_usahaart.kdomsetusaha', '=', 'master_omsetusaha.kdomsetusaha')
-            ->select(
-                'master_lapanganusaha.lapanganusaha',
-                'master_tempatusaha.tempatusaha',
-                'master_omsetusaha.omsetusaha',
-                'data_usahaart.usahaart_jumlahpekerja',
-                'data_usahaart.usahaart_namausaha'
-            )
-            ->get();
-
-        $total = $data->count();
-
-        if ($total == 0) {
-            return [
-                'data' => [],
-                'summary' => null,
-                'error' => 'Belum ada data usaha yang bisa dianalisis.'
-            ];
-        }
-
-        // === Hitung agregasi otomatis ===
-        $avg_pekerja = round($data->avg('usahaart_jumlahpekerja'), 2);
-
-        // Dominan sektor usaha
-        $dominant_sector = $data->groupBy('lapanganusaha')
-            ->map->count()
-            ->sortDesc()
-            ->take(3)
-            ->map(function ($count, $sector) use ($total) {
-                return [
-                    'sector' => $sector,
-                    'percentage' => round(($count / $total) * 100, 2)
-                ];
-            })
-            ->values();
-
-        // Persentase punya tempat usaha
-        $has_place = $data->where('tempatusaha', 'ADA')->count();
-        $place_percentage = round(($has_place / $total) * 100, 2);
-
-        // Omzet dominan
-        $omzet_counts = $data->groupBy('omsetusaha')->map->count();
-        $top_omzet = $omzet_counts->sortDesc()->keys()->first();
-
-        // Skor produktivitas sederhana
-        $score = round((($place_percentage + ($avg_pekerja * 10)) / 2), 2);
-
-$dominant = collect($dominant_sector ?? [])->pluck('sector')->join(', ');
-$place = $place_percentage ?? 0;
-$omzet = $top_omzet ?? '-';
-$avg = $avg_pekerja ?? 0;
-
-$general_interpretation = "Perlu penguatan modal, pelatihan manajemen usaha, serta digitalisasi pemasaran untuk meningkatkan pendapatan keluarga.";
-
-$summary = [
-    'total_usaha' => $total,
-    'avg_pekerja' => $avg_pekerja,
-    'dominant_sector' => $dominant_sector,
-    'place_percentage' => $place_percentage,
-    'top_omzet' => $top_omzet,
-    'score' => $score,
-    'general_interpretation' => $general_interpretation
-];
-
-
-
-        
-
-        return compact('data', 'summary');
+        return redirect()
+            ->route('penduduk.usahaart.index')
+            ->with('success', 'Data usaha rumah tangga berhasil dihapus.');
     }
 
-    /**
-     * Tampilkan laporan di browser (HTML)
-     */
-    public function laporan()
-    {
-        $laporan = $this->getLaporanData();
-
-        if (isset($laporan['error'])) {
-            return back()->with('error', $laporan['error']);
-        }
-
-        return view('laporan.usahaart', $laporan);
-    }
-
-    /**
-     * Export laporan ke PDF
+    /* ============================================================
+     *  📊 EXPORT PDF – ANALISIS USAHA RUMAH TANGGA (REAL DATA)
+     * ============================================================
      */
 public function exportPdf()
 {
-    $laporan = $this->getLaporanData();
+    $data = DB::table('data_usahaart')
+        ->join('master_lapanganusaha', 'data_usahaart.kdlapanganusaha', '=', 'master_lapanganusaha.kdlapanganusaha')
+        ->join('master_tempatusaha', 'data_usahaart.kdtempatusaha', '=', 'master_tempatusaha.kdtempatusaha')
+        ->join('master_omsetusaha', 'data_usahaart.kdomsetusaha', '=', 'master_omsetusaha.kdomsetusaha')
+        ->select(
+            'master_lapanganusaha.lapanganusaha',
+            'master_tempatusaha.tempatusaha',
+            'master_omsetusaha.omsetusaha',
+            'data_usahaart.usahaart_jumlahpekerja'
+        )
+        ->get();
 
-    if (isset($laporan['error'])) {
-        return back()->with('error', $laporan['error']);
+    if ($data->isEmpty()) {
+        return back()->with('error', 'Tidak ada data usaha rumah tangga untuk dianalisis.');
     }
 
-    // TANGGAL CETAK OTOMATIS (WAKTU SINGAPURA, format: 11 November 2025)
-    $tanggal_cetak = Carbon::now('Asia/Singapore')->translatedFormat('d F Y');
+    $totalUsaha = $data->count();
 
-    $pdf = Pdf::loadView('laporan.usahaart', array_merge($laporan, [
-        'tanggal_cetak' => $tanggal_cetak
-    ]))
-    ->setPaper('A4', 'portrait')
-    ->setOptions([
-        'defaultFont' => 'DejaVu Sans',
-        'isRemoteEnabled' => true,
-        'isHtml5ParserEnabled' => true,
-        'isFontSubsettingEnabled' => true,
-    ]);
+    // Distribusi Lapangan Usaha
+    $lapanganUsaha = $data->groupBy('lapanganusaha')
+        ->map(fn($i) => [
+            'jumlah' => $i->count(),
+            'persen' => round(($i->count() / $totalUsaha) * 100, 1)
+        ])
+        ->sortByDesc('jumlah');
 
-    return $pdf->stream('Laporan-Sosial-Ekonomi-' . now('Asia/Singapore')->format('Y-m-d') . '.pdf');
+    // Distribusi Omzet
+    $omsetUsaha = $data->groupBy('omsetusaha')
+        ->map(fn($i) => [
+            'jumlah' => $i->count(),
+            'persen' => round(($i->count() / $totalUsaha) * 100, 1)
+        ])
+        ->sortByDesc('jumlah'); // Urutkan dari terbanyak
+
+    // Distribusi Tempat Usaha
+    $tempatUsaha = $data->groupBy('tempatusaha')
+        ->map(fn($i) => [
+            'jumlah' => $i->count(),
+            'persen' => round(($i->count() / $totalUsaha) * 100, 1)
+        ])
+        ->sortByDesc('jumlah');
+
+    $rataPekerja = round($data->avg('usahaart_jumlahpekerja'), 2);
+
+    // Data dominan
+    $lapanganDominan = $lapanganUsaha->keys()->first();
+    $persenLapanganDominan = $lapanganUsaha->first()['persen'] ?? 0;
+
+    $omsetDominan = $omsetUsaha->keys()->first();
+    $persenOmsetDominan = $omsetUsaha->first()['persen'] ?? 0;
+
+    $tempatDominan = $tempatUsaha->keys()->first();
+    $persenTempatDominan = $tempatUsaha->first()['persen'] ?? 0;
+
+    // Omset terendah (untuk analisis skala mikro)
+    $omsetTerendah = $omsetUsaha->sortBy('jumlah')->keys()->first();
+    $persenOmsetTerendah = $omsetUsaha->sortBy('jumlah')->first()['persen'] ?? 0;
+
+    // Cek apakah mayoritas milik sendiri
+    $persenMilikSendiri = $tempatUsaha->firstWhere(fn($v, $k) => str_contains(strtolower($k), 'milik sendiri'))['persen']
+                          ?? $tempatUsaha->get('Milik Sendiri')['persen'] ?? 0;
+
+    $viewData = [
+        'periode'               => Carbon::now()->translatedFormat('F Y'),
+        'tanggal'               => Carbon::now()->translatedFormat('d F Y'),
+        'totalUsaha'            => $totalUsaha,
+        'rataPekerja'           => $rataPekerja,
+        'lapanganUsaha'         => $lapanganUsaha,
+        'omsetUsaha'            => $omsetUsaha,
+        'tempatUsaha'           => $tempatUsaha,
+
+        // Untuk analisis dinamis
+        'lapanganDominan'       => $lapanganDominan,
+        'persenLapanganDominan' => $persenLapanganDominan,
+        'omsetDominan'          => $omsetDominan,
+        'persenOmsetDominan'    => $persenOmsetDominan,
+        'omsetTerendah'         => $omsetTerendah,
+        'persenOmsetTerendah'   => $persenOmsetTerendah,
+        'tempatDominan'         => $tempatDominan,
+        'persenTempatDominan'   => $persenTempatDominan,
+        'persenMilikSendiri'    => $persenMilikSendiri,
+    ];
+
+    $pdf = Pdf::loadView('laporan.usahaart', $viewData)
+        ->setPaper('A4', 'portrait');
+
+    return $pdf->stream('Laporan-Analisis-Usaha-Rumah-Tangga-' . now()->format('Y-m-d') . '.pdf');
 }
-
 }

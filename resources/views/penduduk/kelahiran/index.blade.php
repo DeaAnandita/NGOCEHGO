@@ -38,6 +38,7 @@
                             </div>
                         </div>
                     </div>
+                    
 
                     <div class="flex flex-wrap items-center gap-2">
                         <form method="GET" action="{{ route('penduduk.kelahiran.index') }}" class="flex items-center gap-2">
