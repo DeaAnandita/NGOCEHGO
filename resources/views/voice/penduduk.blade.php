@@ -200,56 +200,36 @@
             {type:"select",label:"Apakah saat ini menjabat sebagai Anggota BPD?",field:"lemdes_9",options:masters.jawab_lemdes}
         ];
         // MODUL 7: LEMBAGA MASYARAKAT
-        questions[7] = [
+        questions[7] = [           
             {type:"select",label:"Apakah bapak/ibu pengurus RT?",field:"lemmas_1",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota pengurus RT?",field:"lemmas_2",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus RW?",field:"lemmas_3",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota pengurus RW?",field:"lemmas_4",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus LPM atau LKMD?",field:"lemmas_5",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota LPM atau LKMD?",field:"lemmas_6",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus PKK?",field:"lemmas_7",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota PKK?",field:"lemmas_8",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus lembaga adat?",field:"lemmas_9",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus Karang Taruna?",field:"lemmas_10",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota Karang Taruna?",field:"lemmas_11",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pernah jadi Hansip atau Linmas?",field:"lemmas_12",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus poskamling?",field:"lemmas_13",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi perempuan?",field:"lemmas_14",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi perempuan?",field:"lemmas_15",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi bapak-bapak?",field:"lemmas_16",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi bapak-bapak?",field:"lemmas_17",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi keagamaan?",field:"lemmas_18",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi keagamaan?",field:"lemmas_19",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi wartawan?",field:"lemmas_20",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi wartawan?",field:"lemmas_21",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus Posyandu?",field:"lemmas_22",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus Posyantekdes?",field:"lemmas_23",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus kelompok tani atau nelayan?",field:"lemmas_24",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota kelompok tani atau nelayan?",field:"lemmas_25",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus lembaga gotong royong?",field:"lemmas_26",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota lembaga gotong royong?",field:"lemmas_27",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi guru?",field:"lemmas_28",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi guru?",field:"lemmas_29",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi dokter atau tenaga medis?",field:"lemmas_30",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi tenaga medis?",field:"lemmas_31",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi pensiunan?",field:"lemmas_32",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi pensiunan?",field:"lemmas_33",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi pemirsa atau pendengar?",field:"lemmas_34",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi pemirsa?",field:"lemmas_35",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus kelompok pencinta alam?",field:"lemmas_36",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota kelompok pencinta alam?",field:"lemmas_37",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus organisasi ilmu pengetahuan?",field:"lemmas_38",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota organisasi ilmu pengetahuan?",field:"lemmas_39",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu memiliki atau mendirikan yayasan?",field:"lemmas_40",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus yayasan?",field:"lemmas_41",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota pengurus yayasan?",field:"lemmas_42",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus satgas kebersihan?",field:"lemmas_43",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota satgas kebersihan?",field:"lemmas_44",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus satgas kebakaran?",field:"lemmas_45",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota satgas kebakaran?",field:"lemmas_46",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus posko bencana?",field:"lemmas_47",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu anggota tim penanggulangan bencana?",field:"lemmas_48",options:masters.jawab_lemmas}
-        ];
+            {type:"select",label:"Apakah bapak/ibu pengurus posko bencana?",field:"lemmas_47",options:masters.jawab_lemmas}
+
+                    ];
         // MODUL 8: LEMBAGA EKONOMI
         questions[8] = [
             {type:"select",label:"Apakah memiliki atau terlibat dalam Koperasi?",field:"lemek_1",options:masters.jawab_lemek},
