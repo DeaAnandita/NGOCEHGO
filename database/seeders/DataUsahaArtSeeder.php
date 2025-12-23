@@ -63,7 +63,7 @@ class DataUsahaArtSeeder extends Seeder
             ],
 
             4 => [
-                'namenaha'       => 'Peternakan Ayam Potong Barokah',
+                'namausaha'       => 'Peternakan Ayam Potong Barokah',
                 'kdlapanganusaha'=> 6,  // Peternakan
                 'kdtempatusaha'  => 2,
                 'kdomsetusaha'   => 3,
