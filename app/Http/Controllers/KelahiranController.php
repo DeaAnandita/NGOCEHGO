@@ -42,8 +42,10 @@ class KelahiranController extends Controller
 
         $kelahirans = DataKelahiran::with(['penduduk', 'pertolonganPersalinan', 'jenisKelahiran', 'tempatPersalinan'])
             ->when($search, function ($query, $search) {
-                $query->where('nama_bayi', 'like', "%{$search}%")
-                    ->orWhereHas('penduduk', fn($q) => $q->where('nama_lengkap', 'like', "%{$search}%"));
+                $query->where('nik', 'like', "%{$search}%")
+                    ->orWhereHas('penduduk', function ($q) use ($search) {
+                    $q->where('penduduk_namalengkap', 'like', "%{$search}%");
+                   }); 
             })
             ->paginate($perPage)
             ->appends(['search' => $search, 'per_page' => $perPage]);

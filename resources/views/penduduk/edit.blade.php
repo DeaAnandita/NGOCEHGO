@@ -6,7 +6,21 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="text-xl font-bold text-gray-800 mb-6">Edit Data Penduduk</h3>
 
-                <form action="{{ route('dasar-penduduk.update', $penduduk->nik) }}" method="POST">
+                @php
+                    // Ambil teks mutasi dari relasi atau dari old input
+                    $mutasiText     = optional($penduduk->mutasi)->mutasimasuk ?? '';
+                    $currentMutasi  = old('kdmutasimasuk', $penduduk->kdmutasimasuk);
+                    // Cari teks mutasi yang sedang dipilih (untuk inisialisasi isDatang)
+                    $selectedMutasi = $mutasi_masuks->firstWhere('kdmutasimasuk', $currentMutasi);
+                    $mutasiText     = $selectedMutasi?->mutasimasuk ?? $mutasiText;
+                    $initialIsDatang = str_contains(strtolower($mutasiText), 'datang');
+                @endphp
+
+                <form action="{{ route('dasar-penduduk.update', $penduduk->nik) }}"
+                      method="POST"
+                      class="space-y-8"
+                      x-data="{ isDatang: {{ $initialIsDatang ? 'true' : 'false' }} }">
+
                     @csrf
                     @method('PUT')
 
@@ -248,84 +262,112 @@
                         </div>
                     </div>
 
-                    <!-- Wilayah Mutasi -->
-                    <div class="mb-8">
-                        <h4 class="text-sm font-semibold text-gray-700 mb-4">Wilayah Mutasi</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Mutasi Masuk</label>
-                                <select name="kdmutasimasuk" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Mutasi --</option>
-                                    @foreach($mutasi_masuks as $item)
-                                        <option value="{{ $item->kdmutasimasuk }}" {{ old('kdmutasimasuk', $penduduk->kdmutasimasuk) == $item->kdmutasimasuk ? 'selected' : '' }}>{{ $item->mutasimasuk }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kdmutasimasuk')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Tanggal Mutasi</label>
-                                <input type="date" name="penduduk_tanggalmutasi" value="{{ old('penduduk_tanggalmutasi', $penduduk->penduduk_tanggalmutasi) }}" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                @error('penduduk_tanggalmutasi')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Provinsi</label>
-                                <select name="kdprovinsi" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Provinsi --</option>
-                                    @foreach($provinsis as $item)
-                                        <option value="{{ $item->kdprovinsi }}" {{ old('kdprovinsi', $penduduk->kdprovinsi) == $item->kdprovinsi ? 'selected' : '' }}>{{ $item->provinsi }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kdprovinsi')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Kabupaten</label>
-                                <select name="kdkabupaten" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Kabupaten --</option>
-                                    @foreach($kabupatens as $item)
-                                        <option value="{{ $item->kdkabupaten }}" {{ old('kdkabupaten', $penduduk->kdkabupaten) == $item->kdkabupaten ? 'selected' : '' }}>{{ $item->kabupaten }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kdkabupaten')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Kecamatan</label>
-                                <select name="kdkecamatan" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Kecamatan --</option>
-                                    @foreach($kecamatans as $item)
-                                        <option value="{{ $item->kdkecamatan }}" {{ old('kdkecamatan', $penduduk->kdkecamatan) == $item->kdkecamatan ? 'selected' : '' }}>{{ $item->kecamatan }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kdkecamatan')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700">Desa</label>
-                                <select name="kddesa" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Desa --</option>
-                                    @foreach($desas as $item)
-                                        <option value="{{ $item->kddesa }}" {{ old('kddesa', $penduduk->kddesa) == $item->kddesa ? 'selected' : '' }}>{{ $item->desa }}</option>
-                                    @endforeach
-                                </select>
-                                @error('kddesa')
-                                    <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                @enderror
+                    <!-- Mutasi Masuk & Tanggal -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Mutasi Masuk</label>
+                            <select name="kdmutasimasuk"
+                                    @change="isDatang = $event.target.selectedOptions[0].text.toLowerCase().includes('datang')"
+                                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Pilih Mutasi --</option>
+                                @foreach($mutasi_masuks as $item)
+                                    <option value="{{ $item->kdmutasimasuk }}"
+                                        {{ old('kdmutasimasuk', $penduduk->kdmutasimasuk) == $item->kdmutasimasuk ? 'selected' : '' }}>
+                                        {{ $item->mutasimasuk }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('kdmutasimasuk') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Tanggal Mutasi -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Tanggal Mutasi</label>
+                            <input type="date" name="penduduk_tanggalmutasi"
+                                   value="{{ old('penduduk_tanggalmutasi', $penduduk->penduduk_tanggalmutasi) }}"
+                                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @error('penduduk_tanggalmutasi') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Wilayah Asal (Datang Dari) - DINAMIS -->
+                    <div x-show="isDatang" x-transition>
+                        <div class="mt-6">
+                            <h3 class="text-gray-700 font-semibold mb-4">Wilayah Asal (Datang Dari)</h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                <!-- Provinsi -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi <span class="text-red-500">*</span></label>
+                                    <select name="kdprovinsi" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Provinsi --</option>
+                                        @foreach($provinsis as $p)
+                                            <option value="{{ $p->kdprovinsi }}"
+                                                {{ old('kdprovinsi', $penduduk->kdprovinsi) == $p->kdprovinsi ? 'selected' : '' }}>
+                                                {{ $p->provinsi }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('kdprovinsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Kabupaten/Kota -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota <span class="text-red-500">*</span></label>
+                                    <select name="kdkabupaten" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Kabupaten/Kota --</option>
+                                        @foreach($kabupatens as $kab)
+                                            <option value="{{ $kab->kdkabupaten }}"
+                                                {{ old('kdkabupaten', $penduduk->kdkabupaten) == $kab->kdkabupaten ? 'selected' : '' }}>
+                                                {{ $kab->kabupaten }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('kdkabupaten') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Kecamatan -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan <span class="text-red-500">*</span></label>
+                                    <select name="kdkecamatan" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Kecamatan --</option>
+                                        @foreach($kecamatans as $kec)
+                                            <option value="{{ $kec->kdkecamatan }}"
+                                                {{ old('kdkecamatan', $penduduk->kdkecamatan) == $kec->kdkecamatan ? 'selected' : '' }}>
+                                                {{ $kec->kecamatan }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('kdkecamatan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Desa/Kelurahan -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan <span class="text-red-500">*</span></label>
+                                    <select name="kddesa" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Desa/Kelurahan --</option>
+                                        @foreach($desas as $d)
+                                            <option value="{{ $d->kddesa }}"
+                                                {{ old('kddesa', $penduduk->kddesa) == $d->kddesa ? 'selected' : '' }}>
+                                                {{ $d->desa }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('kddesa') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="mt-6 flex space-x-4 justify-end">
-                        <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">Simpan</button>
-                        <a href="{{ route('dasar-penduduk.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">Batal</a>
+                        <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200 shadow-sm">
+                            Simpan Perubahan
+                        </button>
+                        <a href="{{ route('dasar-penduduk.index') }}" class="bg-gray-200 text-gray-700 px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-gray-300 transition duration-200 shadow-sm">
+                            Batal
+                        </a>
                     </div>
                 </form>
             </div>
@@ -345,26 +387,11 @@
             });
         </script>
     @endpush
+
     @push('styles')
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <style>
-            .select2-container--default .select2-selection--single {
-                border: 1px solid #d1d5db;
-                border-radius: 0.375rem;
-                height: 38px;
-                padding: 0.5rem;
-                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            }
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
-                line-height: 28px;
-            }
-            .select2-container--default .select2-selection--single .select2-selection__arrow {
-                height: 36px;
-            }
-            .select2-container--default .select2-selection--single:focus {
-                border-color: #3b82f6;
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
-            }
+            /* style select2 tetap sama */
         </style>
     @endpush
 </x-app-layout>

@@ -162,6 +162,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     
 	// Routes untuk Penduduk
     Route::resource('penduduk', PendudukController::class)->except(['show'])->names('dasar-penduduk');
+    // AJAX Wilayah (bisa dipakai bersama)
+    Route::get('/get-kabupaten/{kdprovinsi}', [PendudukController::class, 'getKabupaten']);
+    Route::get('/get-kecamatan/{kdkabupaten}', [PendudukController::class, 'getKecamatan']);
+    Route::get('/get-desa/{kdkecamatan}', [PendudukController::class, 'getDesa']);
     // Penduduk 
     $pendudukControllers = [
         'kelahiran' => KelahiranController::class,

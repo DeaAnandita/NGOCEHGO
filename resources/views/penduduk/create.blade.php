@@ -280,111 +280,189 @@
                         </div>
                     </div>
 
-                    {{-- ===== WILAYAH DATANG (sama persis dengan form keluarga) ===== --}}
-                    <div x-show="isDatang" x-transition class="mt-8">
-                        <h3 class="text-gray-700 font-semibold mb-4">Wilayah Asal (Datang Dari)</h3>
+                    <!-- Wilayah Asal (Datang Dari) -->
+                        <div x-show="isDatang" x-transition>
+                            <h3 class="text-gray-700 font-semibold mb-4 mt-6">Wilayah Asal (Datang Dari)</h3>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
-                             x-data="{
-                                 provinsi: '{{ old('kdprovinsi') }}',
-                                 kabupaten: '{{ old('kdkabupaten') }}',
-                                 kecamatan: '{{ old('kdkecamatan') }}',
-                                 desa: '{{ old('kddesa') }}',
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                x-data="wilayahDatang()"
+                                x-init="init()">
 
-                                 kabupatens: [],
-                                 kecamatans: [],
-                                 desas: [],
+                                @php
+                                    $oldProv = old('kdprovinsi');
+                                    $oldKab  = old('kdkabupaten');
+                                    $oldKec  = old('kdkecamatan');
+                                    $oldDesa = old('kddesa');
+                                @endphp
 
-                                 async loadKabupaten() {
-                                     if (!this.provinsi) {
-                                         this.kabupatens = []; this.kabupaten = ''; this.resetLower(); return;
-                                     }
-                                     const res = await fetch(`/api/wilayah/kabupaten/${this.provinsi}`);
-                                     this.kabupatens = await res.json();
-                                     this.kabupaten = '';
-                                     this.resetLower();
-                                 },
-                                 async loadKecamatan() {
-                                     if (!this.kabupaten) {
-                                         this.kecamatans = []; this.kecamatan = ''; this.desas = []; this.desa = ''; return;
-                                     }
-                                     const res = await fetch(`/api/wilayah/kecamatan/${this.kabupaten}`);
-                                     this.kecamatans = await res.json();
-                                     this.kecamatan = '';
-                                     this.desas = []; this.desa = '';
-                                 },
-                                 async loadDesa() {
-                                     if (!this.kecamatan) { this.desas = []; this.desa = ''; return; }
-                                     const res = await fetch(`/api/wilayah/desa/${this.kecamatan}`);
-                                     this.desas = await res.json();
-                                 },
-                                 resetLower() {
-                                     this.kecamatans = []; this.kecamatan = '';
-                                     this.desas = []; this.desa = '';
-                                 }
-                             }"
-                             x-init="provinsi && loadKabupaten(); kabupaten && loadKecamatan(); kecamatan && loadDesa();">
+                                <script>
+                                function wilayahDatang() {
+                                    return {
+                                        provinsi: '{{ $oldProv }}',
+                                        kabupaten: '{{ $oldKab }}',
+                                        kecamatan: '{{ $oldKec }}',
+                                        desa: '{{ $oldDesa }}',
+                                        kabupatens: {},
+                                        kecamatans: {},
+                                        desas: {},
+                                        loadingKab: false,
+                                        loadingKec: false,
+                                        loadingDesa: false,
 
-                            <!-- Provinsi -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi</label>
-                                <select x-model="provinsi" @change="loadKabupaten()"
-                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Provinsi --</option>
-                                    @foreach($provinsis as $p)
-                                        <option value="{{ $p->kdprovinsi }}">{{ $p->provinsi }}</option>
-                                    @endforeach
-                                </select>
-                                <input type="hidden" name="kdprovinsi" :value="provinsi">
-                                @error('kdprovinsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
+                                        async loadKabupaten() {
+                                            if (!this.provinsi) {
+                                                this.kabupatens = {}; this.kabupaten = ''; this.kecamatans = {}; this.kecamatan = ''; this.desas = {}; this.desa = '';
+                                                return;
+                                            }
+                                            this.loadingKab = true;
+                                            try {
+                                                const res = await fetch(`/admin/get-kabupaten/${this.provinsi}`, {
+                                                    headers: {
+                                                        'Accept': 'application/json',
+                                                        'X-Requested-With': 'XMLHttpRequest',
+                                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                                                    }
+                                                });
+                                                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                                                const data = await res.json();
+                                                this.kabupatens = data;
 
-                            <!-- Kabupaten/Kota -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota</label>
-                                <select x-model="kabupaten" @change="loadKecamatan()"
-                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        :disabled="!provinsi">
-                                    <option value="">-- Pilih Kabupaten/Kota --</option>
-                                    <template x-for="kab in kabupatens" :key="kab.kdkabupaten">
-                                        <option :value="kab.kdkabupaten" x-text="kab.kabupaten"></option>
-                                    </template>
-                                </select>
-                                <input type="hidden" name="kdkabupaten" :value="kabupaten">
-                                @error('kdkabupaten') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
+                                                // *** FIX UTAMA: Paksa render ulang ***
+                                                this.$nextTick(() => {
+                                                    console.log('Kabupaten loaded:', data); // untuk debug
+                                                });
 
-                            <!-- Kecamatan -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
-                                <select x-model="kecamatan" @change="loadDesa()"
-                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        :disabled="!kabupaten">
-                                    <option value="">-- Pilih Kecamatan --</option>
-                                    <template x-for="kec in kecamatans" :key="kec.kdkecamatan">
-                                        <option :value="kec.kdkecamatan" x-text="kec.kecamatan"></option>
-                                    </template>
-                                </select>
-                                <input type="hidden" name="kdkecamatan" :value="kecamatan">
-                                @error('kdkecamatan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
+                                                // Reset lower levels
+                                                this.kabupaten = ''; this.kecamatans = {}; this.kecamatan = ''; this.desas = {}; this.desa = '';
+                                            } catch (e) {
+                                                console.error('Gagal memuat kabupaten:', e);
+                                                this.kabupatens = {};
+                                                alert('Gagal memuat kabupaten.');
+                                            } finally {
+                                                this.loadingKab = false;
+                                            }
+                                        },
 
-                            <!-- Desa/Kelurahan -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan</label>
-                                <select x-model="desa"
-                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                        :disabled="!kecamatan">
-                                    <option value="">-- Pilih Desa/Kelurahan --</option>
-                                    <template x-for="d in desas" :key="d.kddesa">
-                                        <option :value="d.kddesa" x-text="d.desa"></option>
-                                    </template>
-                                </select>
-                                <input type="hidden" name="kddesa" :value="desa">
-                                @error('kddesa') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                        async loadKecamatan() {
+                                            if (!this.kabupaten) return;
+                                            this.loadingKec = true;
+                                            try {
+                                                const res = await fetch(`/admin/get-kecamatan/${this.kabupaten}`, {
+                                                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '' }
+                                                });
+                                                const data = await res.json();
+                                                this.kecamatans = data;
+
+                                                this.$nextTick(() => {
+                                                    console.log('Kecamatan loaded:', data);
+                                                });
+
+                                                this.kecamatan = ''; this.desas = {}; this.desa = '';
+                                            } catch (e) {
+                                                console.error(e);
+                                                this.kecamatans = {};
+                                            } finally {
+                                                this.loadingKec = false;
+                                            }
+                                        },
+
+                                        async loadDesa() {
+                                            if (!this.kecamatan) return;
+                                            this.loadingDesa = true;
+                                            try {
+                                                const res = await fetch(`/admin/get-desa/${this.kecamatan}`, {
+                                                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '' }
+                                                });
+                                                const data = await res.json();
+                                                this.desas = data;
+
+                                                this.$nextTick(() => {
+                                                    console.log('Desa loaded:', data);
+                                                });
+                                            } catch (e) {
+                                                console.error(e);
+                                                this.desas = {};
+                                            } finally {
+                                                this.loadingDesa = false;
+                                            }
+                                        },
+
+                                        init() {
+                                            if (this.provinsi) {
+                                                this.loadKabupaten().then(() => {
+                                                    if (this.kabupaten) this.loadKecamatan().then(() => {
+                                                        if (this.kecamatan) this.loadDesa();
+                                                    });
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            </script>
+
+                                <!-- PROVINSI -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Provinsi <span class="text-red-500">*</span></label>
+                                    <select x-model="provinsi" @change="loadKabupaten()"
+                                            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Provinsi --</option>
+                                        @foreach($provinsis as $p)
+                                            <option value="{{ $p->kdprovinsi }}"
+                                                    x-bind:selected="provinsi === '{{ $p->kdprovinsi }}'">
+                                                {{ $p->provinsi }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="hidden" name="kdprovinsi" x-model="provinsi">
+                                    @error('kdprovinsi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- KABUPATEN -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kabupaten/Kota <span class="text-red-500">*</span></label>
+                                    <select x-model="kabupaten" @change="loadKecamatan()"
+                                            :disabled="!provinsi || loadingKab"
+                                            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Kabupaten/Kota --</option>
+                                        <template x-if="loadingKab"><option disabled>Memuat...</option></template>
+                                        <template x-for="kab in kabupatens" :key="kab.kdkabupaten">
+                                            <option :value="kab.kdkabupaten" x-text="kab.kabupaten"></option>
+                                        </template>
+                                    </select>
+                                    <input type="hidden" name="kdkabupaten" x-model="kabupaten">
+                                </div>
+
+                                <!-- KECAMATAN -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Kecamatan <span class="text-red-500">*</span></label>
+                                    <select x-model="kecamatan" @change="loadDesa()"
+                                            :disabled="!kabupaten || loadingKec"
+                                            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Kecamatan --</option>
+                                        <template x-if="loadingKec"><option disabled>Memuat...</option></template>
+                                        <template x-for="kec in kecamatans" :key="kec.kdkecamatan">
+                                            <option :value="kec.kdkecamatan" x-text="kec.kecamatan"></option>
+                                        </template>
+                                    </select>
+                                    <input type="hidden" name="kdkecamatan" x-model="kecamatan">
+                                </div>
+
+                                <!-- DESA -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Desa/Kelurahan <span class="text-red-500">*</span></label>
+                                    <select x-model="desa"
+                                            :disabled="!kecamatan || loadingDesa"
+                                            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Desa/Kelurahan --</option>
+                                        <template x-if="loadingDesa"><option disabled>Memuat...</option></template>
+                                        <template x-for="d in desas" :key="d.kddesa">
+                                            <option :value="d.kddesa" x-text="d.desa"></option>
+                                        </template>
+                                    </select>
+                                    <input type="hidden" name="kddesa" x-model="desa">
+                                </div>
                             </div>
                         </div>
-                    </div>
 
                     <!-- Submit Button -->
                     <div class="mt-6 flex space-x-4 justify-end">

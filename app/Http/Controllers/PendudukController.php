@@ -428,32 +428,32 @@ class PendudukController extends Controller
         return $pdf->stream('Laporan-Analisis-Data-Penduduk.pdf');
     }
 
-    public function kabupaten($kdprovinsi)
+    public function getKabupaten($kdprovinsi)
     {
-        $kabupatens = MasterKabupaten::where('kdprovinsi', $kdprovinsi)
-            ->select('kdkabupaten', 'kabupaten')
+        $kabupatens = DB::table('master_kabupaten')
+            ->where('kdprovinsi', $kdprovinsi)
             ->orderBy('kabupaten')
-            ->get();
+            ->get(['kdkabupaten', 'kabupaten']); // ambil sebagai collection of objects
 
         return response()->json($kabupatens);
     }
 
-    public function kecamatan($kdkabupaten)
+    public function getKecamatan($kdkabupaten)
     {
-        $kecamatans = MasterKecamatan::where('kdkabupaten', $kdkabupaten)
-            ->select('kdkecamatan', 'kecamatan')
+        $kecamatans = DB::table('master_kecamatan')
+            ->where('kdkabupaten', $kdkabupaten)
             ->orderBy('kecamatan')
-            ->get();
+            ->get(['kdkecamatan', 'kecamatan']);
 
         return response()->json($kecamatans);
     }
 
-    public function desa($kdkecamatan)
+    public function getDesa($kdkecamatan)
     {
-        $desas = MasterDesa::where('kdkecamatan', $kdkecamatan)
-            ->select('kddesa', 'desa')
+        $desas = DB::table('master_desa')
+            ->where('kdkecamatan', $kdkecamatan)
             ->orderBy('desa')
-            ->get();
+            ->get(['kddesa', 'desa']);
 
         return response()->json($desas);
     }
