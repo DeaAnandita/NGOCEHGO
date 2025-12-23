@@ -8,9 +8,7 @@
             </div>
         </div>
     @endslot
-
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <div class="max-w-7xl mx-auto py-8 px-6 space-y-6">
         <div class="flex justify-center">
             <button type="submit" id="simpanBtn" form="voiceForm"
@@ -19,12 +17,6 @@
                 Simpan Semua Data
             </button>
         </div>
-        <div class="mt-4">
-            <button id="bypassValidation" class="px-6 py-2 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600">
-                Lewati Validasi Suara (Testing Saja)
-            </button>
-        </div>
-
         <div id="inputArea" class="bg-white rounded-2xl shadow-lg p-6">
             <h2 id="modulTitle" class="text-2xl font-bold text-center mb-6 text-green-800">Input Data Keluarga via Suara</h2>
             <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
@@ -37,26 +29,23 @@
                 Tekan mic untuk mulai merekam...
             </div>
             <div id="quizArea" class="space-y-6"></div>
-
             <div class="flex items-center justify-center mt-10 space-x-4">
-                <!-- Tombol Mic / Stop -->
-                <button id="recordBtn" class="relative w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 z-10">
-                    <svg id="recordIcon" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
-                    </svg>
-                    <span class="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-75 hidden" id="pulseRing"></span>
-                </button>
-
-                <!-- Visualizer + Placeholder Text -->
-                <div class="relative w-72 h-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-full shadow-inner overflow-hidden flex items-center justify-center">
-                    <canvas id="visualizer" class="absolute inset-0 w-full h-full px-6 hidden"></canvas>
-                    <div id="visualizerPlaceholder" class="absolute text-gray-500 text-sm font-medium pointer-events-none">
-                        Klik mic untuk mulai merekam
-                    </div>
+            <!-- Tombol Mic / Stop -->
+            <button id="recordBtn" class="relative w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 z-10">
+                <svg id="recordIcon" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
+                </svg>
+                <span class="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-75 hidden" id="pulseRing"></span>
+            </button>
+            <!-- Visualizer + Placeholder Text -->
+            <div class="relative w-72 h-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-full shadow-inner overflow-hidden flex items-center justify-center">
+                <canvas id="visualizer" class="absolute inset-0 w-full h-full px-6 hidden"></canvas>
+                <div id="visualizerPlaceholder" class="absolute text-gray-500 text-sm font-medium pointer-events-none">
+                    Klik mic untuk mulai merekam
                 </div>
             </div>
         </div>
-
+        </div>
         <div id="reviewForm" class="hidden bg-white rounded-2xl shadow-lg p-6 mt-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-center text-green-700">Review & Edit Data</h3>
@@ -68,7 +57,6 @@
             </form>
         </div>
     </div>
-
     <div id="loadingOverlay" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 flex flex-col items-center justify-center z-50">
         <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center transform transition-all duration-300 scale-100">
             <div class="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
@@ -78,29 +66,25 @@
             <p class="text-sm text-gray-500">Proses penyimpanan 12 modul data keluarga</p>
         </div>
     </div>
-
     <style>
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .option-card {
             transition: all .3s; border: 2px solid #e5e7eb; cursor: pointer;
-            padding: 1rem; border-radius: 1rem; text-align: center; 
+            padding: 1rem; border-radius: 1rem; text-align: center;
         }
         .option-card:hover { background-color: #f0fdfa; border-color: #14b8a6; }
         .option-card.selected { background-color: #ccfbf1 !important; border-color: #14b8a6 !important; box-shadow: 0 0 0 3px rgba(20,184,166,.2); }
-
         /* Recording state */
         #recordBtn.recording {
             background: linear-gradient(to bottom right, #ef4444, #dc2626) !important;
-            
+           
         }
         #recordBtn.recording #pulseRing { display: block; }
-
         /* Visualizer aktif → placeholder hilang */
         #visualizer.show { display: block !important; }
         #visualizerPlaceholder.hide { display: none !important; }
     </style>
-
     <script>
         // ==================== DATA FROM LARAVEL ====================
         const masters = @json($masters);
@@ -123,7 +107,6 @@
         const jawabKualitasIbuHamilOptions = @json($jawabKualitasIbuHamilOptions);
         const kualitasBayiOptions = @json($kualitasBayiOptions);
         const jawabKualitasBayiOptions = @json($jawabKualitasBayiOptions);
-
         // ==================== STATE ====================
         let currentModul = 1;
         let step = 0;
@@ -134,16 +117,13 @@
         let audioContext = null, analyser = null, dataArray = null, canvas = null, ctx = null;
         let isSpeaking = false;
         let isReviewMode = false;
-
         const modules = [
             {id:1,name:"Data Keluarga"},{id:2,name:"Prasarana Dasar"},{id:3,name:"Aset Keluarga"},
             {id:4,name:"Aset Lahan Tanah"},{id:5,name:"Aset Ternak"},{id:6,name:"Aset Perikanan"},
             {id:7,name:"Sarpras Kerja"},{id:8,name:"Bangun Keluarga"},{id:9,name:"Sejahtera Keluarga"},
             {id:10,name:"Konflik Sosial"},{id:11,name:"Kualitas Ibu Hamil"},{id:12,name:"Kualitas Bayi"}
         ];
-
         const questions = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[],11:[],12:[]};
-
         // ==================== BUILD QUESTIONS ====================
         questions[1] = [
             {type:"text",label:"Sebutkan nomor kartu keluarga, 16 digit",field:"no_kk"},
@@ -154,7 +134,6 @@
             {type:"number",label:"RT berapa?",field:"keluarga_rt"},
             {type:"text",label:"Sebutkan alamat lengkapnya",field:"keluarga_alamatlengkap"}
         ];
-
         questions[2] = [
             {type:"select",label:"Status Pemilik Bangunan",field:"kdstatuspemilikbangunan",options:masters.status_pemilik_bangunan},
             {type:"select",label:"Status Pemilik Lahan",field:"kdstatuspemiliklahan",options:masters.status_pemilik_lahan},
@@ -178,7 +157,6 @@
             {type:"number",label:"Luas Lantai Rumah ini dalam meter persegi",field:"prasdas_luaslantai"},
             {type:"number",label:"Ada berapa kamar tidur di rumah ini",field:"prasdas_jumlahkamar"}
         ];
-
         Object.entries(asetKeluargaOptions).forEach(([kd,label])=>questions[3].push({type:"select",label:label,field:`asetkeluarga_${kd}`,options:jawabOptions}));
         Object.entries(lahanOptions).forEach(([kd,label])=>questions[4].push({type:"text",label:label,field:`asetlahan_${kd}`,isLahan:true}));
         Object.entries(asetTernakOptions).forEach(([kd,label])=>questions[5].push({type:"text",label:label,field:`asetternak_${kd}`,isTernak:true}));
@@ -218,7 +196,7 @@
             {type:"select",label:"Kecamatan asalnya apa?",field:"kdkecamatan",dynamic:true,parentField:"kdkabupaten",dynamicUrl:"/get-kecamatan/"},
             {type:"select",label:"Desa atau kelurahan asalnya apa?",field:"kddesa",dynamic:true,parentField:"kdkecamatan",dynamicUrl:"/get-desa/"}
         ];
-        
+       
         // Insert wilayah jika mutasi datang (akan ditangani dinamis)
         function injectWilayahIfNeeded() {
             const idx = questions[1].findIndex(q => q.field === "kdmutasimasuk");
@@ -230,7 +208,6 @@
                 ["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].forEach(f=>delete answers[f]);
             }
         }
-
         // ==================== UTILITIES ====================
         function capitalize(t){return t.replace(/\b\w/g,l=>l.toUpperCase());}
         function pad3(n){return String(n).padStart(3,'0');}
@@ -269,14 +246,8 @@
                 speechSynthesis.speak(u);
             });
         }
-
         // ==================== CORE FUNCTIONS ====================
         function initFresh(){
-            voiceValidated = false;
-            if (mediaRecorder) mediaRecorder = null;
-            audioChunks = [];
-            document.getElementById('recordBtn').disabled = false;
-            document.getElementById('recordBtn').classList.remove('opacity-50', 'cursor-not-allowed');
             localStorage.clear(); currentModul=1; step=0;
             answers={keluarga_tanggalmutasi:new Date().toISOString().split('T')[0]};
             modulStatus={1:'active',2:'pending',3:'pending',4:'pending',5:'pending',6:'pending',7:'pending',8:'pending',9:'pending',10:'pending',11:'pending',12:'pending'};
@@ -287,7 +258,6 @@
             document.getElementById('quizArea').innerHTML=''; document.getElementById('voice-status').innerText='Tekan mic untuk mulai merekam...';
             updateProgressSteps(); renderQuestion(); checkAllCompletedAndShowSimpanBtn();
         }
-
         function saveData(){
             localStorage.setItem('voiceAnswers',JSON.stringify(answers));
             localStorage.setItem('modulStatus',JSON.stringify(modulStatus));
@@ -315,7 +285,6 @@
                 }
             });
         }
-
         function updateProgressSteps(){
             const c=document.getElementById('progressSteps'); c.innerHTML='';
             modules.forEach((m,i)=>{
@@ -328,7 +297,6 @@
                 d.appendChild(circle); d.appendChild(txt); c.appendChild(d);
             });
         }
-
         function switchModul(id){
             stopListening(); saveData(); loadModulData(id);
             document.getElementById('reviewForm').classList.add('hidden');
@@ -342,29 +310,26 @@
                 renderQuestion();
             }
         }
-
         function stopListening(){
             if(recognition){recognition.stop();recognition=null;}
             if(audioContext){audioContext.close().catch(()=>{});audioContext=null;}
             analyser=null; isListening=false;
-            
+           
             document.getElementById('recordBtn').classList.remove('recording');
             document.getElementById('visualizer').classList.remove('show');
             document.getElementById('visualizerPlaceholder').classList.remove('hide');
-            
+           
             document.getElementById('recordIcon').innerHTML = `
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                    d="M19 11a7 7 0 01-7 7m0 0a7 7  0 01-7-7m7 7v4m0 0H8m4 0h4" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
             `;
             document.getElementById('voice-status').innerText = 'Merekam dihentikan. Klik mic untuk mulai lagi...';
         }
-
         function checkAllCompletedAndShowSimpanBtn(){
             const allDone=Object.values(modulStatus).every(s=>s==='completed');
             const b=document.getElementById('simpanBtn');
             if(allDone){b.style.backgroundColor='#2563eb';b.disabled=false;}else{b.style.backgroundColor='#9ca3af';b.disabled=true;}
         }
-
         function updateProgress(){
             const total=questions[currentModul].length;
             const pct=((step+1)/total)*100;
@@ -372,7 +337,6 @@
             document.getElementById('currentQ').textContent=step+1;
             document.getElementById('totalQ').textContent=total;
         }
-
         async function renderQuestion(){
             const q=questions[currentModul][step];
             if(q.dynamic && !q.options){
@@ -390,9 +354,8 @@
                 }
             }
             let html='';
-
             if(currentModul===3&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">YA</strong> / <strong class="mx-2">TIDAK</strong> / <strong class="mx-2">KOSONG</strong></div>`;
-            if(currentModul===4&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong>"Tidak Memiliki"</strong> atau <strong>angka hektar</strong></div>`;
+            if(currentModul===4&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong>"tidak punya"</strong> atau <strong>angka hektar</strong></div>`;
             if(currentModul===5&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka jumlah ekor, atau "tidak ada"</div>`;
             if(currentModul===6&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab dengan angka jumlah atau "tidak ada"</div>`;
             if(currentModul===7&&step===0) html+=`<div class="bg-blue-50 border border-blue-300 text-blue-800 p-5 rounded-xl text-center font-medium mb-6 leading-relaxed">
@@ -412,14 +375,12 @@
             if(currentModul===11&&step===0) html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">Jawab: <strong class="mx-2">1</strong> ADA / <strong class="mx-2">2</strong> PERNAH ADA / <strong class="mx-2">3</strong> TIDAK ADA</div>`;
             if(currentModul === 12 && step===0){
                 html+=`<div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-center font-medium mb-6">
-                        Jawab: <strong class="mx-2">1</strong> ADA / 
-                            <strong class="mx-2">2</strong> PERNAH ADA / 
+                        Jawab: <strong class="mx-2">1</strong> ADA /
+                            <strong class="mx-2">2</strong> PERNAH ADA /
                             <strong class="mx-2">3</strong> TIDAK ADA
                     </div>`;
             }
-
             html+=`<h3 class="text-lg font-medium text-center mb-6 text-gray-800">${q.label}</h3>`;
-
             if(q.type==="select"){
                 let cols = currentModul===3?2:(currentModul===8?2:(currentModul===7?3:(currentModul===8?3:(currentModul===10?2:3))));
                 let gridClass = `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto`;
@@ -437,7 +398,6 @@
             updateProgress();
             attachCardListeners();
         }
-
         function attachCardListeners(){
             document.querySelectorAll('.option-card').forEach(c=>{
                 c.onclick=()=>{
@@ -447,13 +407,10 @@
                 };
             });
         }
-
         // ==================== PERUBAHAN UTAMA: SARPRAS KERJA (MODUL 7) ====================
         async function speakQuestionAndOptions(){
             //await speak(`Pendataan data ${modules.find(m=>m.id===currentModul).name} dimulai.`);
-
             const q = questions[currentModul][step];
-
             // MODUL 7: Jelaskan pilihan 1-6 HANYA SEKALI DI AWAL
             if(currentModul === 7 && step === 0){
                 await speak("Modul Sarpras Kerja dimulai.");
@@ -466,7 +423,6 @@
                 await speak("6. Tidak memiliki");
                 await new Promise(r => setTimeout(r, 4000)); // beri waktu user menghafal
             }
-
             // Hint suara biasa untuk modul lain
             if(currentModul===3&&step===0){await speak("Modul Aset Keluarga. Jawab YA, TIDAK, atau KOSONG.");}
             if(currentModul===4&&step===0){await speak("Modul Aset Lahan Tanah. Jawab 'tidak punya' atau angka hektar.");}
@@ -496,99 +452,24 @@
                 .replace(/\//g, ' atau ')
                 .replace(/\&/g, ' dan ')
                 .replace(/SARA/g, 'sara')
-                .replace(/MEUBLER/g, 'meubler')
-                .replace(/TERAPHY/g, 'terapi')
-                .replace(/KONTRUKSI/g, 'konstruksi')
-                .replace(/AKSES/g, 'akses')
-                .replace(/SANITASI/g, 'sanitasi')
-                .replace(/BAB/g, 'b a b')
                 .replace(/HIV\/AIDS/g, 'HIV AIDS')
                 .replace(/\s+/g, ' ')
                 .trim();
-
             await speak(pertanyaanDibaca);
-
-            // === TRIGGER REKAMAN VALIDASI SUARA DI PERTANYAAN PERTAMA ===
-            if (currentModul === 1 && step === 0) {
-                if (!voiceValidated) {
-                    await speak("Sebelum memulai, saya akan memvalidasi suara Anda untuk mencegah duplikasi data.");
-                    await speak("Rekaman ini hanya untuk validasi suara.");
-                    startVoiceValidationRecording();
-                } else {
-                    await speak("");
-                }
-            }
-
             // Baca pilihan hanya untuk modul yang butuh (kecuali modul 7, dan skip untuk wilayah datang)
-            if(q.type==="select" && currentModul !== 7 && ![3,8,10,11,7].includes(currentModul) && !["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].includes(q.field)){
+            if(q.type==="select" && currentModul !== 7 && ![3,8,10,11].includes(currentModul) && !["kdprovinsi","kdkabupaten","kdkecamatan","kddesa"].includes(q.field)){
                 const opts=Object.values(q.options);
                 for(let i=0;i<opts.length;i++){
                     await speak(`${i+1}. ${cleanOptionText(opts[i])}`);
                     if(i<opts.length-1)await new Promise(r=>setTimeout(r,100));
                 }
             }
-
             document.getElementById('voice-status').innerText='Mendengarkan...';
         }
-
         async function processVoiceAnswer(text){
             if(isSpeaking) return;
             const q = questions[currentModul][step];
             let value = text;
-
-            // === KHUSUS PERTANYAAN PERTAMA (no_kk) → VALIDASI SUARA ===
-            // Tapi kita pisahkan: validasi suara dulu, baru jawab no_kk
-            if (currentModul === 1 && step === 0) {
-                // Jika BELUM lolos validasi suara → blokir jawaban no_kk
-                if (!voiceValidated) {
-                    await speak("Mohon tunggu, sedang memvalidasi suara Anda terlebih dahulu.");
-                    return;
-                }
-
-                // Jika SUDAH lolos validasi → proses no_kk seperti biasa
-                let digits = text.replace(/\D/g, '');
-
-                if (digits.length < 16) {
-                    if (digits.length === 0) {
-                        await speak("Maaf, saya tidak mendengar angka. Ulangi nomor Kartu Keluarga 16 digit dengan jelas.");
-                    } else {
-                        await speak(`Saya mendengar hanya ${digits.length} digit. Harus 16 digit. Ulangi dari awal.`);
-                    }
-                    return;
-                }
-
-                if (digits.length > 16) {
-                    digits = digits.slice(0, 16);
-                    await speak(`Saya ambil 16 digit pertama: ${digits.match(/.{4}/g).join(' ')}. Jika salah, ulangi.`);
-                } else {
-                    await speak(`Nomor KK diterima: ${digits.match(/.{4}/g).join(' ')}. Lanjut ke pertanyaan berikutnya.`);
-                }
-
-                const formatted = digits.match(/.{4}/g).join(' ');
-
-                answers[q.field] = digits;
-                document.getElementById('inputAnswer').value = formatted;
-
-                saveData();
-
-                // LANJUT KE PERTANYAAN BERIKUTNYA
-                setTimeout(async () => {
-                    step++;
-                    if (step < questions[currentModul].length) {
-                        renderQuestion();
-                        if (isListening) await speakQuestionAndOptions();
-                    } else {
-                        isReviewMode = true;
-                        modulStatus[currentModul] = 'completed';
-                        saveData();
-                        updateProgressSteps();
-                        checkAllCompletedAndShowSimpanBtn();
-                        showReviewForm();
-                    }
-                }, 2000);
-
-                return;
-            }
             // === KHUSUS WILAYAH DATANG (provinsi, kab, kec, desa) ===
             if(["kdprovinsi", "kdkabupaten", "kdkecamatan", "kddesa"].includes(q.field)){
                 const match = findBestMatch(text, q.options);
@@ -598,13 +479,11 @@
                 }
                 value = match[0];
                 answers[q.field] = value;
-
                 const card = document.querySelector(`.option-card[data-value="${value}"]`);
                 if(card){
                     document.querySelectorAll('.option-card').forEach(c=>c.classList.remove('selected'));
                     card.classList.add('selected');
                 }
-
                 saveData();
                 setTimeout(async()=>{
                     step++;
@@ -612,8 +491,8 @@
                         renderQuestion();
                         if(isListening) await speakQuestionAndOptions();
                     }else{
-                        isReviewMode=true; 
-                        modulStatus[currentModul]='completed'; 
+                        isReviewMode=true;
+                        modulStatus[currentModul]='completed';
                         saveData();
                         updateProgressSteps();
                         checkAllCompletedAndShowSimpanBtn();
@@ -622,51 +501,44 @@
                 },1200);
                 return;
             }
-
             else if(currentModul === 7){
-                const n = normalize(text);
-                if (n.includes('milik sendiri') && (n.includes('jelek') || n.includes('tidak baik') || n.includes('rusak') || n.includes('buruk') || n.includes('kondisi jelek'))) {
-                    value = '2'; // MILIK SENDIRI (JELEK)
-                }
-                else if (n.includes('milik sendiri') && (n.includes('bagus') || n.includes('baik') || n.includes('kondisi baik') || n.includes('kondisi bagus'))) {
-                    value = '1'; // MILIK SENDIRI (BAGUS)
-                }
-                else if (n.includes('milik sendiri')) {
-                    value = '1';
-                }
-                else if (n.includes('milik kelompok') || (n.includes('kelompok') && n.includes('sewa tidak bayar'))) {
-                    value = '3';
-                }
-                else if (n.includes('milik orang lain') && (n.includes('sewa tidak bayar') || n.includes('gratis') || n.includes('tidak bayar'))) {
-                    value = '5'; // SEWA TIDAK BAYAR dulu, karena lebih spesifik
-                }
-                else if (n.includes('milik orang lain') && (n.includes('sewa bayar') || n.includes('bayar'))) {
-                    value = '4';
-                }
-                else if (n.includes('milik orang lain')) {
-                    value = '4';
-                }
-                else if (n.includes('tidak memiliki') || n.includes('tidak punya') || n.includes('nggak punya') || n.includes('ga punya') || n.includes('kosong') || n.includes('tidak ada')) {
-                    value = '6';
-                }
-                else {
-                    await speak("Maaf, jawaban tidak dikenali. Ulangi dengan lebih jelas, contoh: 'milik sendiri jelek', 'milik orang lain sewa gratis', atau 'tidak memiliki'.");
-                    return;
-                }
-
-                // Tampilkan teks jawaban yang lebih informatif di input readonly (jika ada)
-                const jawabanTeks = {
-                    '1': 'Milik sendiri (bagus)',
-                    '2': 'Milik sendiri (jelek)',
-                    '3': 'Milik kelompok (sewa tidak bayar)',
-                    '4': 'Milik orang lain (sewa bayar)',
-                    '5': 'Milik orang lain (sewa tidak bayar)',
-                    '6': 'Tidak memiliki'
-                };
-                if (document.getElementById('inputAnswer')) {
-                    document.getElementById('inputAnswer').value = jawabanTeks[value];
-                }
+            const n = normalize(text);
+            // Prioritas deteksi kata kunci
+            if (n.includes('milik sendiri') && (n.includes('bagus') || n.includes('baik') || n.includes('kondisi baik'))) {
+                value = '1'; // MILIK SENDIRI (BAGUS)
             }
+            else if (n.includes('milik sendiri') && (n.includes('jelek') || n.includes('tidak baik') || n.includes('rusak'))) {
+                value = '2'; // MILIK SENDIRI (JELEK)
+            }
+            else if (n.includes('milik kelompok') || (n.includes('kelompok') && n.includes('sewa tidak bayar'))) {
+                value = '3'; // MILIK KELOMPOK (SEWA TIDAK BAYAR)
+            }
+            else if (n.includes('milik orang lain') && (n.includes('sewa bayar') || n.includes('bayar'))) {
+                value = '4'; // MILIK ORANG LAIN (SEWA BAYAR)
+            }
+            else if (n.includes('milik orang lain') && (n.includes('sewa tidak bayar') || n.includes('gratis') || n.includes('tidak bayar'))) {
+                value = '5'; // MILIK ORANG LAIN (SEWA TIDAK BAYAR)
+            }
+            else if (n.includes('tidak memiliki') || n.includes('tidak punya') || n.includes('nggak punya') || n.includes('ga punya') || n.includes('kosong')) {
+                value = '6'; // TIDAK MEMILIKI
+            }
+            else {
+                await speak("Maaf, jawaban tidak dikenali. Ulangi dengan mengucapkan salah satu pilihan seperti 'milik sendiri bagus' atau 'tidak memiliki'");
+                return;
+            }
+            // Tampilkan teks jawaban yang dipilih di input (lebih informatif)
+            const jawabanTeks = {
+                '1': 'Milik sendiri (bagus)',
+                '2': 'Milik sendiri (jelek)',
+                '3': 'Milik kelompok',
+                '4': 'Milik orang lain (sewa bayar)',
+                '5': 'Milik orang lain (sewa tidak bayar)',
+                '6': 'Tidak memiliki'
+            };
+            if (document.getElementById('inputAnswer')) {
+                document.getElementById('inputAnswer').value = jawabanTeks[value];
+            }
+        }
             // SEMUA LOGIKA LAIN TETAP SAMA
             else if(q.isLahan){
                 const n=normalize(text);
@@ -706,14 +578,9 @@
                 value = n.includes('ya')||n.includes('punya')||n.includes('ada') ? '1' : '2';
                 if(!['1','2'].includes(value)){await speak("Jawab ya atau tidak");return;}
             }
-            else if(q.field==="keluarga_rw"||q.field==="keluarga_rt"){
-                const m=text.match(/\d+/g);
-                if(!m){await speak("Tidak ada angka");return;}
-                value=pad3(m.join('')); document.getElementById('inputAnswer').value=value;
-            }
             else if(q.type==="select" && currentModul===10){
                 const n = normalize(text);
-                
+               
                 // Prioritas: "tidak ada" harus menang atas "ada"
                 if(n.includes('tidak ada') || n.includes('nggak ada') || n.includes('ga ada') || n.includes('belum pernah') || n.includes('tidak pernah')){
                     value = '2'; // TIDAK ADA
@@ -742,60 +609,10 @@
                 if(value.length!==16){await speak("Harus 16 digit");return;}
                 document.getElementById('inputAnswer').value=value;
             }
-            else if(q.field==="no_kk"){
-                // Ambil semua digit dari ucapan
-                let digits = text.replace(/\D/g, '');
-
-                // Jika kurang dari 16 digit
-                if (digits.length < 16) {
-                    if (digits.length === 0) {
-                        await speak("Maaf, saya tidak mendengar angka sama sekali. Ulangi nomor Kartu Keluarga 16 digit dengan jelas.");
-                    } else {
-                        await speak(`Saya hanya mendengar ${digits.length} digit. Nomor KK harus 16 digit. Silakan ulangi dari awal.`);
-                    }
-                    // Restart rekaman validasi jika masih di validasi suara
-                    if (isListening && currentModul === 1 && step === 0 && !voiceValidated) {
-                        startVoiceValidationRecording();
-                    }
-                    return;
-                }
-
-                // Jika lebih dari 16, ambil 16 pertama
-                if (digits.length > 16) {
-                    digits = digits.slice(0, 16);
-                    await speak(`Saya mengambil 16 digit pertama: ${digits.match(/.{4}/g).join(' ')}. Jika salah, ulangi dari awal.`);
-                } else {
-                    await speak(`Nomor KK diterima: ${digits.match(/.{4}/g).join(' ')}. Lanjut ke pertanyaan berikutnya.`);
-                }
-
-                // Format tampilan dengan spasi setiap 4 digit
-                const formatted = digits.match(/.{4}/g).join(' ');
-
-                // Simpan jawaban
-                answers[q.field] = digits;
-                document.getElementById('inputAnswer').value = formatted;
-
-                // Simpan ke localStorage
-                saveData();
-
-                // LANJUT KE PERTANYAAN BERIKUTNYA
-                setTimeout(async () => {
-                    step++;
-                    if (step < questions[currentModul].length) {
-                        renderQuestion();
-                        if (isListening) await speakQuestionAndOptions();
-                    } else {
-                        // Selesai modul 1
-                        isReviewMode = true;
-                        modulStatus[currentModul] = 'completed';
-                        saveData();
-                        updateProgressSteps();
-                        checkAllCompletedAndShowSimpanBtn();
-                        showReviewForm();
-                    }
-                }, 2000); // beri jeda 2 detik agar user dengar konfirmasi
-
-                return; // stop proses lebih lanjut
+            else if(q.field==="keluarga_rw"||q.field==="keluarga_rt"){
+                const m=text.match(/\d+/g);
+                if(!m){await speak("Tidak ada angka");return;}
+                value=pad3(m.join('')); document.getElementById('inputAnswer').value=value;
             }
             else if(q.type==="text"){
                 value=capitalize(text.trim()); document.getElementById('inputAnswer').value=value;
@@ -805,9 +622,7 @@
                 if(!m){await speak("Tidak ada angka");return;}
                 value=m.join(''); document.getElementById('inputAnswer').value=value;
             }
-
             answers[q.field]=value;
-
             if(q.type==="select"){
                 const card=document.querySelector(`.option-card[data-value="${value}"]`);
                 if(card){
@@ -815,16 +630,13 @@
                     card.classList.add('selected');
                 }
             }
-
             // === DETEKSI MUTASI "DATANG" → TAMBAH 4 PERTANYAAN WILAYAH ===
             if(currentModul===1 && q.field==="kdmutasimasuk"){
                 injectWilayahIfNeeded();
             }
-
             // === KHUSUS MODUL 11: KUALITAS IBU HAMIL ===
         if(currentModul === 11 || currentModul === 12){
             const n = normalize(text);
-
             if(n.includes('ada') && !n.includes('pernah') && !n.includes('tidak')){
                 value = '1'; // ADA
             }
@@ -848,7 +660,6 @@
                 return;
             }
         }
-
             saveData();
             setTimeout(async()=>{
                 step++;
@@ -861,7 +672,6 @@
                 }
             },1200);
         }
-
         function showReviewForm(){
             stopListening();
             document.getElementById('inputArea').classList.add('hidden');
@@ -870,9 +680,7 @@
             document.getElementById('voice-status').innerText='Review data. Selesaikan semua modul untuk simpan.';
             const container = document.getElementById('reviewFields');
             container.innerHTML = '';
-
             const isMutasiDatang = answers.kdmutasimasuk === '3';
-
             if(currentModul === 1){
                 let html = '';
                 html += `<div>
@@ -913,7 +721,6 @@
                     <label class="block text-xs font-medium mb-1">Tanggal Mutasi</label>
                     <input type="date" name="keluarga_tanggalmutasi" value="${answers.keluarga_tanggalmutasi}" class="w-full border rounded-lg p-2.5 text-sm">
                 </div>`;
-
                 // Wilayah Datang
                 html += `<div id="wilayahDatangSection" class="${isMutasiDatang ? '' : 'hidden'} col-span-3 bg-teal-50 p-6 rounded-xl border border-teal-200 grid grid-cols-1 md:grid-cols-2 gap-6">
                     <h4 class="font-bold text-teal-800 mb-4 col-span-2">Wilayah Datang</h4>
@@ -943,9 +750,7 @@
                         </select>
                     </div>
                 </div>`;
-
                 container.innerHTML = html;
-
                 // Event listener untuk toggle wilayah datang di review
                 document.getElementById('review_kdmutasimasuk').addEventListener('change', function(){
                     answers.kdmutasimasuk = this.value;
@@ -964,7 +769,6 @@
                     }
                     saveData();
                 });
-
                 // Event cascade wilayah datang
                 document.getElementById('review_kdprovinsi')?.addEventListener('change', function(){
                     window.getWilayah('kabupaten', this.value, 'review_kdkabupaten');
@@ -978,7 +782,6 @@
                 document.getElementById('review_kdkecamatan')?.addEventListener('change', function(){
                     window.getWilayah('desa', this.value, 'review_kddesa');
                 });
-
                 // Auto-load jika sudah ada nilai
                 if(answers.kdprovinsi){
                     setTimeout(()=>{
@@ -1007,7 +810,6 @@
                     container.innerHTML+=`<div><label class="block text-xs font-medium mb-1">${q.label}</label>${input}</div>`;
                 });
             }
-
             // Tambahkan listener untuk update answers saat edit di review
             document.querySelectorAll('#reviewFields input, #reviewFields select').forEach(el => {
                 el.addEventListener('change', e => {
@@ -1016,37 +818,31 @@
                 });
             });
         }
-
         document.getElementById('recordBtn').addEventListener('click', async () => {
             if (isReviewMode) return;
-
             if (isListening) {
                 stopListening();
                 return;
             }
-
             isListening = true;
             const btn = document.getElementById('recordBtn');
             btn.classList.add('recording');
             // Saat mulai merekam
             document.getElementById('visualizer').classList.add('show');
             document.getElementById('visualizerPlaceholder').classList.add('hide');
-
             // Ganti ikon jadi stop (kotak putih)
             document.getElementById('recordIcon').innerHTML = `
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" 
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                     d="M10 9h4v6h-4z" fill="white" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" 
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                     d="M12 21a9 9 0 100-18 9 9 0 000 18z" stroke="white" fill="none" />
             `;
-
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 256;
                 canvas = document.getElementById('visualizer');
                 ctx = canvas.getContext('2d');
-
                 // Responsive canvas
                 const resizeCanvas = () => {
                     canvas.width = canvas.offsetWidth * window.devicePixelRatio;
@@ -1054,7 +850,6 @@
                 };
                 resizeCanvas();
                 window.addEventListener('resize', resizeCanvas);
-
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
                 const stream = await navigator.mediaDevices.getUserMedia({audio: true});
                 const source = audioContext.createMediaStreamSource(stream);
@@ -1065,58 +860,41 @@
                 stopListening();
                 return;
             }
-
             await speakQuestionAndOptions();
-
             const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SR();
             recognition.lang = 'id-ID';
             recognition.continuous = true;
             recognition.interimResults = true;
-
             recognition.onresult = e => {
                 const r = e.results[e.results.length - 1];
                 if (r.isFinal && r[0].confidence > 0.6) {
                     const t = r[0].transcript.trim();
                     document.getElementById('voice-status').innerText = `Dengar: "${t}"`;
-
-                    // === PERBAIKAN KUNCI: STOP MEDIARECORDER SEKARANG JUGA ===
-                    if (mediaRecorder && mediaRecorder.state === 'recording') {
-                        mediaRecorder.stop(); // langsung stop, tidak tunggu 8 detik
-                    }
-
                     processVoiceAnswer(t.toLowerCase());
                 }
             };
-
             recognition.onerror = () => setTimeout(() => recognition?.start(), 100);
             recognition.onend = () => { if(isListening) setTimeout(() => recognition?.start(), 100); };
             recognition.start();
         });
-
         function drawWaveVisualizer() {
             if (!isListening) return;
             requestAnimationFrame(drawWaveVisualizer);
-
             analyser.getByteFrequencyData(dataArray);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             const barWidth = (canvas.width / dataArray.length) * 2.8;
             let x = canvas.width * 0.1;
-
             for (let i = 0; i < dataArray.length; i++) {
                 let barHeight = (dataArray[i] / 255) * canvas.height * 0.8;
-
                 const gradient = ctx.createLinearGradient(0, canvas.height/2 - barHeight/2, 0, canvas.height/2 + barHeight/2);
                 gradient.addColorStop(0, '#10b981');
                 gradient.addColorStop(1, '#34d399');
-
                 ctx.fillStyle = gradient;
                 ctx.roundRect(x, canvas.height/2 - barHeight/2, barWidth * 0.7, barHeight, 6).fill();
                 x += barWidth + 2;
             }
         }
-
         // Tambahkan roundRect untuk canvas (polyfill)
         CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
             if (w < 2 * r) r = w / 2;
@@ -1130,7 +908,6 @@
             this.closePath();
             return this;
         };
-
         document.getElementById('voiceForm').addEventListener('submit', async function(e){
             e.preventDefault();
             const btn=document.getElementById('simpanBtn'); btn.disabled=true; btn.innerText="Menyimpan...";
@@ -1169,27 +946,22 @@
             }
             finally{btn.disabled=false;btn.innerText="Simpan Semua Data";}
         });
-
         // GANTI fungsi window.getWilayah jadi ini:
         window.getWilayah = async function(tipe, parentId, targetId, selectedValue) {
             if (!parentId) {
                 document.getElementById(targetId).innerHTML = '<option value="">-- Pilih Dulu --</option>';
                 return;
             }
-
             const select = document.getElementById(targetId);
             select.innerHTML = '<option>-- Memuat... --</option>';
             select.disabled = true;
-
             try {
                 let url;
                 if (tipe === 'kabupaten') url = `/get-kabupaten/${parentId}`;
                 if (tipe === 'kecamatan') url = `/get-kecamatan/${parentId}`;
                 if (tipe === 'desa') url = `/get-desa/${parentId}`;
-
                 const res = await fetch(url);
                 const data = await res.json();
-
                 select.innerHTML = '<option value="">-- Pilih --</option>';
                 Object.entries(data).forEach(([id, nama]) => {
                     const selected = (id === selectedValue) ? ' selected' : '';
@@ -1202,7 +974,6 @@
                 select.disabled = false;
             }
         };
-
         document.getElementById('restartBtn').addEventListener('click', function() {
             // Reset hanya data modul ini
             questions[currentModul].forEach(q => {
@@ -1216,114 +987,83 @@
             updateProgressSteps();
             renderQuestion();
         });
-        // ==================== TAMBAHAN: VOICE VALIDATION ====================
-    let voiceValidated = false;         // status validasi suara
-    let mediaRecorder = null;           // untuk rekam audio khusus validasi
-    let audioChunks = [];
-
-    // Fungsi mulai rekam audio untuk validasi (terpisah dari recognition biasa)
-    async function startVoiceValidationRecording() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
-            audioChunks = [];
-            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-
-            mediaRecorder.onstop = async () => {
-                // Langsung validasi saat rekaman selesai
-                await validateVoicePrint();
-            };
-
-            mediaRecorder.start();
-            document.getElementById('voice-status').innerText = 'Merekam untuk validasi suara...';
-
-            // TIDAK ADA setTimeout lagi
-            // Rekaman akan di-stop otomatis saat recognition dapat hasil final
-
-        } catch (err) {
-            console.error("Gagal akses mikrofon untuk validasi:", err);
-            await speak("Gagal mengakses mikrofon. Pendataan tidak dapat dilanjutkan.");
-            stopListening();
+        // ==================== VALIDASI FREKUENSI SUARA (ANTI-MANIPULASI) ====================
+        let voiceFingerprint = null;
+        const FINGERPRINT_KEY = 'voiceFingerprint';
+        const SIMILARITY_THRESHOLD = 0.90; // 90% kemiripan dianggap suara sama
+        function generateFingerprintFromDataArray(dataArray) {
+            // Ambil sampel dari 32 bin pertama (suara manusia biasanya di frekuensi rendah-menengah)
+            const sample = dataArray.slice(0, 32);
+            const sum = sample.reduce((a, b) => a + b, 0);
+            const avg = sum / sample.length;
+            const variance = sample.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / sample.length;
+           
+            // Buat string fingerprint sederhana
+            return btoa(String.fromCharCode(...sample)) + '|' + avg.toFixed(2) + '|' + variance.toFixed(2);
         }
-    }
-
-   async function validateVoicePrint() {
-    if (audioChunks.length === 0) {
-        await speak("Tidak ada rekaman suara. Silakan ulangi.");
-        document.getElementById('voice-status').innerText = 'Klik mic untuk coba lagi.';
-        return false;
-    }
-
-    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-    const formData = new FormData();
-    formData.append('voice_sample', audioBlob, 'validation.webm');
-
-    try {
-        document.getElementById('voice-status').innerText = 'Memvalidasi suara...';
-
-        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        const response = await Promise.race([
-            fetch("{{ route('voice.validate') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": token,
-                    "Accept": "application/json"
-                    // JANGAN SET "Content-Type": "multipart/form-data" → biarkan browser handle
-                },
-                body: formData  // <--- WAJIB ADA!
-            }),
-            new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Timeout validasi')), 15000)
-            )
-        ]);
-
-        const result = await response.json();
-
-        if (result.allowed === true) {
-            voiceValidated = true;
-
-            await speak("Validasi suara berhasil. Sekarang sebutkan nomor Kartu Keluarga 16 digit Anda untuk pendataan.");
-
-            document.getElementById('voice-status').innerText = 'Mendengarkan nomor KK...';
-
-            renderQuestion();
-            if (isListening) await speakQuestionAndOptions();
-
+        function compareFingerprints(fp1, fp2) {
+            if (!fp1 || !fp2) return 0;
+            const [hash1, avg1, var1] = fp1.split('|');
+            const [hash2, avg2, var2] = fp2.split('|');
+           
+            const avgDiff = Math.abs(parseFloat(avg1) - parseFloat(avg2));
+            const varDiff = Math.abs(parseFloat(var1) - parseFloat(var2));
+           
+            // Semakin kecil diff, semakin mirip
+            const avgSimilarity = 1 - (avgDiff / 255);
+            const varSimilarity = 1 - (varDiff / 10000);
+           
+            return (avgSimilarity + varSimilarity) / 2;
+        }
+        async function validateVoiceUniqueness() {
+            if (!analyser || !dataArray) return true;
+            // Ambil 50 frame sampel untuk akurasi
+            const samples = [];
+            for (let i = 0; i < 50; i++) {
+                analyser.getByteFrequencyData(dataArray);
+                samples.push([...dataArray]); // copy array
+                await new Promise(r => setTimeout(r, 50)); // 50ms x 50 = 2.5 detik sampling
+            }
+            // Hitung fingerprint dari rata-rata semua sampel
+            const avgSample = new Uint8Array(dataArray.length);
+            for (let i = 0; i < dataArray.length; i++) {
+                avgSample[i] = samples.reduce((sum, arr) => sum + arr[i], 0) / samples.length;
+            }
+            voiceFingerprint = generateFingerprintFromDataArray(avgSample);
+            const savedFp = localStorage.getItem(FINGERPRINT_KEY);
+            if (savedFp) {
+                const similarity = compareFingerprints(voiceFingerprint, savedFp);
+                if (similarity >= SIMILARITY_THRESHOLD) {
+                    await speak("Peringatan: Suara Anda terdeteksi sudah pernah digunakan untuk pendataan sebelumnya. Manipulasi pendataan tidak diperbolehkan.");
+                    alert("⚠️ DETEKSI SUARA SAMA!\n\nSuara Anda sudah pernah digunakan untuk pendataan di perangkat ini.\nIni dapat dianggap sebagai manipulasi data.\n\nProses dihentikan untuk menjaga integritas pendataan.");
+                    stopListening();
+                    document.getElementById('voice-status').innerText = 'Pendataan dihentikan karena suara terdeteksi sama.';
+                    return false;
+                }
+            }
+            // Simpan fingerprint baru (hanya jika lolos validasi)
+            localStorage.setItem(FINGERPRINT_KEY, voiceFingerprint);
             return true;
-        } else {
-            voiceValidated = false;
-            await speak(result.message || "Maaf, suara Anda sudah terdaftar sebelumnya atau validasi gagal. Pendataan tidak dapat dilanjutkan saat ini.");
-
-            document.getElementById('voice-status').innerText = 'Validasi gagal. Klik mic jika ingin coba lagi, atau hubungi petugas.';
-
-            // JANGAN restart otomatis → biarkan user putuskan
-            document.getElementById('recordBtn').disabled = false;
-            document.getElementById('recordBtn').classList.remove('opacity-50', 'cursor-not-allowed');
-
-            return false;
         }
-    } catch (err) {
-        console.error("Error validasi suara:", err);
-
-        voiceValidated = false;
-        await speak("Gagal memvalidasi suara karena masalah teknis. Silakan coba lagi atau hubungi petugas.");
-
-        document.getElementById('voice-status').innerText = 'Error validasi. Klik mic untuk coba lagi.';
-
-        // Aktifkan mic kembali, tapi TIDAK restart otomatis
-        document.getElementById('recordBtn').disabled = false;
-        document.getElementById('recordBtn').classList.remove('opacity-50', 'cursor-not-allowed');
-
-        return false;
-    }
-}
-document.getElementById('bypassValidation')?.addEventListener('click', async () => {
-    voiceValidated = true;
-    await speak("Validasi suara dilewati (mode testing).");
-    renderQuestion();
-    if (isListening) await speakQuestionAndOptions();
-});
+        // Modifikasi speakQuestionAndOptions untuk menjalankan validasi hanya di pertanyaan pertama modul 1
+        const originalSpeakQuestionAndOptions = speakQuestionAndOptions;
+        speakQuestionAndOptions = async function() {
+            const q = questions[currentModul][step];
+            // Hanya jalankan validasi di pertanyaan pertama modul 1
+            if (currentModul === 1 && step === 0 && q.field === "no_kk") {
+                document.getElementById('voice-status').innerText = 'Memvalidasi suara Anda... Harap bicara sebentar...';
+               
+                const valid = await validateVoiceUniqueness();
+                if (!valid) {
+                    return; // hentikan proses
+                }
+               
+                document.getElementById('voice-status').innerText = 'Suara valid. Lanjutkan menjawab...';
+                await new Promise(r => setTimeout(r, 1000));
+            }
+            // Lanjutkan membaca pertanyaan seperti biasa
+            await originalSpeakQuestionAndOptions();
+        };
         initFresh();
     </script>
 </x-app-layout>

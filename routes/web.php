@@ -10,7 +10,7 @@ use App\Http\Controllers\{
 };
 use App\Http\Controllers\Voice\{
     VoiceKeluargaController, WilayahController, VoicePrasaranaController, MenuVoiceController, VoiceController,
-    VoicePendudukController,VoiceFingerprintController
+    VoicePendudukController
 };
 use App\Exports\{
     DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,
@@ -43,7 +43,7 @@ Route::prefix('admin/voice')->name('voice.')->middleware('auth')->group(function
     // Voice Keluarga
     // -----------------------------
     Route::get('/keluarga', [VoiceKeluargaController::class, 'index'])->name('keluarga.index');
-    Route::post('/check-voice-duplicate', [VoiceFingerprintController::class, 'checkDuplicate']);
+    Route::post('/validate', [VoiceKeluargaController::class, 'validateVoice'])->name('validate');
     Route::post('/keluarga/store-all', [VoiceKeluargaController::class, 'storeAll'])
         ->name('keluarga.store-all'); // ← ROUTE KHUSUS KELUARGA
 

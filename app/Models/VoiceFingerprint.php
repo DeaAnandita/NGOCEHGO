@@ -6,17 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class VoiceFingerprint extends Model
 {
-    protected $table = 'voice_fingerprints';
+    protected $table = 'voice_prints';
 
-    protected $fillable = ['keluarga_id', 'fingerprint'];
+    protected $fillable = [
+        'no_kk',
+        'embedding'  // PASTIKAN INI 'embedding'
+    ];
 
-    // Otomatis cast JSON ke array
     protected $casts = [
-        'fingerprint' => 'array'
+        'embedding' => 'array'  // Laravel otomatis decode JSON ke array
     ];
 
     public function keluarga()
     {
-        return $this->belongsTo(Keluarga::class); // sesuaikan nama model keluarga Anda
+        return $this->belongsTo(DataKeluarga::class, 'no_Kk');
     }
 }
