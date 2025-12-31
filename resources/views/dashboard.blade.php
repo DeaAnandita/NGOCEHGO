@@ -25,8 +25,8 @@
                         <div class="bg-green-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
                             📂
                         </div>
-                        <h4 class="text-lg font-semibold text-green-800 group-hover:text-green-900">Adm Penduduk</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Kelola data Administrasi Penduduk.</p>
+                        <h4 class="text-lg font-semibold text-green-800 group-hover:text-green-900">Data kependudukan</h4>
+                        <p class="text-gray-600 text-sm mt-1 text-center">Kelola data Administrasi Kependudukan.</p>
                     </div>
                 </a>
                 <a href="{{ route('voice.menu') }}"
@@ -36,8 +36,8 @@
                             <div class="bg-purple-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
                                 🔊
                             </div>
-                            <h4 class="text-lg font-semibold text-purple-800 group-hover:text-purple-900">
-                                Adm Penduduk (Voice)
+                            <h4 class="text-lg font-semibold text-center text-purple-800 group-hover:text-purple-900">
+                                Input Data Kependudukan (Voice)
                             </h4>
                             <p class="text-gray-600 text-sm mt-1 text-center">
                                 Input data keluarga & penduduk secara otomatis dengan suara.
