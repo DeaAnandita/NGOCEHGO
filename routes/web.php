@@ -1,7 +1,9 @@
 <?php
+
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
-    ProfileController, MasterController, KependudukanController,
+    ProfileController, MasterController, KependudukanController, ExportAllController,
     KeluargaController, PendudukController, PrasaranaDasarController, AsetKeluargaController, AsetLahanController,
     AsetPerikananController, AsetTernakController, SarprasKerjaController, BangunKeluargaController,
     SejahteraKeluargaController, KonflikSosialController, KualitasIbuHamilController, KualitasBayiController,
@@ -13,13 +15,17 @@ use App\Http\Controllers\Voice\{
     VoicePendudukController
 };
 use App\Exports\{
-    DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,
+    ExportAllDataKeluarga, DataKualitasIbuHamilExport, DataKeluargaExport, DataLembagaEkonomiExport, DataLembagamasyarakatExport,
     DataAsetKeluargaExport, DataPrasaranaExport, DataSejahteraKeluargaExport, DataKonflikSosialExport,
     DataPendudukExport, DataKelahiranExport, DataSosialEkonomiExport, DataUsahaArtExport,
     DataProgramSertaExport, DataLembagaDesaExport, DataKualitasBayiExport, DataAsetLahanExport,
     DataAsetTernakExport, DataAsetPerikananExport, DataSarprasKerjaExport, DataBangunKeluargaExport
 };
 
+
+Route::get('/export-all-keluarga', function () {
+    return \App\Exports\ExportAllDataKeluarga::export();
+})->name('export.all.keluarga');
 
 // AJAX Wilayah (untuk keluarga)
 Route::get('/get-kabupaten/{kdprovinsi}', [VoiceKeluargaController::class, 'getKabupaten']);
@@ -126,6 +132,7 @@ Route::prefix('master')->name('master.')->controller(MasterController::class)->g
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::view('/dashboard', 'dashboard')->name('dashboard');
     Route::get('/kependudukan', [KependudukanController::class, 'index'])->name('menu.kependudukan');
+    Route::get('/exportall', [ExportAllController::class, 'index'])->name('menu.exportall');
 
     // Routes untuk Keluarga
     Route::resource('keluarga', KeluargaController::class)->except(['show'])->names('dasar-keluarga');
@@ -209,6 +216,86 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('laporan/sarpraskerja/pdf', [SarprasKerjaController::class, 'exportPdf'])->name('sarpraskerja.export.pdf');
     Route::get('laporan/asetperikanan/pdf', [AsetPerikananController::class, 'exportPdf'])->name('asetperikanan.export.pdf');
     Route::get('laporan/asetternak/pdf', [AsetTernakController::class, 'exportPdf'])->name('asetternak.export.pdf');
+});
+
+Route::prefix('api')->group(function () {
+    Route::get('/statistik-desa', function () {
+        try {
+            $keluarga = \App\Models\DataKeluarga::count();
+            $penduduk = \App\Models\DataPenduduk::count();
+
+            // Jenis Kelamin - aman tanpa relasi
+            $laki = \App\Models\DataPenduduk::whereHas('jeniskelamin', function($q) {
+                $q->where('jeniskelamin', 'like', '%laki%'); // lebih aman
+            })->count();
+
+            $perempuan = \App\Models\DataPenduduk::whereHas('jeniskelamin', function($q) {
+                $q->where('jeniskelamin', 'like', '%perempuan%');
+            })->count();
+            
+
+            // Dusun
+            $dusun = \App\Models\DataKeluarga::selectRaw('kddusun, count(*) as jumlah')
+                ->groupBy('kddusun')
+                ->get()
+                ->map(function($item) {
+                    $nama = 'Tidak Diketahui';
+                    if ($item->kddusun) {
+                        $dusunMaster = \App\Models\MasterDusun::find($item->kddusun);
+                        $nama = $dusunMaster?->dusun ?? 'Tidak Diketahui';
+                    }
+                    return ['nama' => $nama, 'jumlah' => $item->jumlah];
+                });
+
+            // Usia - MySQL safe
+            $today = now()->format('Y-m-d');
+            $usia = [
+                'anak' => \App\Models\DataPenduduk::whereRaw("TIMESTAMPDIFF(YEAR, penduduk_tanggallahir, ?) < 15", [$today])->count(),
+                'produktif' => \App\Models\DataPenduduk::whereRaw("TIMESTAMPDIFF(YEAR, penduduk_tanggallahir, ?) BETWEEN 15 AND 64", [$today])->count(),
+                'lansia' => \App\Models\DataPenduduk::whereRaw("TIMESTAMPDIFF(YEAR, penduduk_tanggallahir, ?) > 64", [$today])->count(),
+            ];
+
+            // Agama
+            $agama = \App\Models\DataPenduduk::selectRaw('kdagama, count(*) as jumlah')
+                ->groupBy('kdagama')
+                ->get()
+                ->map(function($item) {
+                    $nama = 'Tidak Diketahui';
+                    if ($item->kdagama) {
+                        $agamaMaster = \App\Models\MasterAgama::find($item->kdagama);
+                        $nama = $agamaMaster?->agama ?? 'Tidak Diketahui';
+                    }
+                    return ['nama' => $nama, 'jumlah' => $item->jumlah];
+                });
+
+            // Status Perkawinan
+            $status_kawin = \App\Models\DataPenduduk::selectRaw('kdstatuskawin, count(*) as jumlah')
+                ->groupBy('kdstatuskawin')
+                ->get()
+                ->map(function($item) {
+                    $nama = 'Tidak Diketahui';
+                    if ($item->kdstatuskawin) {
+                            $master = \App\Models\MasterStatusKawin::find($item->kdstatuskawin);
+                        $nama = $master?->statuskawin ?? 'Tidak Diketahui';
+                    }
+                    return ['nama' => $nama, 'jumlah' => $item->jumlah];
+                });
+
+            return response()->json([
+                'keluarga' => $keluarga,
+                'penduduk' => $penduduk,
+                'laki' => $laki,
+                'perempuan' => $perempuan,
+                'dusun' => $dusun,
+                'usia' => $usia,
+                'agama' => $agama,
+                'status_kawin' => $status_kawin,    
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error statistik-desa: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal memuat data', 'message' => $e->getMessage()], 500);
+        }
+    });
 });
 
 // ===============================

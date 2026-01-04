@@ -2,155 +2,180 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <title>Laporan Data Prasarana Dasar</title>
     <style>
-        @page { margin: 20px 25px; }
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            color: #111;
-            line-height: 1.5;
-        }
-        .header { text-align: center; margin-bottom: 12px; }
-        .title { font-size: 18px; font-weight: bold; margin: 0; text-transform: uppercase; }
-        .subtitle { font-size: 13px; margin: 4px 0 10px; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #d1d5db;
-            padding: 8px;
-            font-size: 12px;
-            vertical-align: top;
-        }
-        th {
-            background-color: #f3f4f6;
-            text-align: center;
-            font-weight: bold;
-        }
-        tr:nth-child(even) { background: #fafafa; }
-        .summary {
-            border: 1px solid #d1d5db;
-            padding: 10px;
-            background: #f9fafb;
-            border-radius: 5px;
-            margin-bottom: 12px;
-        }
-        .footer {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #6b7280;
-        }
-        h3 {
-            font-size: 13px;
-            margin-top: 16px;
-            margin-bottom: 6px;
-        }
-        .rekomendasi {
-            border: 1px solid #d1d5db;
-            background: #f0fdf4;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .rekomendasi h4 {
-            margin: 0 0 6px;
-            font-size: 13px;
-            color: #166534;
-        }
-        .rekomendasi ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-        .rekomendasi li {
-            margin-bottom: 4px;
-        }
-        .category-box {
-            text-align: center;
-            padding: 12px;
-            background: #e0f2fe;
-            border: 2px solid #0ea5e9;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        .page-break { page-break-before: always; }
+        body { font-family: DejaVu Sans, Arial, Helvetica, sans-serif; font-size: 11px; line-height: 1.4; margin: 0; padding: 0; }
+        h1, h2, h3, h4 { margin: 5px 0; }
+        .header { text-align: center; margin: 10px 0 5px 0; }
+        .small { font-size: 10px; color: #555; margin-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        table th, table td { border: 1px solid #000; padding: 4px; text-align: left; vertical-align: top; }
+        table th { background: #f2f2f2; }
+        .section { margin-top: 10px; page-break-inside: avoid; }
+        .note { background: #f9f9f9; border: 1px dashed #aaa; padding: 5px; margin-top: 5px; font-size: 10px; }
+        .highlight { background: #fff3cd; font-weight: bold; }
+        footer { position: fixed; bottom: 0; font-size: 9px; text-align: center; width: 100%; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <p class="title">Laporan Analisis Prasarana Dasar Keluarga</p>
-        <p class="subtitle">Periode: {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</p>
+        <h2>LAPORAN ANALISIS PRASARANA DASAR</h2>
+        <h3>Indikator Kesejahteraan Objektif Prasarana Dasar</h3>
+        <div class="small">Sistem Pendataan Kependudukan NGOCEH GO</div>
+        <hr style="margin: 5px 0;">
     </div>
 
-    <div class="summary">
-        <p><strong>Total Keluarga Terdata:</strong> {{ number_format($total) }}</p>
-        <p><strong>Skor Akses Prasarana Rata-rata:</strong> {{ $skor }} / 100</p>
-        <p><strong>Rata-rata Luas Lantai:</strong> {{ $avg_luas_lantai }} m²</p>
-        <p><strong>Rata-rata Jumlah Kamar:</strong> {{ round($avg_jumlah_kamar) }} kamar</p>
-        <div class="category-box">
-            Kategori Keluarga: {{ $kategori }}
+    <!-- 1. RINGKASAN UMUM -->
+    <div class="section">
+        <h3>1. Ringkasan Umum</h3>
+        <table>
+            <tr><th>Total Keluarga dengan Data Prasarana Tercatat</th><td>{{ number_format($totalKeluargaTerdata) }} KK</td></tr>
+        </table>
+    </div>
+
+    <!-- 2. PROFIL LEGALITAS ASET -->
+    <div class="section">
+        <h3>2. Profil Legalitas Kepemilikan Bangunan dan Lahan</h3>
+        <p>Ringkasan status kepemilikan utama (kombinasi dengan ≥10 KK):</p>
+        <table>
+            <thead>
+                <tr><th>Status Pemilik Bangunan</th><th>Status Pemilik Lahan</th><th>Jumlah KK</th></tr>
+            </thead>
+            <tbody>
+                @foreach($profilLegalitas as $item)
+                    <tr>
+                        <td>{{ $item->status_bangunan }}</td>
+                        <td>{{ $item->status_lahan }}</td>
+                        <td style="text-align:center;">{{ number_format($item->jumlah_kk) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <div class="note">
+            Mayoritas keluarga memiliki bangunan dan lahan milik sendiri. Prioritaskan PTSL untuk kelompok rentan (sewa/pinjam pakai).
         </div>
     </div>
 
-    <h3>Persentase Akses Layak per Indikator</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Indikator Prasarana</th>
-                <th>% Layak</th>
-                <th>% Tidak Layak</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td>1</td><td>Status Pemilik Bangunan (Milik Sendiri)</td><td align="center">{{ $indikator['status_bangunan'] }}%</td><td align="center">{{ round(100 - $indikator['status_bangunan'], 2) }}%</td></tr>
-            <tr><td>2</td><td>Status Pemilik Lahan (Milik Sendiri)</td><td align="center">{{ $indikator['status_lahan'] }}%</td><td align="center">{{ round(100 - $indikator['status_lahan'], 2) }}%</td></tr>
-            <tr><td>3</td><td>Jenis Lantai (Berkualitas Tinggi-Menengah)</td><td align="center">{{ $indikator['lantai_jenis'] }}%</td><td align="center">{{ round(100 - $indikator['lantai_jenis'], 2) }}%</td></tr>
-            <tr><td>4</td><td>Kondisi Lantai (Bagus)</td><td align="center">{{ $indikator['lantai_kondisi'] }}%</td><td align="center">{{ round(100 - $indikator['lantai_kondisi'], 2) }}%</td></tr>
-            <tr><td>5</td><td>Jenis Dinding (Berkualitas)</td><td align="center">{{ $indikator['dinding_jenis'] }}%</td><td align="center">{{ round(100 - $indikator['dinding_jenis'], 2) }}%</td></tr>
-            <tr><td>6</td><td>Kondisi Dinding (Bagus)</td><td align="center">{{ $indikator['dinding_kondisi'] }}%</td><td align="center">{{ round(100 - $indikator['dinding_kondisi'], 2) }}%</td></tr>
-            <tr><td>7</td><td>Jenis Atap (Berkualitas)</td><td align="center">{{ $indikator['atap_jenis'] }}%</td><td align="center">{{ round(100 - $indikator['atap_jenis'], 2) }}%</td></tr>
-            <tr><td>8</td><td>Kondisi Atap (Bagus)</td><td align="center">{{ $indikator['atap_kondisi'] }}%</td><td align="center">{{ round(100 - $indikator['atap_kondisi'], 2) }}%</td></tr>
-            <tr><td>9</td><td>Sumber Air Minum Aman</td><td align="center">{{ $indikator['air_minum'] }}%</td><td align="center">{{ round(100 - $indikator['air_minum'], 2) }}%</td></tr>
-            <tr><td>10</td><td>Kondisi Air Baik</td><td align="center">{{ $indikator['kondisi_air'] }}%</td><td align="center">{{ round(100 - $indikator['kondisi_air'], 2) }}%</td></tr>
-            <tr><td>11</td><td>Cara Perolehan Air (Tidak Membeli)</td><td align="center">{{ $indikator['perolehan_air'] }}%</td><td align="center">{{ round(100 - $indikator['perolehan_air'], 2) }}%</td></tr>
-            <tr><td>12</td><td>Penerangan Listrik PLN</td><td align="center">{{ $indikator['penerangan'] }}%</td><td align="center">{{ round(100 - $indikator['penerangan'], 2) }}%</td></tr>
-            <tr><td>13</td><td>Daya Listrik ≥1300 Watt</td><td align="center">{{ $indikator['daya_listrik'] }}%</td><td align="center">{{ round(100 - $indikator['daya_listrik'], 2) }}%</td></tr>
-            <tr><td>14</td><td>Bahan Bakar Memasak Modern</td><td align="center">{{ $indikator['bahan_bakar'] }}%</td><td align="center">{{ round(100 - $indikator['bahan_bakar'], 2) }}%</td></tr>
-            <tr><td>15</td><td>Fasilitas BAB Sendiri</td><td align="center">{{ $indikator['fasilitas_bab'] }}%</td><td align="center">{{ round(100 - $indikator['fasilitas_bab'], 2) }}%</td></tr>
-            <tr><td>16</td><td>Pembuangan Tinja Aman</td><td align="center">{{ $indikator['pembuangan_tinja'] }}%</td><td align="center">{{ round(100 - $indikator['pembuangan_tinja'], 2) }}%</td></tr>
-            <tr><td>17</td><td>Pembuangan Sampah Resmi</td><td align="center">{{ $indikator['pembuangan_sampah'] }}%</td><td align="center">{{ round(100 - $indikator['pembuangan_sampah'], 2) }}%</td></tr>
-        </tbody>
-    </table>
-
-    <h3>Ringkasan Kategori Prasarana</h3>
-    <div class="summary">
-        <p>• <strong>Prasarana Bangunan & Kepemilikan:</strong> {{ $persen_bangunan }}%</p>
-        <p>• <strong>Prasarana Air & Sanitasi:</strong> {{ $persen_air_sanitasi }}%</p>
-        <p>• <strong>Prasarana Energi:</strong> {{ $persen_energi }}%</p>
+    <!-- 3. TEMUAN KUNCI INDIKATOR KEMISKINAN FISIK -->
+    <div class="section">
+        <h3>3. Temuan Kunci Indikator Kemiskinan Fisik</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Indikator</th>
+                    <th>Jumlah KK</th>
+                    <th>Keterangan & Rekomendasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="highlight">
+                    <td>Material bangunan rendah (tanah/bambu/jerami)</td>
+                    <td>{{ number_format($temuanKunci['material_rendah']) }} KK</td>
+                    <td>Indikator ini menunjukkan rumah tidak layak huni (RTLH). Rekomendasi: Prioritaskan program Bedah Rumah (BSPS/Rutilahu) untuk perbaikan struktural, terintegrasi dengan P3KE untuk kemiskinan ekstrem.</td>
+                </tr>
+                <tr class="highlight">
+                    <td>Lantai/dinding/atap dalam kondisi jelek</td>
+                    <td>{{ number_format($temuanKunci['kondisi_jelek']) }} KK</td>
+                    <td>Menandakan kerentanan terhadap bencana alam dan kesehatan. Rekomendasi: Verifikasi lapangan dan bantuan renovasi melalui dana desa atau BSPS, fokus pada kelompok rentan seperti lansia dan anak-anak.</td>
+                </tr>
+                <tr class="highlight">
+                    <td>Sanitasi tidak layak (jamban umum/buang ke lingkungan)</td>
+                    <td>{{ number_format($temuanKunci['sanitasi_buruk']) }} KK</td>
+                    <td>Berkaitan dengan risiko stunting dan penyakit. Rekomendasi: Program jambanisasi dan tangki septik komunal, koordinasi dengan Dinas Kesehatan untuk pencegahan stunting nasional 2026.</td>
+                </tr>
+                <tr class="highlight">
+                    <td>Masih menggunakan kayu bakar/minyak tanah</td>
+                    <td>{{ number_format($temuanKunci['bahan_bakar_trad']) }} KK</td>
+                    <td>Meningkatkan polusi rumah tangga dan beban ekonomi. Rekomendasi: Konversi ke LPG/kompor listrik melalui subsidi tepat sasaran, integrasi dengan program energi bersih 2026.</td>
+                </tr>
+                <tr>
+                    <td>Kepadatan hunian di bawah standar (< 8 m²/orang)</td>
+                    <td>{{ number_format($temuanKunci['luas_bawah_standar']) }} KK</td>
+                    <td>Menyebabkan masalah sosial dan kesehatan. Rekomendasi: Bantuan penambahan ruang hunian atau relokasi jika lahan terbatas, sesuai standar BPS untuk hunian sehat.</td>
+                </tr>
+                <tr>
+                    <td>Daya listrik rendah (≤450 VA atau tanpa meteran)</td>
+                    <td>{{ number_format($energi->daya_rendah ?? 0) }} KK</td>
+                    <td>Membatasi akses teknologi dan produktivitas. Rekomendasi: Upgrade daya listrik melalui PLN subsidi, prioritas untuk KK dengan usaha mikro di rumah.</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="note">
+            Temuan ini merupakan bukti fisik kemiskinan yang objektif. Gunakan untuk validasi DTKS dan pensasaran program kemiskinan 2026.
+        </div>
     </div>
 
-    <h3>Analisis Interpretatif</h3>
-    <div class="summary">
-        <p>Berdasarkan data prasarana dasar, mayoritas keluarga tergolong <strong>{{ $kategori }}</strong>.
-            Akses terhadap hunian layak, air bersih, sanitasi, dan energi menjadi penentu utama tingkat kesejahteraan infrastruktur rumah tangga.</p>
+    <!-- 4. ESTIMASI KATEGORISASI EKONOMI RUMAH TANGGA (DESIL) -->
+    <div class="section">
+        <h3>4. Estimasi Kategorisasi Ekonomi Rumah Tangga (Desil)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Desil</th>
+                    <th>Jumlah KK</th>
+                    <th>Keterangan & Rekomendasi Intervensi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="highlight">
+                    <td>Desil 1 & 2 (Kemiskinan Ekstrem – Prioritas P3KE)</td>
+                    <td>{{ number_format($desil12) }} KK</td>
+                    <td>KK dengan multiple indikator berat (material rendah, kondisi jelek, dll.). Rekomendasi: Verifikasi segera untuk masuk P3KE, bantuan langsung seperti BLT Ekstrem, Bedah Rumah, dan jambanisasi. Koordinasi dengan Kemensos untuk akses DTKS terbaru 2026.</td>
+                </tr>
+                <tr>
+                    <td>Desil 3 – 7 (Menengah & Rentan)</td>
+                    <td>{{ number_format($desil37) }} KK</td>
+                    <td>KK dengan prasarana cukup, tapi rentan jatuh miskin (misalnya kepadatan tinggi). Rekomendasi: Program pencegahan seperti PTSL (sertifikasi tanah), pelatihan usaha mikro, dan monitoring rutin untuk cegah kemiskinan baru. Integrasikan dengan BPNT atau PKH jika diperlukan.</td>
+                </tr>
+                <tr>
+                    <td>Desil 8 – 10 (Ekonomi Mapan)</td>
+                    <td>{{ number_format($desil810) }} KK</td>
+                    <td>KK dengan prasarana premium (lantai marmer, daya tinggi, dll.). Rekomendasi: Dikecualikan dari bantuan sosial, tapi libatkan dalam program CSR desa atau gotong royong untuk bantu kelompok rendah. Pantau untuk redistribusi pajak/insentif ekonomi.</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="note">
+            Estimasi desil berdasarkan indikator prasarana objektif. Untuk akurasi, padukan dengan data pendapatan DTKS dan verifikasi lapangan.
+        </div>
     </div>
 
-    <div class="rekomendasi">
-        <h4>Rekomendasi Kebijakan Penanggulangan Kemiskinan</h4>
+    <!-- 5. ANALISIS & INTERPRETASI -->
+    <div class="section">
+        <h3>5. Analisis & Interpretasi</h3>
+        @if(count($catatan))
+            <div class="note" style="background:#f0f8ff; border-left:4px solid #0066cc; padding:10px;">
+                @foreach($catatan as $c)
+                    <p>{!! $c !!}</p>
+                @endforeach
+            </div>
+        @else
+            <p>Tidak ada catatan analisis otomatis yang signifikan.</p>
+        @endif
+
+        <div class="note">
+            Analisis ini bersifat dinamis dan mengikuti data terkini. Untuk perhitungan kepadatan penduduk yang lebih presisi (jiwa/km² atau hektar), integrasikan data luas wilayah dari tabel master_dusun. Rekomendasi lanjutan bisa melibatkan data eksternal seperti DTKS (Data Terpadu Kesejahteraan Sosial).
+        </div>
+    </div>
+
+    <!-- 6. REKOMENDASI INTERVENSI PEMERINTAH -->
+    <div class="section">
+        <h3>6. Rekomendasi Intervensi Penanggulangan Kemiskinan</h3>
         <ul>
-            @foreach($rekomendasi as $item)
-                <li>{{ $item }}</li>
+            @foreach($rekomendasi as $r)
+                <li>{{ $r }}</li>
             @endforeach
         </ul>
+        <div class="note">
+            Rekomendasi di atas disusun berdasarkan data kepadatan keluarga dan penduduk saat ini. 
+            Untuk akurasi lebih tinggi, integrasikan dengan data luas wilayah (kepadatan jiwa/km²), 
+            status ekonomi, dan indikator kemiskinan lainnya.
+        </div>
     </div>
 
-    <div class="footer">
-        <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Ngoceh Go</strong>.</p>
-        <p><em>Tanggal Cetak:</em> {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
-    </div>
-</body>
+    <footer>
+        Dicetak secara otomatis melalui sistem — {{ now()->format('d/m/Y') }}
+    </footer>
+
+</body> 
 </html>

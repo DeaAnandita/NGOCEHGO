@@ -1,207 +1,299 @@
 <x-app-layout>
-    <div x-data="{ sidebarOpen: false }" class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Background image dengan scrollable content -->
+    <div class="min-h-screen bg-blue-70 bg-cover bg-center bg-no-repeat">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
-        {{-- Header Card --}}
-        <div class="relative bg-gradient-to-br from-blue-200 to-blue-100 hover:from-blue-200 hover:to-blue-100 border border-blue-200 text-black-800 rounded-3xl p-8 overflow-hidden">
-            <div class="relative z-10 max-w-xl">
-                <h2 class="text-2xl font-semibold">Selamat Datang, {{ Auth::user()->name }} 👋</h2>
-                <p class="opacity-90 mt-2">Senang bertemu lagi! Mari pantau data dan aktivitas desa hari ini 🌿</p>
-                <a href="#" class="inline-block mt-4 bg-white text-blue-600 px-6 py-2.5 rounded-xl font-medium hover:bg-blue-50 transition">
-                    Lihat Menu Utama
-                </a>
-            </div>
-            <img src="{{ asset('images/welcome.svg') }}"
-                 alt="Welcome Illustration"
-                 class="absolute -top-10 right-0 w-72 opacity-95 drop-shadow-lg pointer-events-none hidden sm:block">
-        </div>
-
-        {{-- Quick Access Menu --}}
-        <div class="mt-10">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">📂 Akses Cepat</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <a href="{{ route('menu.kependudukan') }}"
-                   class="group bg-gradient-to-br from-green-100 to-green-50 hover:from-green-200 hover:to-green-100 border border-green-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-green-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            📂
-                        </div>
-                        <h4 class="text-lg font-semibold text-green-800 group-hover:text-green-900">Data kependudukan</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Kelola data Administrasi Kependudukan.</p>
+            <!-- Header Welcome -->
+                <div class="bg-gradient-to-r from-blue-500/95 to-blue-300/95 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden mb-8 text-white">
+                    <div class="px-6 py-10 sm:px-8 sm:py-12 lg:px-10 lg:py-14">
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold leading-tight">
+                            Selamat Datang, {{ Auth::user()->name }}
+                        </h1>
+                        <p class="mt-4 text-base sm:text-lg lg:text-lg opacity-90">
+                            Pantau data dan aktivitas desa secara realtime.
+                        </p>
                     </div>
-                </a>
-                <a href="{{ route('voice.menu') }}"
-                    class="group bg-gradient-to-br from-purple-100 to-purple-50 hover:from-purple-200 hover:to-purple-100 
-                            border border-purple-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                        <div class="flex flex-col items-center">
-                            <div class="bg-purple-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                                🔊
+                </div>
+
+            <!-- Akses Cepat -->
+            <div class="mb-10">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6 drop-shadow-md">Akses Cepat</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- ... (sama seperti sebelumnya) ... -->
+                    <a href="{{ route('menu.kependudukan') }}" class="block bg-white/90 backdrop-blur-sm rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg hover:bg-white transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
                             </div>
-                            <h4 class="text-lg font-semibold text-center text-purple-800 group-hover:text-purple-900">
-                                Input Data Kependudukan (Voice)
-                            </h4>
-                            <p class="text-gray-600 text-sm mt-1 text-center">
-                                Input data keluarga & penduduk secara otomatis dengan suara.
-                            </p>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Data Kependudukan</h3>
+                                <p class="text-sm text-gray-600">Kelola data Kependudukan.</p>
+                            </div>
                         </div>
                     </a>
-                <a href="{{ route('master.list') }}"
-                   class="group bg-gradient-to-br from-blue-100 to-blue-50 hover:from-blue-200 hover:to-blue-100 border border-blue-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-blue-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            📊
+
+                    <a href="{{ route('voice.menu') }}" class="block bg-white/90 backdrop-blur-sm rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg hover:bg-white transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Input Data (Voice)</h3>
+                                <p class="text-sm text-gray-600">Input data dengan suara.</p>
+                            </div>
                         </div>
-                        <h4 class="text-lg font-semibold text-blue-800 group-hover:text-blue-900">Master Data</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Kelola semua master data.</p>
-                    </div>
-                </a>
-                
-                <a href="{{ route('profile.edit') }}"
-                   class="group bg-gradient-to-br from-orange-100 to-orange-50 hover:from-orange-200 hover:to-orange-100 border border-orange-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-orange-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            ⚙️
+                    </a>
+
+                    <a href="{{ route('master.list') }}" class="block bg-white/90 backdrop-blur-sm rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg hover:bg-white transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Soal dan Jawaban</h3>
+                                <p class="text-sm text-gray-600">Panduan data desa.</p>
+                            </div>
                         </div>
-                        <h4 class="text-lg font-semibold text-orange-800 group-hover:text-orange-900">Pengaturan</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Atur preferensi dan pengelolaan sistem Anda.</p>
-                    </div>
-                </a>
+                    </a>
+
+                    <a href="{{ route('menu.exportall') }}" class="block bg-white/90 backdrop-blur-sm rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg hover:bg-white transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center mr-4">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Download Excel</h3>
+                                <p class="text-sm text-gray-600">Unduh data lengkap.</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
             </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Statistik Umum Desa (kiri) -->
+                <div class="flex flex-col">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 drop-shadow-md">Statistik Umum Desa</h2>
+                    <div class="space-y-6">
+                        <!-- ... (4 card statistik sama seperti sebelumnya) ... -->
+                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Keluarga (KK)</p>
+                                    <p class="text-3xl font-bold text-gray-900 mt-2" id="jumlahKeluarga">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Total Penduduk</p>
+                                    <p class="text-3xl font-bold text-gray-900 mt-2" id="jumlahPenduduk">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Laki-Laki</p>
+                                    <p class="text-3xl font-bold text-gray-900 mt-2" id="jumlahLaki">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-600">Perempuan</p>
+                                    <p class="text-3xl font-bold text-gray-900 mt-2" id="jumlahPerempuan">0</p>
+                                </div>
+                                <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts (kanan): 4 chart 2x2, judul di luar -->
+                <div class="lg:col-span-2">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 drop-shadow-md">Visualisasi Data Desa</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Chart 1: Penduduk per Dusun -->
+                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6 flex flex-col">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Penduduk per Dusun</h3>
+                            <div class="flex-1 min-h-0 relative">
+                                <canvas id="dusunChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 2: Kelompok Usia -->
+                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6 flex flex-col">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Kelompok Usia</h3>
+                            <div class="flex-1 min-h-0 relative">
+                                <canvas id="usiaChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Chart 4: Agama -->
+                        <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-md border border-gray-200 p-6 flex flex-col">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Distribusi Agama</h3>
+                            <div class="flex-1 min-h-0 relative">
+                                <canvas id="agamaChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 3. Status Perkawinan -->
+                        <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6 flex flex-col">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Status Perkawinan</h3>
+                            <div class="flex-1 min-h-0">
+                                <canvas id="statusKawinChart"></canvas>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Time -->
+            <div class="mt-8 text-center text-sm text-gray-700 drop-shadow-md" id="updateTime">Memuat...</div>
         </div>
+    </div>
 
-        {{-- Report Menu Section --}}
-        <div class="mt-12">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">📄 Laporan</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <a href="#"
-                   class="group bg-gradient-to-br from-teal-100 to-teal-50 hover:from-teal-200 hover:to-teal-100 border border-teal-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-teal-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            📋
-                        </div>
-                        <h4 class="text-lg font-semibold text-teal-800 group-hover:text-teal-900">Laporan Penduduk</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Lihat laporan data penduduk desa.</p>
-                    </div>
-                </a>
-                <a href="#"
-                   class="group bg-gradient-to-br from-indigo-100 to-indigo-50 hover:from-indigo-200 hover:to-indigo-100 border border-indigo-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-indigo-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            🏡
-                        </div>
-                        <h4 class="text-lg font-semibold text-indigo-800 group-hover:text-indigo-900">Laporan Keluarga</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Lihat laporan data keluarga desa.</p>
-                    </div>
-                </a>
-                <a href="#"
-                   class="group bg-gradient-to-br from-pink-100 to-pink-50 hover:from-pink-200 hover:to-pink-100 border border-pink-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-pink-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            🛠️
-                        </div>
-                        <h4 class="text-lg font-semibold text-pink-800 group-hover:text-pink-900">Laporan Aset</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Lihat laporan data aset keluarga.</p>
-                    </div>
-                </a>
-                <a href="#"
-                   class="group bg-gradient-to-br from-amber-100 to-amber-50 hover:from-amber-200 hover:to-amber-100 border border-amber-200 p-6 rounded-2xl shadow transition-all duration-200 hover:-translate-y-1">
-                    <div class="flex flex-col items-center">
-                        <div class="bg-amber-500 text-white p-3 rounded-full mb-3 shadow-md group-hover:scale-110 transition">
-                            🌾
-                        </div>
-                        <h4 class="text-lg font-semibold text-amber-800 group-hover:text-amber-900">Laporan Lahan</h4>
-                        <p class="text-gray-600 text-sm mt-1 text-center">Lihat laporan data aset lahan.</p>
-                    </div>
-                </a>
-            </div>
-        </div>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const jumlahKeluargaEl = document.getElementById('jumlahKeluarga');
+            const jumlahPendudukEl = document.getElementById('jumlahPenduduk');
+            const jumlahLakiEl = document.getElementById('jumlahLaki');
+            const jumlahPerempuanEl = document.getElementById('jumlahPerempuan');
+            const updateTimeEl = document.getElementById('updateTime');
 
-            {{-- Statistik Section --}}
-        <div class="mt-8 bg-white rounded-xl shadow-sm p-4">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-base font-semibold text-gray-700">📈 Statistik Data Desa</h3>
-                <span class="text-xs text-gray-500" id="updateTime"></span>
-            </div>
-            <div class="max-h-[300px] overflow-y-auto">
-                <canvas id="desaChart" height="80"></canvas>
-            </div>
-        </div>
+            let dusunChart, usiaChart, statusKawinChart, agamaChart;
 
+            function countUp(el, target) {
+                let start = 0;
+                const duration = 1800;
+                const increment = target / (duration / 16);
+                const timer = setInterval(() => {
+                    start += increment;
+                    if (start >= target) {
+                        el.textContent = Math.floor(target).toLocaleString('id-ID');
+                        clearInterval(timer);
+                    } else {
+                        el.textContent = Math.floor(start).toLocaleString('id-ID');
+                    }
+                }, 16);
+            }
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            async function fetchStats() {
+                try {
+                    const response = await axios.get('/api/statistik-desa');
+                    const data = response.data;
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const ctx = document.getElementById('desaChart').getContext('2d');
+                    // Update angka
+                    countUp(jumlahKeluargaEl, data.keluarga || 0);
+                    countUp(jumlahPendudukEl, data.penduduk || 0);
+                    countUp(jumlahLakiEl, data.laki || 0);
+                    countUp(jumlahPerempuanEl, data.perempuan || 0);
 
-                let chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Penduduk', 'Keluarga', 'Aset', 'Lahan'],
-                        datasets: [{
-                            label: 'Jumlah Data',
-                            data: [0, 0, 0, 0],
-                            backgroundColor: ['#60a5fa', '#34d399', '#fbbf24', '#f87171']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1
-                                }
-                            }
+                    // Chart 1: Dusun
+                    if (dusunChart) dusunChart.destroy();
+                    const ctx1 = document.getElementById('dusunChart').getContext('2d');
+                    dusunChart = new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: data.dusun?.map(d => d.nama.length > 12 ? d.nama.substr(0,12)+'...' : d.nama) || [],
+                            datasets: [{ data: data.dusun?.map(d => d.jumlah) || [], backgroundColor: '#3B82F6', borderRadius: 6 }]
                         },
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        }
-                    }
-                });
+                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
 
-                async function fetchData() {
-                    try {
-                        const response = await axios.get('/api/statistik-desa');
-                        const data = response.data;
+                    // Chart 2: Usia
+                    if (usiaChart) usiaChart.destroy();
+                    const ctx2 = document.getElementById('usiaChart').getContext('2d');
+                    usiaChart = new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Anak (0-14)', 'Produktif (15-64)', 'Lansia (65+)'],
+                            datasets: [{ data: [data.usia.anak || 0, data.usia.produktif || 0, data.usia.lansia || 0], backgroundColor: ['#10B981', '#3B82F6', '#F59E0B'], borderWidth: 0 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: false } } }
+                    });
 
-                        chart.data.datasets[0].data = [
-                            data.penduduk,
-                            data.keluarga,
-                            data.aset,
-                            data.lahan
-                        ];
-                        chart.update('none');
+                    // Chart 3: Status Perkawinan (baru)
+                    
+                    if (statusKawinChart) statusKawinChart.destroy();
+                    const ctx3 = document.getElementById('statusKawinChart').getContext('2d');
+                    statusKawinChart = new Chart(ctx3, {
+                        type: 'bar',
+                        data: {
+                            labels: data.status_kawin?.map(d => d.nama.length > 12 ? d.nama.substr(0,12)+'...' : d.nama) || [],
+                            datasets: [{ data: data.status_kawin?.map(d => d.jumlah) || [], backgroundColor: '#de3a7f', borderRadius: 6 }]
+                        },
+                        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: false } }, scales: { x: { beginAtZero: true } } }
+                    });
 
-                        const now = new Date();
-                        document.getElementById('updateTime').textContent =
-                            `Terakhir diperbarui: ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
-                    } catch (error) {
-                        console.error('Gagal memuat data statistik:', error);
-                    }
+                    // Chart 4: Agama
+                    if (agamaChart) agamaChart.destroy();
+                    const ctx4 = document.getElementById('agamaChart').getContext('2d');
+                    agamaChart = new Chart(ctx4, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.agama?.map(a => a.nama) || [],
+                            datasets: [{ data: data.agama?.map(a => a.jumlah) || [], backgroundColor: ['#10B981','#3B82F6','#8B5CF6','#F59E0B','#EF4444','#6B7280'], borderWidth: 0 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: false } } }
+                    });
+
+                    const now = new Date();
+                    updateTimeEl.textContent = `Terakhir diperbarui: ${now.toLocaleString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}`;
+
+                } catch (err) {
+                    console.error(err);
+                    updateTimeEl.textContent = 'Gagal memuat data';
                 }
+            }
 
-                // Muat data pertama kali
-                fetchData();
-
-                // Refresh otomatis setiap 30 detik
-                setInterval(fetchData, 30000);
-            });
-
-            // Alpine.js
-            document.addEventListener('alpine:init', () => {
-                Alpine.data('sidebar', () => ({
-                    sidebarOpen: false,
-                    toggleSidebar() {
-                        this.sidebarOpen = !this.sidebarOpen;
-                    }
-                }));
-            });
-        </script>
-
-        {{-- Alpine.js --}}
-        <script src="https://unpkg.com/alpinejs@3.x.x" defer></script>
-    </x-app-layout>
+            fetchStats();
+            setInterval(fetchStats, 60000);
+        });
+    </script>
+</x-app-layout>

@@ -195,139 +195,194 @@ class PrasaranaDasarController extends Controller
                          ->with('success', 'Data prasarana dasar berhasil dihapus.');
     }
 
-    public static function exportPDF()
+    public function exportPdf()
 {
-    // Ambil semua data prasarana
-    $data = DataPrasaranaDasar::all();
-    $total = $data->count() ?: 1; // Hindari pembagian nol
+    // --- TOTAL KK TERDATA ---
+    $totalKeluargaTerdata = DB::table('data_prasaranadasar')->count();
 
-    // Rata-rata luas lantai dan jumlah kamar
-    $avg_luas_lantai = round(DataPrasaranaDasar::avg('prasdas_luaslantai') ?? 0, 2);
-    $avg_jumlah_kamar = round(DataPrasaranaDasar::avg('prasdas_jumlahkamar') ?? 0, 2);
+    // --- PROFIL LEGALITAS ASET (RINGKAS) ---
+    $profilLegalitasRaw = DB::table('data_prasaranadasar as p')
+        ->leftJoin('master_statuspemilikbangunan as sb', 'sb.kdstatuspemilikbangunan', '=', 'p.kdstatuspemilikbangunan')
+        ->leftJoin('master_statuspemiliklahan as sl', 'sl.kdstatuspemiliklahan', '=', 'p.kdstatuspemiliklahan')
+        ->selectRaw('
+            COALESCE(sb.statuspemilikbangunan, "Tidak Terdata") as status_bangunan,
+            COALESCE(sl.statuspemiliklahan, "Tidak Terdata") as status_lahan,
+            COUNT(DISTINCT p.no_kk) as jumlah_kk
+        ')
+        ->groupBy('sb.statuspemilikbangunan', 'sl.statuspemiliklahan')
+        ->orderByDesc('jumlah_kk')
+        ->get();
 
-    // Hitung persentase "layak" untuk setiap indikator utama
-    $indikator = [];
+    // Ringkas: hanya tampilkan yang ≥10 KK, sisanya jadi "Lainnya"
+    $profilLegalitas = $profilLegalitasRaw->where('jumlah_kk', '>=', 10);
 
-    // 1. Status Pemilik Bangunan (layak = Milik Sendiri)
-    $indikator['status_bangunan'] = round(DataPrasaranaDasar::where('kdstatuspemilikbangunan', 1)->count() / $total * 100, 2);
-
-    // 2. Status Pemilik Lahan (layak = Milik Sendiri)
-    $indikator['status_lahan'] = round(DataPrasaranaDasar::where('kdstatuspemiliklahan', 1)->count() / $total * 100, 2);
-
-    // 3. Lantai (layak = bahan berkualitas tinggi-menengah: marmer sampai kayu)
-    $indikator['lantai_jenis'] = round(DataPrasaranaDasar::whereIn('kdjenislantaibangunan', [1,2,3,4,5])->count() / $total * 100, 2);
-
-    // 4. Kondisi Lantai Bagus
-    $indikator['lantai_kondisi'] = round(DataPrasaranaDasar::where('kdkondisilantaibangunan', 1)->count() / $total * 100, 2);
-
-    // 5. Dinding (layak = tembok/kayu/kalsiboard)
-    $indikator['dinding_jenis'] = round(DataPrasaranaDasar::whereIn('kdjenisdindingbangunan', [1,2,3])->count() / $total * 100, 2);
-
-    // 6. Kondisi Dinding Bagus
-    $indikator['dinding_kondisi'] = round(DataPrasaranaDasar::where('kdkondisidindingbangunan', 1)->count() / $total * 100, 2);
-
-    // 7. Atap (layak = beton/genteng/asbes)
-    $indikator['atap_jenis'] = round(DataPrasaranaDasar::whereIn('kdjenisatapbangunan', [1,2,3,4,5])->count() / $total * 100, 2);
-
-    // 8. Kondisi Atap Bagus
-    $indikator['atap_kondisi'] = round(DataPrasaranaDasar::where('kdkondisiatapbangunan', 1)->count() / $total * 100, 2);
-
-    // 9. Sumber Air Minum Aman
-    $indikator['air_minum'] = round(DataPrasaranaDasar::whereIn('kdsumberairminum', [1,2,3,4,5,6])->count() / $total * 100, 2);
-
-    // 10. Kondisi Air Baik
-    $indikator['kondisi_air'] = round(DataPrasaranaDasar::where('kdkondisisumberair', 1)->count() / $total * 100, 2);
-
-    // 11. Cara Perolehan Air (Tidak Membeli)
-    $indikator['perolehan_air'] = round(DataPrasaranaDasar::where('kdcaraperolehanair', 3)->count() / $total * 100, 2);
-
-    // 12. Penerangan Listrik PLN
-    $indikator['penerangan'] = round(DataPrasaranaDasar::where('kdsumberpeneranganutama', 1)->count() / $total * 100, 2);
-
-    // 13. Daya ≥1300 Watt
-    $indikator['daya_listrik'] = round(DataPrasaranaDasar::whereIn('kdsumberdayaterpasang', [3,4,5])->count() / $total * 100, 2);
-
-    // 14. Bahan Bakar Modern (listrik/gas/biogas)
-    $indikator['bahan_bakar'] = round(DataPrasaranaDasar::whereIn('kdbahanbakarmemasak', [1,2,3,4])->count() / $total * 100, 2);
-
-    // 15. Fasilitas BAB Sendiri
-    $indikator['fasilitas_bab'] = round(DataPrasaranaDasar::where('kdfasilitastempatbab', 1)->count() / $total * 100, 2);
-
-    // 16. Pembuangan Tinja Aman (tangki/SPAL)
-    $indikator['pembuangan_tinja'] = round(DataPrasaranaDasar::whereIn('kdpembuanganakhirtinja', [1,2])->count() / $total * 100, 2);
-
-    // 17. Pembuangan Sampah Resmi
-    $indikator['pembuangan_sampah'] = round(DataPrasaranaDasar::whereIn('kdcarapembuangansampah', [3,4])->count() / $total * 100, 2);
-
-    // Skor keseluruhan: rata-rata dari 17 indikator
-    $skor = round(array_sum($indikator) / 17, 2);
-
-    // Kategori sub-indikator
-    $persen_bangunan = round((
-        $indikator['status_bangunan'] + $indikator['status_lahan'] +
-        $indikator['lantai_jenis'] + $indikator['lantai_kondisi'] +
-        $indikator['dinding_jenis'] + $indikator['dinding_kondisi'] +
-        $indikator['atap_jenis'] + $indikator['atap_kondisi']
-    ) / 8, 2);
-
-    $persen_air_sanitasi = round((
-        $indikator['air_minum'] + $indikator['kondisi_air'] + $indikator['perolehan_air'] +
-        $indikator['fasilitas_bab'] + $indikator['pembuangan_tinja'] + $indikator['pembuangan_sampah']
-    ) / 6, 2);
-
-    $persen_energi = round((
-        $indikator['penerangan'] + $indikator['daya_listrik'] + $indikator['bahan_bakar']
-    ) / 3, 2);
-
-    // Tentukan kategori & rekomendasi
-    if ($skor < 40 || $persen_bangunan < 50) {
-        $kategori = 'Miskin / Rentan Kemiskinan';
-        $rekomendasi = [
-            'Prioritaskan bantuan renovasi rumah tidak layak huni (BSPS/Risha).',
-            'Program penyediaan air bersih (sumur bor, PAM desa) dan jamban keluarga.',
-            'Subsidi LPG 3kg dan listrik pra-bayar untuk rumah tangga miskin.',
-            'Kolaborasi dengan PUPR untuk sertifikasi lahan dan bangunan milik sendiri.'
-        ];
-    } elseif ($skor < 65 || $persen_air_sanitasi < 60) {
-        $kategori = 'Menengah Bawah / Rawan Kemiskinan';
-        $rekomendasi = [
-            'Pendampingan kredit mikro untuk perbaikan atap, lantai, dan dinding.',
-            'Program STBM (Sanitasi Total Berbasis Masyarakat) dan pengelolaan sampah.',
-            'Konversi bahan bakar kayu bakar ke gas kota atau biogas.',
-            'Bantuan infrastruktur listrik dan air bersih di wilayah tertinggal.'
-        ];
-    } elseif ($skor < 85) {
-        $kategori = 'Menengah / Potensi Berkembang';
-        $rekomendasi = [
-            'Dorong peningkatan daya listrik dan penggunaan energi terbarukan.',
-            'Pengembangan sistem pembuangan sampah terpadu dan IPAL komunal.',
-            'Pelatihan pengelolaan air limbah rumah tangga.',
-            'Monitoring berkala untuk mencegah penurunan akses prasarana.'
-        ];
-    } else {
-        $kategori = 'Sejahtera / Stabil';
-        $rekomendasi = [
-            'Pertahankan akses prasarana melalui program pemeliharaan rutin.',
-            'Kembangkan infrastruktur ramah lingkungan (panel surya, biogas).',
-            'Arahkan CSR perusahaan untuk membantu keluarga rentan di sekitar.',
-            'Evaluasi distribusi prasarana secara berkala.'
-        ];
+    $lainnya = $profilLegalitasRaw->where('jumlah_kk', '<', 10)->sum('jumlah_kk');
+    if ($lainnya > 0) {
+        $profilLegalitas->push((object)[
+            'status_bangunan' => 'Kombinasi Lainnya',
+            'status_lahan'    => '(termasuk sewa, pinjam, dll.)',
+            'jumlah_kk'       => $lainnya
+        ]);
     }
 
+    // --- INDEKS KELAYAKAN RUMAH ---
+    $kelayakanRumah = DB::table('data_prasaranadasar as p')
+        ->leftJoin('master_jenislantaibangunan as jl', 'jl.kdjenislantaibangunan', '=', 'p.kdjenislantaibangunan')
+        ->leftJoin('master_kondisilantaibangunan as kl', 'kl.kdkondisilantaibangunan', '=', 'p.kdkondisilantaibangunan')
+        ->leftJoin('master_jenisdindingbangunan as jd', 'jd.kdjenisdindingbangunan', '=', 'p.kdjenisdindingbangunan')
+        ->leftJoin('master_kondisidindingbangunan as kd', 'kd.kdkondisidindingbangunan', '=', 'p.kdkondisidindingbangunan')
+        ->leftJoin('master_jenisatapbangunan as ja', 'ja.kdjenisatapbangunan', '=', 'p.kdjenisatapbangunan')
+        ->leftJoin('master_kondisiatapbangunan as ka', 'ka.kdkondisiatapbangunan', '=', 'p.kdkondisiatapbangunan')
+        ->selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN kl.kondisilantaibangunan = 'JELEK/KUALITAS RENDAH' OR kd.kondisidindingbangunan = 'JELEK/KUALITAS RENDAH' OR ka.kondisiatapbangunan = 'JELEK/KUALITAS RENDAH' THEN 1 ELSE 0 END) as tidak_layak,
+            SUM(CASE WHEN (jl.jenislantaibangunan IN ('TANAH', 'BAMBU') OR jd.jenisdindingbangunan IN ('BAMBU', 'SENG') OR ja.jenisatapbangunan IN ('JERAMI/ IJUK/ DAUN/ RUMBIA')) THEN 1 ELSE 0 END) as bahan_rendah
+        ")
+        ->first();
+
+    // --- KEPADATAN HUNIAN ---
+    $kepadatanRaw = DB::table('data_prasaranadasar as p')
+        ->leftJoin('data_penduduk as pend', 'pend.no_kk', '=', 'p.no_kk')
+        ->selectRaw('
+            p.no_kk,
+            COALESCE(p.prasdas_luaslantai, 0) as prasdas_luaslantai,
+            COUNT(pend.nik) as jumlah_anggota
+        ')
+        ->groupBy('p.no_kk', 'p.prasdas_luaslantai')
+        ->havingRaw('p.prasdas_luaslantai IS NOT NULL AND p.prasdas_luaslantai > 0')
+        ->get();
+
+    $totalKkValid = $kepadatanRaw->count();
+
+    $jumlahDiBawahStandar = 0;
+    $sumLuasPerOrang = 0;
+
+    foreach ($kepadatanRaw as $item) {
+        if ($item->jumlah_anggota > 0) {
+            $luasPerOrang = $item->prasdas_luaslantai / $item->jumlah_anggota;
+            $sumLuasPerOrang += $luasPerOrang;
+
+            if ($luasPerOrang < 8) {
+                $jumlahDiBawahStandar++;
+            }
+        }
+    }
+
+    $rataLuasPerOrang = $totalKkValid > 0 ? round($sumLuasPerOrang / $totalKkValid, 1) : 0;
+    $persenDiBawahStandar = $totalKkValid > 0 ? round(($jumlahDiBawahStandar / $totalKkValid) * 100, 1) : 0;
+    // --- SANITASI ---
+    $sanitasi = DB::table('data_prasaranadasar as p')
+        ->leftJoin('master_fasilitastempatbab as fb', 'fb.kdfasilitastempatbab', '=', 'p.kdfasilitastempatbab')
+        ->leftJoin('master_pembuanganakhirtinja as pt', 'pt.kdpembuanganakhirtinja', '=', 'p.kdpembuanganakhirtinja')
+        ->selectRaw("
+            SUM(CASE WHEN fb.fasilitastempatbab IN ('UMUM') OR pt.pembuanganakhirtinja NOT IN ('TANGKI', 'SPAL') THEN 1 ELSE 0 END) as sanitasi_buruk
+        ")
+        ->first();
+
+    // --- KETAHANAN ENERGI ---
+    $energi = DB::table('data_prasaranadasar as p')
+        ->leftJoin('master_sumberdayaterpasang as sd', 'sd.kdsumberdayaterpasang', '=', 'p.kdsumberdayaterpasang')
+        ->leftJoin('master_bahanbakarmemasak as bm', 'bm.kdbahanbakarmemasak', '=', 'p.kdbahanbakarmemasak')
+        ->selectRaw("
+            SUM(CASE WHEN sd.sumberdayaterpasang IN ('450 WATT', 'TANPA METERAN') THEN 1 ELSE 0 END) as daya_rendah,
+            SUM(CASE WHEN bm.bahanbakarmemasak IN ('KAYU BAKAR', 'MINYAK TANAH', 'ARANG', 'BRIKET') THEN 1 ELSE 0 END) as bahan_tradisional
+        ")
+        ->first();
+
+    // --- DESIL 8-10: KK MAPAN (minimal 2 dari 3 kriteria premium) ---
+    $mapanQuery = DB::table('data_prasaranadasar as p')
+        ->leftJoin('master_jenislantaibangunan as jl', 'jl.kdjenislantaibangunan', '=', 'p.kdjenislantaibangunan')
+        ->leftJoin('master_sumberdayaterpasang as sd', 'sd.kdsumberdayaterpasang', '=', 'p.kdsumberdayaterpasang')
+        ->leftJoin('master_sumberairminum as sa', 'sa.kdsumberairminum', '=', 'p.kdsumberairminum')
+        ->leftJoin('master_bahanbakarmemasak as bm', 'bm.kdbahanbakarmemasak', '=', 'p.kdbahanbakarmemasak')
+        ->selectRaw("
+            SUM(
+                CASE WHEN 
+                    (
+                        IF(TRIM(jl.jenislantaibangunan) IN ('MARMER/ GRANIT', 'MARMER/GRANIT', 'KERAMIK'), 1, 0) +
+                        IF(TRIM(sd.sumberdayaterpasang) IN ('2.200 WATT', 'LEBIH DARI 2.200 WATT'), 1, 0) +
+                        IF(TRIM(sa.sumberairminum) IN ('AIR KEMASAN BERMERK', 'LEDING METERAN'), 1, 0) +
+                        IF(TRIM(bm.bahanbakarmemasak) IN ('LISTRIK', 'GAS KOTA/BIOGAS', 'GAS LEBIH DARI 3 KG'), 1, 0)
+                    ) >= 3
+                THEN 1 ELSE 0 END
+            ) as jumlah_mapan
+        ")
+        ->first();
+
+    $desil810 = $mapanQuery->jumlah_mapan ?? 0;
+
+    // =============================
+    // TEMUAN KUNCI & KATEGORI DESIL
+    // =============================
+    $temuanKunci = [
+        'material_rendah'     => $kelayakanRumah->bahan_rendah ?? 0,
+        'kondisi_jelek'       => $kelayakanRumah->tidak_layak ?? 0,
+        'sanitasi_buruk'      => $sanitasi->sanitasi_buruk ?? 0,
+        'bahan_bakar_trad'    => $energi->bahan_tradisional ?? 0,
+        'luas_bawah_standar'  => $jumlahDiBawahStandar,
+        'daya_rendah'         => $energi->daya_rendah ?? 0,
+    ];
+
+    // Estimasi Desil 1-2: max dari indikator buruk (untuk menghindari overlap)
+    $desil12 = max(
+        $temuanKunci['material_rendah'],
+        $temuanKunci['kondisi_jelek'],
+        $temuanKunci['sanitasi_buruk'],
+        $temuanKunci['bahan_bakar_trad']
+    );
+
+    // Desil 3-7: total - desil1-2 - desil8-10
+    $desil37 = $totalKeluargaTerdata - $desil12 - $desil810;
+    if ($desil37 < 0) $desil37 = 0;
+
+    // =============================
+    // ANALISIS & CATATAN
+    // =============================
+    $catatan = [];
+
+    $catatan[] = "Total keluarga dengan data prasarana dasar tercatat: {$totalKeluargaTerdata} KK.";
+
+    if ($totalKeluargaTerdata > 0) {
+        $persenTidakLayak = round(($kelayakanRumah->tidak_layak / $totalKeluargaTerdata) * 100, 1);
+        $persenBahanRendah = round(($kelayakanRumah->bahan_rendah / $totalKeluargaTerdata) * 100, 1);
+
+        $catatan[] = "Sebanyak {$persenTidakLayak}% rumah tangga memiliki setidaknya satu komponen (lantai/dinding/atap) dalam kondisi jelek/kualitas rendah.";
+        if ($persenBahanRendah > 10) {
+            $catatan[] = "Terdapat {$persenBahanRendah}% rumah tangga menggunakan material rendah (tanah, bambu, jerami), indikator kuat kemiskinan ekstrem.";
+        }
+
+        $catatan[] = "Rata-rata luas lantai per orang: " . round($rataLuasPerOrang, 1) . " m². Sebanyak " . round($persenDiBawahStandar, 1) . "% KK berada di bawah standar kesehatan BPS (<8 m²/orang).";
+
+        $persenSanitasiBuruk = round(($sanitasi->sanitasi_buruk / $totalKeluargaTerdata) * 100, 1);
+        $catatan[] = "Sebanyak {$persenSanitasiBuruk}% rumah tangga memiliki akses sanitasi buruk (jamban umum atau buang ke lingkungan terbuka).";
+
+        $persenEnergiRendah = round(($energi->daya_rendah / $totalKeluargaTerdata) * 100, 1);
+        $persenBahanTradisional = round(($energi->bahan_tradisional / $totalKeluargaTerdata) * 100, 1);
+        $catatan[] = "Ketahanan energi: {$persenEnergiRendah}% menggunakan daya ≤450 VA atau tanpa meteran, dan {$persenBahanTradisional}% masih menggunakan kayu bakar/minyak tanah.";
+    }
+
+    // =============================
+    // REKOMENDASI INTERVENSI
+    // =============================
+    $rekomendasi = [
+        "Lakukan verifikasi dan prioritaskan program Bedah Rumah (RTLH/BSPS) bagi rumah dengan kondisi lantai/dinding/atap jelek atau material rendah.",
+        "Bangun tangki septik komunal dan program jambanisasi di wilayah dengan sanitasi buruk tinggi untuk pencegahan stunting dan penyakit berbasis lingkungan.",
+        "Dorong konversi bahan bakar memasak ke LPG/kompor listrik melalui subsidi tepat sasaran bagi keluarga miskin yang masih menggunakan kayu bakar.",
+        "Integrasikan data ini ke dalam P3KE (Pensasaran Percepatan Penghapusan Kemiskinan Ekstrem) sebagai indikator objektif untuk ranking penerima bantuan.",
+        "Lakukan program PTSL (Pendaftaran Tanah Sistematis Lengkap) bagi rumah tangga dengan status lahan bukan milik sendiri untuk mengurangi kerentanan penggusuran."
+    ];
+
     $pdf = Pdf::loadView('laporan.prasaranadasar', [
-        'data' => $data,
-        'total' => $total,
-        'indikator' => $indikator,
-        'skor' => $skor,
-        'kategori' => $kategori,
-        'rekomendasi' => $rekomendasi,
-        'persen_bangunan' => $persen_bangunan,
-        'persen_air_sanitasi' => $persen_air_sanitasi,
-        'persen_energi' => $persen_energi,
-        'avg_luas_lantai' => $avg_luas_lantai,
-        'avg_jumlah_kamar' => $avg_jumlah_kamar,
+        'totalKeluargaTerdata'   => $totalKeluargaTerdata,
+        'profilLegalitas'        => $profilLegalitas,
+        'temuanKunci'            => $temuanKunci,
+        'desil12'               => $desil12,
+        'desil37'               => $desil37,
+        'desil810'              => $desil810,
+        'catatan'                => $catatan,
+        'rekomendasi'            => $rekomendasi,
     ])->setPaper('a4', 'portrait');
 
-    return $pdf->download('Laporan_Analisis_Prasarana_Dasar_Keluarga.pdf');
+    return $pdf->download('Laporan_Analisis_Prasarana_Dasar.pdf');
 }
 }

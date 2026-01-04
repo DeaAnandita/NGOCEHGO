@@ -152,76 +152,187 @@ class KeluargaController extends Controller
         return response()->json($desas);
     }
 
-    public static function exportPDF()
-    {
-        // Ambil data utama
-        $masterMutasi = MasterMutasiMasuk::all();
-        $masterDusun = MasterDusun::all();
-        $data = DataKeluarga::all();
-        $total = $data->count();
+    public function exportPdf()
+{
+    // --- DATA DASAR ---
+    $ringkasan = DB::table('data_keluarga')
+        ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
+        ->selectRaw('
+            COUNT(DISTINCT data_keluarga.no_kk) as total_keluarga,
+            COUNT(data_penduduk.nik) as total_penduduk
+        ')
+        ->first();
 
-        // Hitung persentase mutasi datang
-        $mutasi_datang = DataKeluarga::where('kdmutasimasuk', 'datang')->count();  // Asumsi kode 'datang'
-        $persen_datang = $total > 0 ? round(($mutasi_datang / $total) * 100, 2) : 0;
+    // --- REKAP PER DUSUN ---
+    $perDusun = DB::table('data_keluarga')
+        ->leftJoin('master_dusun', 'master_dusun.kddusun', '=', 'data_keluarga.kddusun')
+        ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
+        ->selectRaw('
+            COALESCE(master_dusun.dusun, "Tidak ada dusun") as dusun,
+            COUNT(DISTINCT data_keluarga.no_kk) as total_keluarga,
+            COUNT(data_penduduk.nik) as total_penduduk
+        ')
+        ->groupBy('master_dusun.dusun')
+        ->orderBy('dusun')
+        ->get();
 
-        // Hitung kepadatan per dusun (rata-rata)
-        $kepadatan_per_dusun = DataKeluarga::select('kddusun', DB::raw('COUNT(*) as count'))
-            ->groupBy('kddusun')
-            ->get()
-            ->avg('count') ?? 0;
+    $jumlahDusun   = $perDusun->count();
+    $dusunTerpadat = $perDusun->sortByDesc('total_penduduk')->first();
 
-        // Hitung persen migran dari daerah miskin (asumsi daftar provinsi miskin, sesuaikan)
-        $daerah_miskin = ['Papua', 'NTT'];  // Contoh, ambil dari config atau DB
-        $migran_miskin = DataKeluarga::where('kdmutasimasuk', 'datang')
-            ->whereHas('provinsi', function ($q) use ($daerah_miskin) {
-                $q->whereIn('provinsi', $daerah_miskin);
-            })->count();
-        $persen_migran_miskin = $mutasi_datang > 0 ? round(($migran_miskin / $mutasi_datang) * 100, 2) : 0;
+    // --- REKAP RW / RT (FORMAT HIARKIS) ---
+    $rekapRwRtRaw = DB::table('data_keluarga')
+        ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
+        ->selectRaw('
+            data_keluarga.keluarga_rw as rw,
+            data_keluarga.keluarga_rt as rt,
+            COUNT(DISTINCT data_keluarga.no_kk) as total_keluarga,
+            COUNT(data_penduduk.nik) as total_penduduk
+        ')
+        ->groupBy('data_keluarga.keluarga_rw', 'data_keluarga.keluarga_rt')
+        ->orderBy('data_keluarga.keluarga_rw')
+        ->orderBy('data_keluarga.keluarga_rt')
+        ->get();
 
-        // Skor kerentanan
-        $skor = ($persen_datang * 0.4) + ($kepadatan_per_dusun * 0.003) + ($persen_migran_miskin * 0.3);  // Adjust multiplier kepadatan agar masuk skala 0-100
-        $skor = max(0, min(100, round($skor, 2)));
+    // Kelompokkan per RW untuk tabel hierarkis
+    $rekapRwRt = $rekapRwRtRaw->groupBy('rw');
 
-        // Kategori dan rekomendasi (mirip contoh aset)
-        if ($skor > 50 || $persen_datang > 20) {
-            $kategori = 'Rentan Kemiskinan Migrasi';
-            $rekomendasi = [
-                'Program integrasi migran dengan BLT khusus.',
-                'Mapping infrastruktur di dusun padat.',
-                'Kerja sama antar-daerah untuk pencegahan migrasi.'
-            ];
-        } elseif ($skor >= 30) {
-            $kategori = 'Rawan Kemiskinan Lokal';
-            $rekomendasi = [
-                'Alokasi PKH targeted per RW/RT.',
-                'Pembangunan infrastruktur desa.',
-                'Monitoring migrasi berkala.'
-            ];
+    // Hitung total
+    $jumlahRw = $rekapRwRt->count();
+    $jumlahRt = $rekapRwRtRaw->count();
+    $totalKeluargaKeseluruhan = $rekapRwRtRaw->sum('total_keluarga');
+    $totalPendudukKeseluruhan = $rekapRwRtRaw->sum('total_penduduk');
+
+    // --- RINGKASAN MUTASI ---
+    $mutasiMasuk = DB::table('data_penduduk')
+        ->leftJoin('master_mutasimasuk', 'master_mutasimasuk.kdmutasimasuk', '=', 'data_penduduk.kdmutasimasuk')
+        ->leftJoin('data_keluarga', 'data_keluarga.no_kk', '=', 'data_penduduk.no_kk')
+        ->select(
+            'master_mutasimasuk.mutasimasuk',
+            DB::raw('COUNT(DISTINCT data_penduduk.no_kk) as jumlah_keluarga'),
+            DB::raw('COUNT(data_penduduk.nik) as jumlah_penduduk')
+        )
+        ->groupBy('master_mutasimasuk.kdmutasimasuk', 'master_mutasimasuk.mutasimasuk')
+        ->orderBy('master_mutasimasuk.kdmutasimasuk')
+        ->get();
+
+    if ($mutasiMasuk->count() < 4) {
+        $existingTypes = $mutasiMasuk->pluck('mutasimasuk')->toArray();
+        $allTypes = ['MUTASI TETAP', 'MUTASI LAHIR', 'MUTASI DATANG', 'MUTASI KELUAR'];
+        foreach ($allTypes as $type) {
+            if (!in_array($type, $existingTypes)) {
+                $mutasiMasuk->push((object)[
+                    'mutasimasuk' => $type,
+                    'jumlah_keluarga' => 0,
+                    'jumlah_penduduk' => 0
+                ]);
+            }
+        }
+    }
+
+    // =============================
+    // ANALISIS & INTERPRETASI (DIPERBAIKI: GUNAKAN $rekapRwRtRaw)
+    // =============================
+    $catatan = [];
+
+    // 1. Rata-rata anggota keluarga
+    if ($ringkasan->total_penduduk > 0) {
+        $rataPendudukPerKk = round($ringkasan->total_penduduk / $ringkasan->total_keluarga);
+        $catatan[] = "Rata-rata jumlah anggota keluarga adalah {$rataPendudukPerKk} orang per Kartu Keluarga (KK). Ini mencerminkan struktur rumah tangga umum di wilayah ini.";
+
+        if ($rataPendudukPerKk >= 6) {
+            $catatan[] = "Rata-rata yang tinggi (≥6 orang/KK) mengindikasikan potensi beban ekonomi lebih besar pada keluarga, terutama dalam akses pendidikan, kesehatan, dan pangan. Hal ini bisa menjadi faktor risiko kemiskinan jika tidak didukung oleh pendapatan yang memadai.";
+        } elseif ($rataPendudukPerKk <= 3) {
+            $catatan[] = "Rata-rata yang relatif rendah (≤3 orang/KK) mungkin disebabkan oleh tren keluarga kecil, urbanisasi, atau migrasi pekerja. Ini bisa menunjukkan penurunan pertumbuhan penduduk alami dan kebutuhan program pemberdayaan keluarga muda.";
         } else {
-            $kategori = 'Stabil';
-            $rekomendasi = [
-                'Edukasi manajemen migrasi.',
-                'Program CSR untuk investasi.',
-                'Survey tahunan deteksi dini.'
-            ];
+            $catatan[] = "Rata-rata ini berada dalam kisaran normal (4-5 orang/KK), tetapi perlu pemantauan lanjutan terhadap keluarga dengan anggota di atas rata-rata untuk identifikasi rumah tangga rentan.";
+        }
+    }
+
+    // 2. Analisis Dusun (tetap sama)
+    if ($jumlahDusun > 0) {
+        $rataPendudukPerDusun = round($ringkasan->total_penduduk / $jumlahDusun);
+
+        if ($dusunTerpadat) {
+            $persenPendudukTerpadat = round(($dusunTerpadat->total_penduduk / $ringkasan->total_penduduk) * 100);
+            $catatan[] = "Dusun {$dusunTerpadat->dusun} adalah wilayah terpadat dengan {$dusunTerpadat->total_penduduk} jiwa ({$persenPendudukTerpadat}% dari total penduduk) dan {$dusunTerpadat->total_keluarga} KK.";
+
+            if ($persenPendudukTerpadat > 25) {
+                $catatan[] = "Konsentrasi penduduk yang tinggi di satu dusun ini menandakan ketimpangan spasial, yang bisa memperburuk akses layanan dasar — faktor utama kemiskinan struktural.";
+            }
         }
 
-        // Persentase ringkasan
-        $persen_kepadatan_tinggi = round(($kepadatan_per_dusun > 50 ? 100 : ($kepadatan_per_dusun / 50) * 100), 2);  // Asumsi threshold 50
-
-        $pdf = Pdf::loadView('laporan.keluarga', [
-            'data' => $data,
-            'masterMutasi' => $masterMutasi,
-            'masterDusun' => $masterDusun,
-            'persen_datang' => $persen_datang,
-            'kepadatan_per_dusun' => round($kepadatan_per_dusun, 2),
-            'persen_migran_miskin' => $persen_migran_miskin,
-            'skor' => $skor,
-            'kategori' => $kategori,
-            'rekomendasi' => $rekomendasi,
-            'persen_kepadatan_tinggi' => $persen_kepadatan_tinggi,
-        ])->setPaper('a4', 'portrait');
-
-        return $pdf->download('Laporan_Analisis_Data_Keluarga.pdf');
+        $dusunDiAtasRata = $perDusun->filter(fn($d) => $d->total_penduduk > $rataPendudukPerDusun * 1.3)->count();
+        if ($dusunDiAtasRata > 0) {
+            $catatan[] = "Terdapat {$dusunDiAtasRata} dusun dengan penduduk >30% di atas rata-rata, mengindikasikan distribusi penduduk yang tidak merata.";
+        }
     }
+
+    // 3. Analisis RW/RT — DIPERBAIKI: gunakan $rekapRwRtRaw
+    if ($jumlahRt > 0) {
+        $rataPendudukPerRt = round($ringkasan->total_penduduk / $jumlahRt);
+
+        // Cari RT terpadat dari data mentah
+        $rtTerpadat = $rekapRwRtRaw->sortByDesc('total_penduduk')->first();
+
+        if ($rtTerpadat) {
+            $catatan[] = "RT {$rtTerpadat->rt} di RW {$rtTerpadat->rw} memiliki penduduk tertinggi ({$rtTerpadat->total_penduduk} jiwa dari {$rtTerpadat->total_keluarga} KK), dibandingkan rata-rata {$rataPendudukPerRt} jiwa per RT.";
+
+            if ($rtTerpadat->total_penduduk > $rataPendudukPerRt * 1.5) {
+                $catatan[] = "Kepadatan tinggi di RT ini menunjukkan kebutuhan intervensi mikro seperti verifikasi kemiskinan dan program bantuan targeted (PKH, BLT, BPNT).";
+            }
+        }
+    }
+
+    // 4. Analisis Mutasi — DIPERBAIKI: gunakan jumlah_penduduk
+    $mutasiLahir   = $mutasiMasuk->where('mutasimasuk', 'MUTASI LAHIR')->first()?->jumlah_penduduk ?? 0;
+    $mutasiDatang  = $mutasiMasuk->where('mutasimasuk', 'MUTASI DATANG')->first()?->jumlah_penduduk ?? 0;
+    $mutasiKeluar  = $mutasiMasuk->where('mutasimasuk', 'MUTASI KELUAR')->first()?->jumlah_penduduk ?? 0;
+
+    $migrasiNeto = $mutasiDatang - $mutasiKeluar;
+
+    $catatan[] = "Mutasi penduduk: kelahiran {$mutasiLahir} jiwa, migrasi neto " . ($migrasiNeto >= 0 ? "+{$migrasiNeto}" : "{$migrasiNeto}") . " jiwa (datang: {$mutasiDatang}, keluar: {$mutasiKeluar}).";
+
+    if ($migrasiNeto < 0 && abs($migrasiNeto) > 10) {
+        $catatan[] = "Migrasi keluar signifikan dapat menjadi indikator kurangnya peluang ekonomi lokal.";
+    }
+    if ($mutasiDatang > 20) {
+        $catatan[] = "Penduduk pendatang cukup banyak ({$mutasiDatang} jiwa) — perlu integrasi sosial dan pendaftaran kependudukan.";
+    }
+
+    // 5. Kesimpulan umum
+    $catatan[] = "Data secara keseluruhan menunjukkan pola kepadatan dan mutasi yang dapat menjadi dasar penentuan prioritas program penanggulangan kemiskinan.";
+
+    // =============================
+    // REKOMENDASI
+    // =============================
+    $namaDusunTerpadat = $dusunTerpadat?->dusun ?? '-';
+    $namaRtTerpadat = $rtTerpadat ? "RT {$rtTerpadat->rt}/RW {$rtTerpadat->rw}" : '-';
+
+    $rekomendasiIntervensi = [
+        "Prioritaskan verifikasi kemiskinan di Dusun {$namaDusunTerpadat} dan {$namaRtTerpadat} sebagai wilayah terpadat.",
+        "Fokus program PKH, BPNT, dan BLT pada keluarga di wilayah dengan kepadatan tinggi.",
+        "Perkuat pendaftaran penduduk pendatang dan integrasi sosial.",
+        "Pantau terus pertumbuhan penduduk alami dan migrasi untuk perencanaan jangka panjang.",
+        "Integrasikan data luas wilayah dan status ekonomi untuk analisis kepadatan yang lebih akurat di masa mendatang."
+    ];
+
+    // === PASS DATA KE VIEW (HAPUS $perRwRt!) ===
+    $pdf = Pdf::loadView('laporan.keluarga', [
+        'ringkasan'                 => $ringkasan,
+        'perDusun'                  => $perDusun,
+        'jumlahDusun'               => $jumlahDusun,
+        'dusunTerpadat'             => $dusunTerpadat,
+        'rekapRwRt'                 => $rekapRwRt,                    // Untuk tabel hierarkis
+        'jumlahRw'                  => $jumlahRw,
+        'jumlahRt'                  => $jumlahRt,
+        'totalKeluargaKeseluruhan'  => $totalKeluargaKeseluruhan,
+        'totalPendudukKeseluruhan'  => $totalPendudukKeseluruhan,
+        'mutasiMasuk'               => $mutasiMasuk,
+        'catatan'                   => $catatan,
+        'rekomendasiIntervensi'     => $rekomendasiIntervensi,
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->download('laporan_data_keluarga.pdf');
+}
+
 }

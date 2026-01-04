@@ -221,8 +221,11 @@
         </main>
 
         <footer class="text-center py-4 text-sm text-gray-500 bg-white/50 mt-auto">
-            Sistem Informasi Desa Kaliwungu © {{ date('Y') }} | Dibuat dengan 💚 oleh Tim Kandang Macan
+            © {{ date('Y') }} | <strong>Ngoceh Go</strong> — Sistem Pendataan Kemiskinan Berbasis Suara dan Data  
+            <br>
+            Dikembangkan oleh Kelompok Skripsi Universitas Muria Kudus (UMK)
         </footer>
+
     </div>
     @stack('scripts')
 
