@@ -172,33 +172,33 @@
         questions[1] = [
             {type:"text",label:"Sebutkan nomor kartu keluarga, 16 digit",field:"no_kk"},
             {type:"select",label:"Jenis mutasi apa?",field:"kdmutasimasuk",options:mutasiOptions},
-            // {type:"text",label:"Siapa nama kepala rumah tangga?",field:"keluarga_kepalakeluarga"},
-            // {type:"select",label:"Dusun atau lingkungan apa?",field:"kddusun",options:dusunOptions},
-            // {type:"number",label:"RW berapa?",field:"keluarga_rw"},
-            // {type:"number",label:"RT berapa?",field:"keluarga_rt"},
-            // {type:"text",label:"Sebutkan alamat lengkapnya",field:"keluarga_alamatlengkap"}
+            {type:"text",label:"Siapa nama kepala rumah tangga?",field:"keluarga_kepalakeluarga"},
+            {type:"select",label:"Dusun atau lingkungan apa?",field:"kddusun",options:dusunOptions},
+            {type:"number",label:"RW berapa?",field:"keluarga_rw"},
+            {type:"number",label:"RT berapa?",field:"keluarga_rt"},
+            {type:"text",label:"Sebutkan alamat lengkapnya",field:"keluarga_alamatlengkap"}
         ];
 
         questions[2] = [
             {type:"select",label:"Status Pemilik Bangunan",field:"kdstatuspemilikbangunan",options:masters.status_pemilik_bangunan},
-            // {type:"select",label:"Status Pemilik Lahan",field:"kdstatuspemiliklahan",options:masters.status_pemilik_lahan},
-            // {type:"select",label:"Jenis Fisik Bangunan",field:"kdjenisfisikbangunan",options:masters.jenis_fisik_bangunan},
-            // {type:"select",label:"Jenis Lantai Bangunan",field:"kdjenislantaibangunan",options:masters.jenis_lantai},
-            // {type:"select",label:"Kondisi Lantai Bangunan",field:"kdkondisilantaibangunan",options:masters.kondisi_lantai},
-            // {type:"select",label:"Jenis Dinding Bangunan",field:"kdjenisdindingbangunan",options:masters.jenis_dinding},
-            // {type:"select",label:"Kondisi Dinding Bangunan",field:"kdkondisidindingbangunan",options:masters.kondisi_dinding},
-            // {type:"select",label:"Jenis Atap Bangunan",field:"kdjenisatapbangunan",options:masters.jenis_atap},
-            // {type:"select",label:"Kondisi Atap Bangunan",field:"kdkondisiatapbangunan",options:masters.kondisi_atap},
-            // {type:"select",label:"Sumber Air Minum",field:"kdsumberairminum",options:masters.sumber_air_minum},
-            // {type:"select",label:"Kondisi Sumber Air Minum",field:"kdkondisisumberair",options:masters.kondisi_sumber_air},
-            // {type:"select",label:"Cara Memperoleh Air Minum",field:"kdcaraperolehanair",options:masters.cara_perolehan_air},
-            // {type:"select",label:"Sumber Penerangan Utama",field:"kdsumberpeneranganutama",options:masters.sumber_penerangan},
-            // {type:"select",label:"Sumber Daya Terpasang",field:"kdsumberdayaterpasang",options:masters.daya_terpasang},
-            // {type:"select",label:"Bahan Bakar Memasak",field:"kdbahanbakarmemasak",options:masters.bahan_bakar},
-            // {type:"select",label:"Penggunaan Fasilitas Tempat BAB",field:"kdfasilitastempatbab",options:masters.fasilitas_bab},
-            // {type:"select",label:"Tempat Pembuangan Akhir Tinja",field:"kdpembuanganakhirtinja",options:masters.pembuangan_tinja},
-            // {type:"select",label:"Cara Pembuangan Akhir Sampah",field:"kdcarapembuangansampah",options:masters.pembuangan_sampah},
-            // {type:"select",label:"Manfaat Mata Air",field:"kdmanfaatmataair",options:masters.manfaat_mataair},
+            {type:"select",label:"Status Pemilik Lahan",field:"kdstatuspemiliklahan",options:masters.status_pemilik_lahan},
+            {type:"select",label:"Jenis Fisik Bangunan",field:"kdjenisfisikbangunan",options:masters.jenis_fisik_bangunan},
+            {type:"select",label:"Jenis Lantai Bangunan",field:"kdjenislantaibangunan",options:masters.jenis_lantai},
+            {type:"select",label:"Kondisi Lantai Bangunan",field:"kdkondisilantaibangunan",options:masters.kondisi_lantai},
+            {type:"select",label:"Jenis Dinding Bangunan",field:"kdjenisdindingbangunan",options:masters.jenis_dinding},
+            {type:"select",label:"Kondisi Dinding Bangunan",field:"kdkondisidindingbangunan",options:masters.kondisi_dinding},
+            {type:"select",label:"Jenis Atap Bangunan",field:"kdjenisatapbangunan",options:masters.jenis_atap},
+            {type:"select",label:"Kondisi Atap Bangunan",field:"kdkondisiatapbangunan",options:masters.kondisi_atap},
+            {type:"select",label:"Sumber Air Minum",field:"kdsumberairminum",options:masters.sumber_air_minum},
+            {type:"select",label:"Kondisi Sumber Air Minum",field:"kdkondisisumberair",options:masters.kondisi_sumber_air},
+            {type:"select",label:"Cara Memperoleh Air Minum",field:"kdcaraperolehanair",options:masters.cara_perolehan_air},
+            {type:"select",label:"Sumber Penerangan Utama",field:"kdsumberpeneranganutama",options:masters.sumber_penerangan},
+            {type:"select",label:"Sumber Daya Terpasang",field:"kdsumberdayaterpasang",options:masters.daya_terpasang},
+            {type:"select",label:"Bahan Bakar Memasak",field:"kdbahanbakarmemasak",options:masters.bahan_bakar},
+            {type:"select",label:"Penggunaan Fasilitas Tempat BAB",field:"kdfasilitastempatbab",options:masters.fasilitas_bab},
+            {type:"select",label:"Tempat Pembuangan Akhir Tinja",field:"kdpembuanganakhirtinja",options:masters.pembuangan_tinja},
+            {type:"select",label:"Cara Pembuangan Akhir Sampah",field:"kdcarapembuangansampah",options:masters.pembuangan_sampah},
+            {type:"select",label:"Manfaat Mata Air",field:"kdmanfaatmataair",options:masters.manfaat_mataair},
             {type:"number",label:"Luas Lantai Rumah ini dalam meter persegi",field:"prasdas_luaslantai"},
             {type:"number",label:"Ada berapa kamar tidur di rumah ini",field:"prasdas_jumlahkamar"}
         ];
@@ -211,13 +211,13 @@
         Object.entries(bangunKeluargaOptions).slice(0,51).forEach(([kd,label])=>{ if(kd<=51) questions[8].push({type:"select",label:label,field:`bangunkeluarga_${kd}`,options:jawabBangunOptions}); });
         [
             {field:"sejahterakeluarga_61",label:"Rata-rata uang saku anak untuk sekolah perhari"},
-            // {field:"sejahterakeluarga_62",label:"Keluarga memiliki kebiasaan merokok? Jika ya, berapa bungkus perhari"},
-            // {field:"sejahterakeluarga_63",label:"Kepala keluarga memiliki kebiasaan minum kopi di kedai? Berapa kali"},
-            // {field:"sejahterakeluarga_64",label:"Kepala keluarga memiliki kebiasaan minum kopi di kedai? Berapa jam perhari"},
-            // {field:"sejahterakeluarga_65",label:"Rata-rata pulsa yang digunakan keluarga seminggu"},
-            // {field:"sejahterakeluarga_66",label:"Rata-rata pendapatan atau penghasilan keluarga sebulan"},
-            // {field:"sejahterakeluarga_67",label:"Rata-rata pengeluaran keluarga sebulan"},
-            // {field:"sejahterakeluarga_68",label:"Rata-rata uang belanja keluarga sebulan"}
+            {field:"sejahterakeluarga_62",label:"Keluarga memiliki kebiasaan merokok? Jika ya, berapa bungkus perhari"},
+            {field:"sejahterakeluarga_63",label:"Kepala keluarga memiliki kebiasaan minum kopi di kedai? Berapa kali"},
+            {field:"sejahterakeluarga_64",label:"Kepala keluarga memiliki kebiasaan minum kopi di kedai? Berapa jam perhari"},
+            {field:"sejahterakeluarga_65",label:"Rata-rata pulsa yang digunakan keluarga seminggu"},
+            {field:"sejahterakeluarga_66",label:"Rata-rata pendapatan atau penghasilan keluarga sebulan"},
+            {field:"sejahterakeluarga_67",label:"Rata-rata pengeluaran keluarga sebulan"},
+            {field:"sejahterakeluarga_68",label:"Rata-rata uang belanja keluarga sebulan"}
         ].forEach(q=>questions[9].push({type:"text",label:q.label,field:q.field,isUraian:true}));
         Object.entries(konflikSosialOptions).forEach(([kd,label])=>questions[10].push({type:"select",label:label,field:`konfliksosial_${kd}`,options:jawabKonflikOptions}));
         Object.entries(kualitasIbuHamilOptions).forEach(([kd,label])=>{
