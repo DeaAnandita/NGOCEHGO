@@ -75,15 +75,15 @@ class KeluargaController extends Controller
 
         // Load data wilayah asal untuk edit
         $kabupatens = $keluarga->kdprovinsi 
-            ? \DB::table('master_kabupaten')->where('kdprovinsi', $keluarga->kdprovinsi)->orderBy('kabupaten')->get(['kdkabupaten', 'kabupaten'])
+            ? DB::table('master_kabupaten')->where('kdprovinsi', $keluarga->kdprovinsi)->orderBy('kabupaten')->get(['kdkabupaten', 'kabupaten'])
             : collect();
 
         $kecamatans = $keluarga->kdkabupaten 
-            ? \DB::table('master_kecamatan')->where('kdkabupaten', $keluarga->kdkabupaten)->orderBy('kecamatan')->get(['kdkecamatan', 'kecamatan'])
+            ? DB::table('master_kecamatan')->where('kdkabupaten', $keluarga->kdkabupaten)->orderBy('kecamatan')->get(['kdkecamatan', 'kecamatan'])
             : collect();
 
         $desas = $keluarga->kdkecamatan 
-            ? \DB::table('master_desa')->where('kdkecamatan', $keluarga->kdkecamatan)->orderBy('desa')->get(['kddesa', 'desa'])
+            ? DB::table('master_desa')->where('kdkecamatan', $keluarga->kdkecamatan)->orderBy('desa')->get(['kddesa', 'desa'])
             : collect();
 
         return view('keluarga.edit', compact('keluarga', 'mutasis', 'dusuns', 'provinsis', 'kabupatens', 'kecamatans', 'desas'));
@@ -124,7 +124,7 @@ class KeluargaController extends Controller
     }
     public function getKabupaten($kdprovinsi)
     {
-        $kabupatens = \DB::table('master_kabupaten')
+        $kabupatens = DB::table('master_kabupaten')
             ->where('kdprovinsi', $kdprovinsi)
             ->orderBy('kabupaten')
             ->get(['kdkabupaten', 'kabupaten']); // ambil sebagai collection of objects
@@ -134,7 +134,7 @@ class KeluargaController extends Controller
 
     public function getKecamatan($kdkabupaten)
     {
-        $kecamatans = \DB::table('master_kecamatan')
+        $kecamatans = DB::table('master_kecamatan')
             ->where('kdkabupaten', $kdkabupaten)
             ->orderBy('kecamatan')
             ->get(['kdkecamatan', 'kecamatan']);
@@ -144,7 +144,7 @@ class KeluargaController extends Controller
 
     public function getDesa($kdkecamatan)
     {
-        $desas = \DB::table('master_desa')
+        $desas = DB::table('master_desa')
             ->where('kdkecamatan', $kdkecamatan)
             ->orderBy('desa')
             ->get(['kddesa', 'desa']);
