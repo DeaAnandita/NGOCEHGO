@@ -17,6 +17,12 @@
                 Simpan Semua Data Penduduk
             </button>
         </div>
+        <div class="mt-4">
+            <button id="bypassValidation" class="px-6 py-2 bg-yellow-500 text-white rounded-lg shadow hover:bg-yellow-600">
+                Lewati Validasi Suara (Testing Saja)
+            </button>
+        </div>
+
         <div id="inputArea" class="bg-white rounded-2xl shadow-lg p-6">
             <h2 id="modulTitle" class="text-2xl font-bold text-center mb-6 text-green-800">Input Data Penduduk via Suara</h2>
             <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
@@ -201,111 +207,12 @@
         ];
         // MODUL 7: LEMBAGA MASYARAKAT
         questions[7] = [           
-            {type:"select",label:"Apakah bapak/ibu pengurus RT?",field:"lemmas_1",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus RW?",field:"lemmas_3",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus LPM atau LKMD?",field:"lemmas_5",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus PKK?",field:"lemmas_7",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus lembaga adat?",field:"lemmas_9",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus Karang Taruna?",field:"lemmas_10",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pernah jadi Hansip atau Linmas?",field:"lemmas_12",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus poskamling?",field:"lemmas_13",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi perempuan?",field:"lemmas_14",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi bapak-bapak?",field:"lemmas_16",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi keagamaan?",field:"lemmas_18",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi wartawan?",field:"lemmas_20",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus Posyandu?",field:"lemmas_22",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus Posyantekdes?",field:"lemmas_23",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus kelompok tani atau nelayan?",field:"lemmas_24",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus lembaga gotong royong?",field:"lemmas_26",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi guru?",field:"lemmas_28",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi dokter atau tenaga medis?",field:"lemmas_30",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi pensiunan?",field:"lemmas_32",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi pemirsa atau pendengar?",field:"lemmas_34",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus kelompok pencinta alam?",field:"lemmas_36",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus organisasi ilmu pengetahuan?",field:"lemmas_38",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu memiliki atau mendirikan yayasan?",field:"lemmas_40",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus yayasan?",field:"lemmas_41",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus satgas kebersihan?",field:"lemmas_43",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus satgas kebakaran?",field:"lemmas_45",options:masters.jawab_lemmas},
-            {type:"select",label:"Apakah bapak/ibu pengurus posko bencana?",field:"lemmas_47",options:masters.jawab_lemmas}
+            {type:"select",label:"Apakah bapak/ibu pengurus RT?",field:"lemmas_1",options:masters.jawab_lemmas}
 
                     ];
         // MODUL 8: LEMBAGA EKONOMI
         questions[8] = [
-            {type:"select",label:"Apakah memiliki atau terlibat dalam Koperasi?",field:"lemek_1",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki Unit Usaha Simpan Pinjam?",field:"lemek_2",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha industri kerajinan tangan?",field:"lemek_3",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha industri pakaian/jahit menjahit?",field:"lemek_4",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha industri pengolahan makanan/minuman?",field:"lemek_5",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha industri alat rumah tangga?",field:"lemek_6",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perdagangan bahan bangunan?",field:"lemek_7",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perdagangan alat pertanian/perkebunan?",field:"lemek_8",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha restoran/rumah makan/warung makan?",field:"lemek_9",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki toko kelontong/swalayan/minimarket?",field:"lemek_10",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki warung kelontong/kios/toko kecil?",field:"lemek_11",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha angkutan darat (mobil/bus/truk)?",field:"lemek_12",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha angkutan sungai/perahu motor?",field:"lemek_13",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha angkutan laut/kapal?",field:"lemek_14",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha angkutan udara?",field:"lemek_15",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha jasa ekspedisi/pengiriman barang?",field:"lemek_16",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang sumur/bor air?",field:"lemek_17",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki atau mengelola pasar harian?",field:"lemek_18",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki atau mengelola pasar mingguan?",field:"lemek_19",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki atau mengelola pasar ternak?",field:"lemek_20",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perdagangan hasil bumi atau tambang?",field:"lemek_21",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perdagangan antar pulau?",field:"lemek_22",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai pengijon (pemberi modal hasil bumi)?",field:"lemek_23",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tengkulak/pedagang pengumpul?",field:"lemek_24",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha peternakan (sapi, kambing, ayam, dll)?",field:"lemek_25",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perikanan (tambak, budidaya ikan)?",field:"lemek_26",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perkebunan (kelapa sawit, karet, dll)?",field:"lemek_27",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah tergabung dalam kelompok simpan pinjam wanita/arisan?",field:"lemek_28",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha produksi minuman (sirup, kopi, dll)?",field:"lemek_29",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha apotek/toko obat/farmasi?",field:"lemek_30",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha karoseri/modifikasi kendaraan?",field:"lemek_31",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha penitipan/garasi kendaraan bermotor?",field:"lemek_32",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perakitan elektronik/reparasi?",field:"lemek_33",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha pengolahan kayu/mebel?",field:"lemek_34",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki atau mengelola bioskop?",field:"lemek_35",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha film keliling/bioskop berjalan?",field:"lemek_36",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki grup sandiwara/drama/teater?",field:"lemek_37",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki grup lawak/komedi?",field:"lemek_38",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki grup tari Jaipongan?",field:"lemek_39",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki grup wayang orang/golek?",field:"lemek_40",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki grup musik/band/orkes?",field:"lemek_41",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki grup vokal/paduan suara?",field:"lemek_42",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha persewaan genset/tenaga listrik?",field:"lemek_43",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha pengecer gas elpiji/BBM eceran?",field:"lemek_44",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha air minum isi ulang/AMDK?",field:"lemek_45",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang kayu/mebel?",field:"lemek_46",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang batu/bangunan?",field:"lemek_47",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang jahit/bordir/konveksi?",field:"lemek_48",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang cukur/pangkas rambut?",field:"lemek_49",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang service elektronik?",field:"lemek_50",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang las/besi?",field:"lemek_51",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai tukang pijat/urut/refleksi?",field:"lemek_52",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai Notaris?",field:"lemek_53",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai Pengacara/Advokat?",field:"lemek_54",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai Konsultan Manajemen?",field:"lemek_55",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai Konsultan Teknik?",field:"lemek_56",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah berprofesi sebagai Pejabat Pembuat Akta Tanah (PPAT)?",field:"lemek_57",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha losmen/pondok wisata?",field:"lemek_58",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha wisma/penginapan?",field:"lemek_59",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha asrama/kos-kosan?",field:"lemek_60",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha persewaan kamar?",field:"lemek_61",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki rumah kontrakan?",field:"lemek_62",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki mess/pondok pekerja?",field:"lemek_63",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha hotel?",field:"lemek_64",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha home stay?",field:"lemek_65",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha villa?",field:"lemek_66",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha town house/apartemen sewa?",field:"lemek_67",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha perusahaan asuransi?",field:"lemek_68",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki lembaga keuangan mikro/bukan bank?",field:"lemek_69",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki Lembaga Perkreditan Rakyat (LPR)?",field:"lemek_70",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha pegadaian?",field:"lemek_71",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki Bank Perkreditan Rakyat (BPR)?",field:"lemek_72",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha penyewaan alat pesta/tenda?",field:"lemek_73",options:masters.jawab_lemek},
-            {type:"select",label:"Apakah memiliki usaha pengolahan dan penjualan hasil hutan?",field:"lemek_74",options:masters.jawab_lemek}
+            {type:"select",label:"Apakah memiliki atau terlibat dalam Koperasi?",field:"lemek_1",options:masters.jawab_lemek}
         ];
        
         const wilayahQuestions = [
@@ -363,34 +270,60 @@
             return score>3?best:null;
         }
         function mapOmsetToCode(omset) {
-        let input = (omset ?? '').toString().toLowerCase().trim();
-        let angka = parseFloat(input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
-        if (/juta|jutaan/i.test(input)) angka *= 1000000;
-        if (angka <= 1000000) return '1';
-        if (angka <= 5000000) return '2';
-        if (angka <= 10000000) return '3';
-        return '4';
-}
-function mapPendapatanToCode(pendapatan) {
-        if (!pendapatan) return '0';
-        let input = pendapatan.toString().toLowerCase().trim();
-        // Ambil angka saja
-        let angkaStr = input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.');
-        let nilai = parseFloat(angkaStr) || 0;
-        // Deteksi "juta"
-        if (/juta|jutaan|milyar/i.test(input)) {
-            nilai *= 1000000;
+            let input = (omset ?? '').toString().toLowerCase().trim();
+
+            // Deteksi kasus "tidak berpenghasilan" atau variasinya
+            if (input === '' || 
+                /tidak ada|tidak berpenghasilan|nol|kosong|tidak punya|tanpa penghasilan/i.test(input)) {
+                return '0'; // Kode untuk "tidak berpenghasilan"
+            }
+
+            let angka = parseFloat(input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
+
+            // Jika ada kata "juta" atau "jutaan"
+            if (/juta|jutaan|milyar/i.test(input)) {
+                angka *= 1000000;
+            }
+            // Jika ada kata "ribu" dan angkanya kecil (misal: 500 ribu)
+            else if (/ribu/i.test(input) && angka < 10000) {
+                angka *= 1000;
+            }
+
+            if (angka <= 1000000) return '1';        // ≤ 1 juta
+            if (angka <= 5000000) return '2';        // 1–5 juta
+            if (angka <= 10000000) return '3';       // 5–10 juta
+            return '4';                              // > 10 juta
         }
-        // Deteksi "ribu" (biar 800 ribu masuk)
-        else if (/ribu/i.test(input) && nilai < 10000) {
-            nilai *= 1000;
+        function mapPendapatanToCode(pendapatan) {
+            if (!pendapatan) return '0';
+
+            let input = pendapatan.toString().toLowerCase().trim();
+
+            // Deteksi kasus "tidak berpendapatan" atau variasinya
+            if (input === '' || 
+                /tidak ada|tidak berpendapatan|nol|tidak punya|tanpa pendapatan|belum bekerja|belum berpenghasilan/i.test(input)) {
+                return '0'; // Kode untuk "tidak berpendapatan"
+            }
+
+            // Ambil angka saja
+            let angkaStr = input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.');
+            let nilai = parseFloat(angkaStr) || 0;
+
+            // Deteksi "juta" atau "milyar"
+            if (/juta|jutaan|milyar/i.test(input)) {
+                nilai *= 1000000;
+            }
+            // Deteksi "ribu" untuk kasus seperti "800 ribu"
+            else if (/ribu/i.test(input) && nilai < 10000) {
+                nilai *= 1000;
+            }
+
+            if (nilai <= 1000000) return '1';   // ≤ 1 juta
+            if (nilai <= 1500000) return '2';   // ≤ 1,5 juta
+            if (nilai <= 2000000) return '3';   // ≤ 2 juta
+            if (nilai <= 3000000) return '4';   // ≤ 3 juta
+            return '5';                         // > 3 juta
         }
-        if (nilai <= 1000000) return '1'; // ≤ 1 juta
-        if (nilai <= 1500000) return '2'; // ≤ 1,5 juta
-        if (nilai <= 2000000) return '3'; // ≤ 2 juta
-        if (nilai <= 3000000) return '4'; // ≤ 3 juta
-        return '5'; // > 3 juta
-    }
         function speak(t){
             return new Promise(r=>{
                 if(isSpeaking)return r(); isSpeaking=true;
@@ -552,8 +485,8 @@ function mapPendapatanToCode(pendapatan) {
     if (currentModul === 2 && step === 0) await speak("Modul Kelahiran. Pilih jawaban yang sesuai.");
     if (currentModul === 3 && step === 0) await speak("Modul Sosial Ekonomi. Jawab sesuai kondisi penduduk.");
     if (currentModul === 4 && step === 0) await speak("Modul Usaha A Er Te. Isi data usaha jika ada.");
-    if (currentModul === 5 && step === 0) await speak("Modul Program Serta. Jawab 1 untuk ikut, 2 pernah ikut, 3 tidak ikut.");
-    if ([6,7,8].includes(currentModul) && step === 0) await speak("Modul Lembaga. Jawab 1 ADA, 2 PERNAH ADA, 3 TIDAK ADA.");
+    if (currentModul === 5 && step === 0) await speak("Modul Program Serta. Jawab 1 untuk Ya, 2 pernah, 3 tidak.");
+    if ([6,7,8].includes(currentModul) && step === 0) await speak("Modul Lembaga. Jawab 1 ya, 2 PERNAH, 3 TIDAK.");
 
     // Baca pertanyaan
     let pertanyaanDibaca = q.label
@@ -589,6 +522,17 @@ function mapPendapatanToCode(pendapatan) {
         return; // keluar fungsi setelah selesai baca agama
     }
 
+                // === TRIGGER REKAMAN VALIDASI SUARA DI PERTANYAAN PERTAMA ===
+            if (currentModul === 1 && step === 0) {
+                if (!voiceValidated) {
+                    await speak("Sebelum memulai, saya akan memvalidasi suara Anda untuk mencegah duplikasi data.");
+                    await speak("Rekaman ini hanya untuk validasi suara.");
+                    startVoiceValidationRecording();
+                } else {
+                    await speak("");
+                }
+            }
+
     // ========== PILIHAN UMUM (kecuali yang dikecualikan) ==========
     if (
         q.type === "select" &&
@@ -610,6 +554,7 @@ function mapPendapatanToCode(pendapatan) {
             if (nama === "RP. 1 JUTA S/D RP. 5 JUTA") nama = "RP. 1 JUTA Sampai Dengan RP. 5 JUTA";
             if (nama === "RP. 5 JUTA S/D RP. 10 JUTA") nama = "RP. 5 JUTA Sampai Dengan RP. 10 JUTA";
             if (nama === "PASPORT") nama = "paspor";
+            if (nama === "LEVER") nama = "lever";
             
             await speak(`${i + 1}. ${cleanOptionText(nama)}`);
             if (i < opts.length - 1) await new Promise(r => setTimeout(r, 150));
@@ -776,7 +721,7 @@ function mapPendapatanToCode(pendapatan) {
             // ===================================================================
             if (q.field === "kdomsetusaha") {
                 const kode = mapOmsetToCode(text);
-                const konfirmasi = { '1': '≤ 1 juta', '2': '1–5 juta', '3': '5–10 juta', '4': '> 10 juta' };
+                const konfirmasi = {'1': '≤ 1 juta', '2': '1–5 juta', '3': '5–10 juta', '4': '> 10 juta' };
                 answers[q.field] = kode;
                 await speak(`Omset ${konfirmasi[kode]} rupiah. Lanjut.`);
                 saveData();
@@ -844,6 +789,37 @@ function mapPendapatanToCode(pendapatan) {
             }
             else if (q.type === "text") {
                 value = capitalize(text.trim());
+            }
+            // ===================================================================
+            // 11. JUMLAH PEKERJA USAHA ART (terbilang → angka)
+            // ===================================================================
+            if (q.field === "usahaart_jumlahpekerja") {
+                // Coba deteksi angka langsung
+                const numMatch = text.match(/\d+/g);
+                let nilai = null;
+
+                if (numMatch) {
+                    nilai = parseInt(numMatch.join(''));
+                } else {
+                    // Coba konversi terbilang
+                    nilai = terbilangKeAngka(text);
+                }
+
+                if (nilai === null || isNaN(nilai) || nilai < 0) {
+                    await speak("Jumlah pekerja tidak terdeteksi. Ulangi dengan bilang angka atau terbilang, contoh: lima, sepuluh, dua puluh satu.");
+                    return;
+                }
+
+                // Batas wajar jumlah pekerja (misal maksimal 999)
+                if (nilai > 999) nilai = 999;
+
+                value = nilai.toString();
+                document.getElementById('inputAnswer').value = value;
+                await speak(`Jumlah pekerja ${value} orang. Lanjut.`);
+                answers[q.field] = value;
+                saveData();
+                nextQuestion(1500);
+                return;
             }
 
             // ===================================================================
@@ -926,6 +902,54 @@ function mapPendapatanToCode(pendapatan) {
                 return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
             }
             return null;
+        }
+        // Konversi terbilang Indonesia sederhana ke angka (sampai ratusan cukup untuk jumlah pekerja)
+        function terbilangKeAngka(text) {
+            const lower = text.toLowerCase().trim();
+            const satuan = {
+                nol: 0, satu: 1, dua: 2, tiga: 3, empat: 4, lima: 5,
+                enam: 6, tujuh: 7, delapan: 8, sembilan: 9, sepuluh: 10,
+                sebelas: 11, belas: 10 // untuk "dua belas" dst.
+            };
+            const puluhan = {
+                dua: 20, tiga: 30, empat: 40, lima: 50,
+                enam: 60, tujuh: 70, delapan: 80, sembilan: 90
+            };
+            const ratusan = { seratus: 100, ratus: 100 };
+
+            let angka = 0;
+            let temp = 0;
+
+            // Pecah kata-kata
+            const kata = lower.split(/\s+/);
+
+            for (let i = 0; i < kata.length; i++) {
+                const k = kata[i];
+
+                if (satuan[k] !== undefined) {
+                    temp += satuan[k];
+                    // Jika kata berikutnya "belas" (contoh: dua belas)
+                    if (kata[i + 1] === 'belas') {
+                        temp += 10; // sudah ditambah satuan sebelumnya
+                        i++;
+                    }
+                } else if (puluhan[k]) {
+                    temp += puluhan[k];
+                } else if (ratusan[k]) {
+                    temp += ratusan[k];
+                    // Jika ada satuan setelah ratus (seratus satu → 101)
+                    if (i + 1 < kata.length && satuan[kata[i + 1]] !== undefined) {
+                        temp += satuan[kata[i + 1]];
+                        i++;
+                    }
+                } else if (k.match(/^\d+$/)) {
+                    // Jika langsung bilang angka numerik
+                    return parseInt(k);
+                }
+            }
+
+            angka += temp;
+            return angka > 0 ? angka : null;
         }
 
         function showReviewForm() {
@@ -1549,7 +1573,115 @@ function mapPendapatanToCode(pendapatan) {
             updateProgressSteps();
             renderQuestion();
         });
-        // INISIALISASI
+
+                // ==================== TAMBAHAN: VOICE VALIDATION ====================
+    let voiceValidated = false;         // status validasi suara
+    let mediaRecorder = null;           // untuk rekam audio khusus validasi
+    let audioChunks = [];
+
+    // Fungsi mulai rekam audio untuk validasi (terpisah dari recognition biasa)
+    async function startVoiceValidationRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+            audioChunks = [];
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+            mediaRecorder.onstop = async () => {
+                // Langsung validasi saat rekaman selesai
+                await validateVoicePrint();
+            };
+
+            mediaRecorder.start();
+            document.getElementById('voice-status').innerText = 'Merekam untuk validasi suara...';
+
+            // TIDAK ADA setTimeout lagi
+            // Rekaman akan di-stop otomatis saat recognition dapat hasil final
+
+        } catch (err) {
+            console.error("Gagal akses mikrofon untuk validasi:", err);
+            await speak("Gagal mengakses mikrofon. Pendataan tidak dapat dilanjutkan.");
+            stopListening();
+        }
+    }
+
+   async function validateVoicePrint() {
+    if (audioChunks.length === 0) {
+        await speak("Tidak ada rekaman suara. Silakan ulangi.");
+        document.getElementById('voice-status').innerText = 'Klik mic untuk coba lagi.';
+        return false;
+    }
+
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('voice_sample', audioBlob, 'validation.webm');
+
+    try {
+        document.getElementById('voice-status').innerText = 'Memvalidasi suara...';
+
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        const response = await Promise.race([
+            fetch("{{ route('voice.validate') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": token,
+                    "Accept": "application/json"
+                    // JANGAN SET "Content-Type": "multipart/form-data" → biarkan browser handle
+                },
+                body: formData  // <--- WAJIB ADA!
+            }),
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout validasi')), 15000)
+            )
+        ]);
+
+        const result = await response.json();
+
+        if (result.allowed === true) {
+            voiceValidated = true;
+
+            await speak("Validasi suara berhasil. Sekarang sebutkan nomor Kartu Keluarga 16 digit Anda untuk pendataan.");
+
+            document.getElementById('voice-status').innerText = 'Mendengarkan nomor KK...';
+
+            renderQuestion();
+            if (isListening) await speakQuestionAndOptions();
+
+            return true;
+        } else {
+            voiceValidated = false;
+            await speak(result.message || "Maaf, suara Anda sudah terdaftar sebelumnya atau validasi gagal. Pendataan tidak dapat dilanjutkan saat ini.");
+
+            document.getElementById('voice-status').innerText = 'Validasi gagal. Klik mic jika ingin coba lagi, atau hubungi petugas.';
+
+            // JANGAN restart otomatis → biarkan user putuskan
+            document.getElementById('recordBtn').disabled = false;
+            document.getElementById('recordBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+
+            return false;
+        }
+    } catch (err) {
+        console.error("Error validasi suara:", err);
+
+        voiceValidated = false;
+        await speak("Gagal memvalidasi suara karena masalah teknis. Silakan coba lagi atau hubungi petugas.");
+
+        document.getElementById('voice-status').innerText = 'Error validasi. Klik mic untuk coba lagi.';
+
+        // Aktifkan mic kembali, tapi TIDAK restart otomatis
+        document.getElementById('recordBtn').disabled = false;
+        document.getElementById('recordBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+
+        return false;
+    }
+}
+document.getElementById('bypassValidation')?.addEventListener('click', async () => {
+    voiceValidated = true;
+    await speak("Validasi suara dilewati (mode testing).");
+    renderQuestion();
+    if (isListening) await speakQuestionAndOptions();
+});
         initFresh();
     </script>
 </x-app-layout>

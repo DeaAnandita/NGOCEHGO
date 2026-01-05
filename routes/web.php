@@ -57,6 +57,7 @@ Route::prefix('admin/voice')->name('voice.')->middleware('auth')->group(function
     // Voice Penduduk
     // -----------------------------
     Route::get('/penduduk', [VoicePendudukController::class, 'index'])->name('penduduk.index');
+    Route::post('/validate', [VoicePendudukController::class, 'validateVoice'])->name('validate');
     Route::post('/penduduk/store-all', [VoicePendudukController::class, 'storeAll'])
         ->name('penduduk.store-all'); // ← ROUTE KHUSUS PENDUDUK
 

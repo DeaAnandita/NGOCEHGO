@@ -55,7 +55,10 @@ use App\Models\MasterJawabLemdes;
 use App\Models\MasterJawabLemmas;
 use App\Models\MasterJawabLemek;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;use App\Models\VoiceFingerprint; 
+use App\Http\Controllers\Voice\VoiceFingerprintController;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class VoicePendudukController extends Controller
 {
@@ -134,6 +137,70 @@ class VoicePendudukController extends Controller
 
 
     }
+
+    public function validateVoice(Request $request)
+{
+    $request->validate([
+        'voice_sample' => 'required|file|mimes:webm,ogg,wav,mp3|max:20480',
+    ]);
+
+    try {
+        $file = $request->file('voice_sample');
+        $extension = $file->getClientOriginalExtension();
+        $filename = 'voice_validation_' . Str::random(40) . '.' . $extension;
+        $path = $file->storeAs('voice_samples', $filename, 'public');
+
+        // Dummy embedding untuk testing
+        $currentEmbedding = $this->extractVoiceEmbedding('');
+
+        // Pastikan embedding valid
+        if (!is_array($currentEmbedding) || count($currentEmbedding) < 20) {
+            Storage::disk('public')->delete($path);
+            return response()->json([
+                'allowed' => false,
+                'message' => 'Gagal memproses suara.'
+            ], 422);
+        }
+
+        $threshold = 0.65;
+        $existing = VoiceFingerprint::all();
+
+        foreach ($existing as $record) {
+            $existingEmbedding = is_array($record->embedding) 
+                ? $record->embedding 
+                : json_decode($record->embedding, true);
+
+            if (!is_array($existingEmbedding) || count($existingEmbedding) !== count($currentEmbedding)) {
+                continue;
+            }
+
+            $similarity = $this->cosineSimilarity($currentEmbedding, $existingEmbedding);
+            if ($similarity >= $threshold) {
+                Storage::disk('public')->delete($path);
+                return response()->json([
+                    'allowed' => false,
+                    'message' => 'Suara sudah terdaftar.'
+                ]);
+            }
+        }
+
+        // Simpan sementara
+        session(['temp_voice_embedding' => $currentEmbedding]);
+        Storage::disk('public')->delete($path);
+
+        return response()->json([
+            'allowed' => true,
+            'message' => 'Validasi berhasil.'
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('Voice validation error: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
+        return response()->json([
+            'allowed' => false,
+            'message' => 'Error server: ' . $e->getMessage()
+        ], 500);
+    }
+}
 
     public function storeAll(Request $request)
     {
@@ -279,6 +346,33 @@ class VoicePendudukController extends Controller
                 ]);
 
             });
+                // ==================== SIMPAN VOICE FINGERPRINT ====================
+                if ($request->has('voice_fingerprint')) {
+                    $fingerprint = json_decode($request->voice_fingerprint, true);
+                    
+                    // Validasi fingerprint valid (array dengan minimal 20 elemen numeric)
+                    // Ganti dari session temp
+                    if (session()->has('temp_voice_embedding')) {
+                        $fingerprint = session('temp_voice_embedding');
+
+                        VoiceFingerprint::create([
+                            'nik'        => $penduduk->nik,              // Hubungkan ke NIK penduduk
+                            'no_kk'      => $penduduk->no_kk,            // Opsional, untuk referensi
+                            'embedding'  => $fingerprint,     // Simpan sebagai JSON di DB
+                        ]);
+
+                        session()->forget('temp_voice_embedding');
+                    } else {
+                        \Log::warning('Voice fingerprint invalid', [
+                        'nik'       => $penduduk->nik,
+                        'no_kk'     => $penduduk->no_kk,
+                        'fingerprint' => $fingerprint
+                        ]);
+                    }
+                }
+
+                return response()->json(['success' => true, 'message' => 'Data berhasil disimpan']);
+
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             $errors = [];
@@ -343,5 +437,21 @@ class VoicePendudukController extends Controller
             'exists' => $exists,
             'message' => $exists ? 'NIK sudah terdaftar' : 'NIK tersedia'
         ]);
+    }
+        // Helper functions
+    private function extractVoiceEmbedding(string $audioPath): ?array
+    {
+        // Dummy embedding tetap - cukup untuk testing
+        return array_fill(0, 512, 0.5);
+    }
+    private function cosineSimilarity(array $a, array $b): float
+    {
+        $dot = $normA = $normB = 0;
+        for ($i = 0; $i < count($a); $i++) {
+            $dot += $a[$i] * $b[$i];
+            $normA += $a[$i] ** 2;
+            $normB += $b[$i] ** 2;
+        }
+        return ($normA == 0 || $normB == 0) ? 0 : $dot / (sqrt($normA) * sqrt($normB));
     }
 }
