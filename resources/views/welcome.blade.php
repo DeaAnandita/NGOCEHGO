@@ -96,7 +96,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-blue-500 text-white py-8 sm:py-10 text-center mt-auto">
+    <footer class="bg-blue-900 text-white py-8 sm:py-10 text-center mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
             <p class="text-sm">
                 © {{ date('Y') }} NGOCEH GO - Pendataan Kemiskinan Berbasis Suara dan Data. All rights reserved.
