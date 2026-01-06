@@ -31,6 +31,6 @@ class DataSarprasKerja extends Model
      */
     public function keluarga()
     {
-        return $this->belongsTo(Datakeluarga::class, 'no_kk', 'no_kk');
+        return $this->belongsTo(DataKeluarga::class, 'no_kk', 'no_kk');
     }
 }
