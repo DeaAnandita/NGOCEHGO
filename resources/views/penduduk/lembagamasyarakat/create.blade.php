@@ -6,7 +6,7 @@
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="text-lg font-bold text-gray-800 mb-6">Tambah Data Lembaga Masyarakat</h3>
 
-                <form action="{{ route('penduduk.lembagamasyarakat.store') }}" method="POST">
+                <form action="{{ route('penduduk.lemmas.store') }}" method="POST">
                     @csrf
 
                     <!-- Pilih Penduduk -->

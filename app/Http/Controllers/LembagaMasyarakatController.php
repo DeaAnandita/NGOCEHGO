@@ -18,36 +18,43 @@ class LembagaMasyarakatController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        // Ambil semua data lembaga masyarakat dengan relasi penduduk
-        $search = $request->input('search');
-        $perPage = $request->input('per_page', 10); // default 10
+{
+    $search = $request->input('search');
+    $perPage = $request->input('per_page', 10);
 
-        $lembagaMasyarakats = DataLembagaMasyarakat::with('penduduk')
-            ->when($search, function ($query, $search) {
-                $query->where('nik', 'like', "%{$search}%")
-                    ->orWhereHas('penduduk', function ($q) use ($search) {
-                        $q->where('penduduk_namalengkap', 'like', "%{$search}%");
-                    });
-            })
-            ->orderBy('nik', 'asc')
-            ->paginate($perPage)
-            ->appends(['search' => $search, 'per_page' => $perPage]); // agar pagination tetap membawa parameter
+    $lembagamasyarakats = DataLembagaMasyarakat::with('penduduk')
+        ->when($search, function ($query, $search) {
+            $query->where('nik', 'like', "%{$search}%")
+                  ->orWhereHas('penduduk', function ($q) use ($search) {
+                      $q->where('penduduk_namalengkap', 'like', "%{$search}%");
+                  });
+        })
+        ->orderBy('nik', 'asc')
+        ->paginate($perPage)
+        ->appends([
+            'search' => $search,
+            'per_page' => $perPage
+        ]);
 
-        // Ambil master lembaga hanya yang kdjenislembaga = 3 (Lembaga Masyarakat)
-        $masterLembaga = MasterLembaga::where('kdjenislembaga', 3)
-            ->pluck('lembaga', 'kdlembaga')
-            ->toArray();
+    $masterLembaga = MasterLembaga::where('kdjenislembaga', 3)
+        ->pluck('lembaga', 'kdlembaga')
+        ->toArray();
 
-        // Ambil daftar pilihan jawaban dari master_jawablemmas
-        $masterJawabLemmas = MasterJawabLemmas::pluck('jawablemmas', 'kdjawablemmas')->toArray();
+    $masterJawabLemmas = MasterJawabLemmas::pluck('jawablemmas', 'kdjawablemmas')
+        ->toArray();
 
-        return view('penduduk.lembagamasyarakat.index', compact('lembagaMasyarakats', 'masterLembaga', 'masterJawabLemmas', 'search', 'perPage'));
-    }
+    return view(
+        'penduduk.lembagamasyarakat.index',
+        compact(
+            'lembagamasyarakats',
+            'masterLembaga',
+            'masterJawabLemmas',
+            'search',
+            'perPage'
+        )
+    );
+}
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $penduduks = DataPenduduk::all();
@@ -73,8 +80,8 @@ class LembagaMasyarakatController extends Controller
 
         $data = ['nik' => $request->nik];
 
-        // Loop dari 1 sampai 48 sesuai struktur kolom di tabel
-        for ($i = 1; $i <= 48; $i++) {
+        // Loop dari 1 sampai 27 sesuai struktur kolom di tabel
+        for ($i = 1; $i <= 27; $i++) {
             $data["lemmas_$i"] = $request->input("lemmas_$i", 0);
         }
 
@@ -102,14 +109,14 @@ class LembagaMasyarakatController extends Controller
     public function update(Request $request, $nik)
     {
         $request->validate([
-             'nik' => 'required|exists:data_penduduk,nik',
+            'nik' => 'required|exists:data_penduduk,nik',
         ]);
 
         $lembagaMasyarakat = DataLembagaMasyarakat::where('nik', $nik)->firstOrFail();
 
         $data = ['nik' => $request->nik];
 
-        for ($i = 1; $i <= 48; $i++) {
+        for ($i = 1; $i <= 27; $i++) {
             $data["lemmas_$i"] = $request->input("lemmas_$i", 0);
         }
 
@@ -126,80 +133,172 @@ class LembagaMasyarakatController extends Controller
         $lembagaMasyarakat = DataLembagaMasyarakat::where('nik', $nik)->firstOrFail();
         $lembagaMasyarakat->delete();
 
-        return redirect()->route('penduduk.lembagamasyarakat.index')->with('success', 'Data lembaga masyarakat berhasil dihapus.');
+        return redirect()->route('penduduk.lembagaMmasyarakat.index')->with('success', 'Data lembaga masyarakat berhasil dihapus.');
     }
-
-    /**
+/**
      * Export laporan analisis lembaga masyarakat ke PDF
      */
-   public function exportPdf()
-    {
-        $data = DataLembagaMasyarakat::all();
-        $totalPenduduk = $data->count();
+    public function exportPdf()
+{
+    $data = DataLembagaMasyarakat::all();
+    $totalPenduduk = $data->count();
 
-        if ($totalPenduduk === 0) {
-            return back()->with('error', 'Tidak ada data lembaga masyarakat untuk dianalisis.');
-        }
-
-        // Hitung kategori partisipasi
-        $rendah = $sedang = $tinggi = 0;
-        foreach ($data as $row) {
-            $skor = 0;
-            for ($i = 1; $i <= 48; $i++) {
-                $val = $row->{"lemmas_$i"};
-                if ($val == 1) $skor++;
-            }
-
-            if ($skor >= 8) $tinggi++;
-            elseif ($skor >= 3) $sedang++;
-            else $rendah++;
-        }
-
-        $persenRendah = round(($rendah / $totalPenduduk) * 100, 1);
-        $persenSedang = round(($sedang / $totalPenduduk) * 100, 1);
-        $persenTinggi = round(($tinggi / $totalPenduduk) * 100, 1);
-
-        $kategori = ['Rendah' => $rendah, 'Sedang' => $sedang, 'Tinggi' => $tinggi];
-        arsort($kategori);
-        $dominan = array_key_first($kategori);
-        $persenDominan = match ($dominan) {
-            'Rendah' => $persenRendah,
-            'Sedang' => $persenSedang,
-            'Tinggi' => $persenTinggi,
-        };
-
-        $master = MasterLembaga::pluck('lembaga', 'kdlembaga')->toArray();
-
-        // Hitung jumlah "ADA" per indikator
-        $soalCount = [];
-        foreach ($master as $kode => $nama) {
-            $jumlah = $data->where("lemmas_$kode", 1)->count();
-            $soalCount[$kode] = [
-                'nama' => ucfirst(Str::lower($nama)),
-                'jumlah' => $jumlah,
-            ];
-        }
-
-        // Ambil 8 besar partisipasi
-        usort($soalCount, fn($a, $b) => $b['jumlah'] <=> $a['jumlah']);
-        $topSoal = array_slice($soalCount, 0, 8);
-
-        // Generate PDF tanpa diagram
-        $pdf = Pdf::loadView('laporan.lembagamasyarakat', [
-            'totalPenduduk' => $totalPenduduk,
-            'rendah' => $rendah,
-            'sedang' => $sedang,
-            'tinggi' => $tinggi,
-            'persenRendah' => $persenRendah,
-            'persenSedang' => $persenSedang,
-            'persenTinggi' => $persenTinggi,
-            'dominan' => $dominan,
-            'persenDominan' => $persenDominan,
-            'topSoal' => $topSoal,
-            'periode' => Carbon::now()->translatedFormat('F Y'),
-            'tanggal' => Carbon::now()->translatedFormat('d F Y'),
-        ])->setPaper('a4', 'portrait');
-
-        return $pdf->stream('Laporan-Analisis-Lembaga-Masyarakat.pdf');
+    if ($totalPenduduk === 0) {
+        return back()->with('error', 'Tidak ada data lembaga masyarakat untuk dianalisis.');
     }
+
+    $max_lembaga = 48;
+
+    /* =====================================================
+     * HITUNG INDIKATOR PER LEMBAGA
+     * ===================================================== */
+    $indikator = [];
+
+    for ($i = 1; $i <= $max_lembaga; $i++) {
+        $countYa = 0;
+
+        foreach ($data as $row) {
+            if (isset($row->{"lemmas_$i"}) && $row->{"lemmas_$i"} == 1) {
+                $countYa++;
+            }
+        }
+
+        $countTidak = $totalPenduduk - $countYa;
+        $persenYa = ($countYa / $totalPenduduk) * 100;
+
+        $indikator["lemmas_$i"] = [
+            'count_ya' => $countYa,
+            'count_tidak' => $countTidak,
+            'persen_ya' => round($persenYa, 2),
+            'keterangan' => $persenYa > 70
+                ? 'Mayoritas penduduk aktif dalam lembaga ini.'
+                : ($persenYa > 40
+                    ? 'Sebagian penduduk terlibat, perlu peningkatan partisipasi.'
+                    : 'Partisipasi rendah, memerlukan pembinaan kelembagaan.')
+        ];
+    }
+
+    /* =====================================================
+     * HITUNG PARTISIPASI PER PENDUDUK
+     * ===================================================== */
+    $rendah = $sedang = $tinggi = 0;
+    $totalSkor = 0;
+
+    foreach ($data as $row) {
+        $skor = 0;
+
+        for ($i = 1; $i <= $max_lembaga; $i++) {
+            if (isset($row->{"lemmas_$i"}) && $row->{"lemmas_$i"} == 1) {
+                $skor++;
+            }
+        }
+
+        $totalSkor += $skor;
+
+        if ($skor >= 8) {
+            $tinggi++;
+        } elseif ($skor >= 3) {
+            $sedang++;
+        } else {
+            $rendah++;
+        }
+    }
+
+    $avgPartisipasi = round($totalSkor / $totalPenduduk);
+    $skorPartisipasi = round(($avgPartisipasi / $max_lembaga) * 100, 2);
+
+    $persenRendah = round(($rendah / $totalPenduduk) * 100, 1);
+    $persenSedang = round(($sedang / $totalPenduduk) * 100, 1);
+    $persenTinggi = round(($tinggi / $totalPenduduk) * 100, 1);
+
+    /* =====================================================
+     * KATEGORI DOMINAN
+     * ===================================================== */
+    $kategoriArr = [
+        'Rendah' => $rendah,
+        'Sedang' => $sedang,
+        'Tinggi' => $tinggi,
+    ];
+    arsort($kategoriArr);
+    $kategoriDominan = array_key_first($kategoriArr);
+
+    /* =====================================================
+     * ANALISIS & REKOMENDASI
+     * ===================================================== */
+    if ($skorPartisipasi < 25) {
+        $analisis = 'Partisipasi masyarakat dalam lembaga masih sangat rendah.';
+        $rekomendasi = [
+            'Pembinaan intensif lembaga masyarakat.',
+            'Pelibatan tokoh masyarakat.',
+            'Integrasi bantuan berbasis partisipasi.',
+            'Sosialisasi peran lembaga.',
+        ];
+    } elseif ($skorPartisipasi < 50) {
+        $analisis = 'Partisipasi masyarakat tergolong sedang.';
+        $rekomendasi = [
+            'Pelatihan pengurus lembaga.',
+            'Kolaborasi lintas lembaga.',
+            'Insentif berbasis partisipasi.',
+            'Monitoring rutin.',
+        ];
+    } else {
+        $analisis = 'Tingkat partisipasi masyarakat tergolong tinggi.';
+        $rekomendasi = [
+            'Pertahankan dukungan anggaran.',
+            'Kembangkan program lintas sektor.',
+            'Jadikan lembaga aktif sebagai role model.',
+            'Libatkan lembaga dalam perencanaan desa.',
+        ];
+    }
+    $periode = Carbon::now()->translatedFormat('F Y');
+    $tanggal = Carbon::now()->translatedFormat('d F Y');
+
+
+    /* =====================================================
+     * MASTER LEMBAGA
+     * ===================================================== */
+    $master = MasterLembaga::where('kdjenislembaga', 3)->get();
+    $lembaga = [];
+
+foreach ($master as $index => $row) {
+    $kode = 'lemmas_' . ($index + 1);
+
+    $lembaga[] = (object)[
+        'nama_lembaga' => $row->lembaga,
+        'jumlah_ya'    => $indikator[$kode]['count_ya'] ?? 0,
+        'jumlah_tidak' => $indikator[$kode]['count_tidak'] ?? 0,
+        'keterangan'   => $indikator[$kode]['keterangan'] ?? '-',
+    ];
+}
+
+
+    /* =====================================================
+     * GENERATE PDF
+     * ===================================================== */
+    /* =====================================================
+ * GENERATE PDF
+ * ===================================================== */
+$pdf = Pdf::loadView('laporan.lembagamasyarakat', compact(
+    'data',
+    'master',
+    'indikator',        // Already present
+    'lembaga',          // <-- ADD THIS LINE
+    'totalPenduduk',
+    'skorPartisipasi',
+    'kategoriDominan',
+    'rendah',
+    'sedang',
+    'tinggi',
+    'persenRendah',
+    'persenSedang',
+    'persenTinggi',
+    'analisis',
+    'rekomendasi',
+    'periode',
+    'tanggal'
+))->setPaper('a4', 'portrait');
+
+return $pdf->stream('Laporan_Analisis_Lembaga_Masyarakat.pdf');
+
+}
 }

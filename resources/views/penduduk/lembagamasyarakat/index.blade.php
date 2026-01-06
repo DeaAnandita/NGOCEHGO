@@ -45,7 +45,7 @@
                     <div class="flex flex-wrap items-center gap-2">
 
                         <!-- Per Page -->
-                        <form method="GET" action="{{ route('penduduk.lembagaekonomi.index') }}" class="flex items-center gap-2">
+                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" class="flex items-center gap-2">
                             <label class="text-sm text-gray-600">Tampilkan</label>
                             <select name="per_page" onchange="this.form.submit()"
                                 class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
@@ -60,7 +60,7 @@
                         </form>
 
                         <!-- Search -->
-                        <form method="GET" action="{{ route('penduduk.lembagaekonomi.index') }}" class="flex items-center">
+                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" class="flex items-center">
                             <input type="text" name="search" value="{{ $search ?? '' }}"
                                 placeholder="Cari NIK / No KK"
                                 class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
@@ -71,7 +71,7 @@
                         </form>
 
                         <!-- Tambah -->
-                        <a href="{{ route('penduduk.lembagaekonomi.create') }}"
+                        <a href="{{ route('penduduk.lemmas.create') }}"
                         class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 shadow-sm">
                             + Tambah Data
                         </a>
@@ -101,10 +101,10 @@
                             </thead>
 
                             <tbody class="bg-white divide-y divide-gray-200 text-gray-700">
-                                @forelse ($lembagaMasyarakats as $data)
+                                @forelse ($lembagamasyarakats as $data)
                                     <tr class="hover:bg-gray-50 transition">
                                         <!-- ✅ Kolom NO diperbaiki -->
-                                        <td class="border border-gray-200 px-4 py-3">{{ $lembagaMasyarakats->firstItem() + $loop->index }}</td>
+                                        <td class="border border-gray-200 px-4 py-3">{{ $lembagamasyarakats->firstItem() + $loop->index }}</td>
 
                                         <td class="border border-gray-200 px-4 py-4">{{ $data->nik }}</td>
                                         <td class="border border-gray-200 px-4 py-4">
@@ -156,10 +156,10 @@
                     <!-- Pagination -->
                     <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2 text-sm text-gray-600">
                         <div>
-                            Menampilkan {{ $lembagaMasyarakats->firstItem() }} - {{ $lembagaMasyarakats->lastItem() }} dari {{ $lembagaMasyarakats->total() }} data
+                            Menampilkan {{ $lembagamasyarakats->firstItem() }} - {{ $lembagamasyarakats->lastItem() }} dari {{ $lembagamasyarakats->total() }} data
                         </div>
                         <div class="w-full sm:w-auto">
-                            {{ $lembagaMasyarakats->appends(['search' => request('search'), 'per_page' => request('per_page')])->links() }}
+                            {{ $lembagamasyarakats->appends(['search' => request('search'), 'per_page' => request('per_page')])->links() }}
                         </div>
                     </div>
                 </div>

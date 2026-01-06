@@ -14,20 +14,6 @@
         .title { font-size: 18px; font-weight: bold; margin: 0; text-transform: uppercase; }
         .subtitle { font-size: 13px; margin: 4px 0 10px; }
 
-        .summary {
-            border: 1px solid #d1d5db;
-            background: #f9fafb;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        h3 {
-            font-size: 13px;
-            margin-top: 16px;
-            margin-bottom: 6px;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -45,6 +31,31 @@
             font-weight: bold;
         }
         tr:nth-child(even) { background: #fafafa; }
+
+        .summary {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 5px;
+            margin-bottom: 12px;
+        }
+
+        .category-box {
+            text-align: center;
+            padding: 12px;
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        h3 {
+            font-size: 13px;
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
 
         .rekomendasi {
             border: 1px solid #d1d5db;
@@ -71,84 +82,87 @@
             font-size: 11px;
             color: #6b7280;
         }
+
+        .page-break { page-break-before: always; }
     </style>
 </head>
 <body>
+
+    <!-- HEADER -->
     <div class="header">
         <p class="title">Laporan Analisis Lembaga Masyarakat</p>
         <p class="subtitle">Periode: {{ $periode }}</p>
     </div>
 
+    <!-- RINGKASAN -->
     <div class="summary">
         <p><strong>Total Penduduk Terdata:</strong> {{ number_format($totalPenduduk) }}</p>
-        <p><strong>Keterlibatan Rendah:</strong> {{ $rendah }} ({{ $persenRendah }}%)</p>
-        <p><strong>Keterlibatan Sedang:</strong> {{ $sedang }} ({{ $persenSedang }}%)</p>
-        <p><strong>Keterlibatan Tinggi:</strong> {{ $tinggi }} ({{ $persenTinggi }}%)</p>
-        <p><strong>Kategori Dominan:</strong> {{ strtoupper($dominan) }} ({{ $persenDominan }}%)</p>
+        <p><strong>Rata-rata Tingkat Partisipasi:</strong> {{ $skorPartisipasi }} / 100</p>
+
+        <div class="category-box">
+            Kategori Partisipasi Dominan: {{ strtoupper($kategoriDominan) }}
+        </div>
     </div>
 
-    <h3>Top 8 Lembaga dengan Partisipasi Tertinggi</h3>
+    <!-- TABEL PARTISIPASI LEMBAGA -->
+    <h3>Partisipasi Penduduk pada Lembaga Masyarakat</h3>
     <table>
         <thead>
             <tr>
                 <th style="width:40px;">No</th>
                 <th>Nama Lembaga</th>
-                <th style="width:150px;">Jumlah Penduduk Terlibat</th>
+                <th style="width:120px;">Jumlah Terlibat</th>
+                <th style="width:120px;">Jumlah Tidak Terlibat</th>
+                <th style="width:200px;">Keterangan</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($topSoal as $i => $item)
+            @foreach($lembaga as $i => $item)
                 <tr>
                     <td align="center">{{ $i + 1 }}</td>
-                    <td>{{ $item['nama'] }}</td>
-                    <td align="center">{{ $item['jumlah'] }}</td>
+                    <td>{{ $item->nama_lembaga }}</td>
+                    <td align="center">{{ $item->jumlah_ya }}</td>
+                    <td align="center">{{ $item->jumlah_tidak }}</td>
+                    <td>{{ $item->keterangan }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
+    <!-- PAGE 2 -->
+    <div class="page-break"></div>
+
+    <!-- RINGKASAN KATEGORI -->
+    <h3>Ringkasan Tingkat Keterlibatan</h3>
+    <div class="summary">
+        <p>• <strong>Keterlibatan Tinggi:</strong> {{ $tinggi }} penduduk ({{ $persenTinggi }}%)</p>
+        <p>• <strong>Keterlibatan Sedang:</strong> {{ $sedang }} penduduk ({{ $persenSedang }}%)</p>
+        <p>• <strong>Keterlibatan Rendah:</strong> {{ $rendah }} penduduk ({{ $persenRendah }}%)</p>
+    </div>
+
+    <!-- ANALISIS -->
     <h3>Analisis Interpretatif</h3>
     <div class="summary">
         <p>
-            • <strong>Makna Tingkat Keterlibatan:</strong>
-            @if($dominan === 'Tinggi')
-                Partisipasi masyarakat dalam lembaga sangat aktif. Ini menunjukkan kesadaran sosial dan solidaritas tinggi antarwarga.
-            @elseif($dominan === 'Sedang')
-                Keterlibatan masyarakat cukup baik namun belum merata, perlu dorongan agar partisipasi lebih menyeluruh.
-            @else
-                Partisipasi lembaga masih rendah, menandakan perlunya pembinaan kelembagaan masyarakat tingkat desa/kelurahan.
-            @endif
-        </p>
-
-        <p>
-            • <strong>Interpretasi Umum:</strong>
-            Keterlibatan dalam lembaga sosial merupakan indikator penting dari modal sosial dan ketahanan masyarakat. 
-            Data ini dapat menjadi dasar intervensi sosial untuk memperkuat jejaring kelembagaan di tingkat desa.
+            {{ $analisis }}
         </p>
     </div>
 
+    <!-- REKOMENDASI -->
     <div class="rekomendasi">
         <h4>Rekomendasi Kebijakan Pemerintah</h4>
         <ul>
-            @if($dominan === 'Tinggi')
-                <li>Perkuat dukungan dan pendanaan bagi lembaga masyarakat yang aktif.</li>
-                <li>Kembangkan kegiatan lintas lembaga untuk memperkuat kolaborasi.</li>
-                <li>Berikan penghargaan bagi masyarakat yang berkontribusi dalam lembaga sosial.</li>
-            @elseif($dominan === 'Sedang')
-                <li>Lakukan sosialisasi pentingnya peran lembaga masyarakat di tingkat RT/RW.</li>
-                <li>Adakan pelatihan manajemen organisasi bagi pengurus lembaga lokal.</li>
-                <li>Fasilitasi kolaborasi antar lembaga melalui forum koordinasi desa.</li>
-            @else
-                <li>Identifikasi faktor penyebab rendahnya partisipasi masyarakat.</li>
-                <li>Berikan pendampingan dan pembinaan kepada pengurus lembaga pasif.</li>
-                <li>Integrasikan program pemerintah dengan kegiatan lembaga masyarakat.</li>
-            @endif
+            @foreach($rekomendasi as $item)
+                <li>{{ $item }}</li>
+            @endforeach
         </ul>
     </div>
 
+    <!-- FOOTER -->
     <div class="footer">
         <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Pembangunan Desa Cerdas</strong>.</p>
         <p><em>Tanggal Cetak:</em> {{ $tanggal }}</p>
     </div>
+
 </body>
 </html>
