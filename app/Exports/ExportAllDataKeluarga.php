@@ -22,7 +22,7 @@ use App\Models\DataKualitasIbuHamil;
 
 // Master models
 use App\Models\MasterDusun;
-use App\Models\MasterMutasimasuk;
+use App\Models\MasterMutasiMasuk;
 use App\Models\MasterProvinsi;
 use App\Models\MasterKabupaten;
 use App\Models\MasterKecamatan;
@@ -84,7 +84,7 @@ class ExportAllDataKeluarga
                 'No KK' => $keluarga->no_kk, // String aman karena key label
                 'Kepala Keluarga' => $keluarga->keluarga_kepalakeluarga,
                 'Tanggal Mutasi' => $keluarga->keluarga_tanggalmutasi,
-                'Jenis Mutasi' => optional(MasterMutasimasuk::find($keluarga->kdmutasimasuk))->mutasimasuk ?? '-',
+                'Jenis Mutasi' => optional(MasterMutasiMasuk::find($keluarga->kdmutasimasuk))->mutasimasuk ?? '-',
                 'Dusun' => optional(MasterDusun::find($keluarga->kddusun))->dusun ?? '-',
                 'RW' => $keluarga->keluarga_rw,
                 'RT' => $keluarga->keluarga_rt,
