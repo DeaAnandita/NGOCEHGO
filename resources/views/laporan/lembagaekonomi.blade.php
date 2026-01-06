@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <title>Laporan Analisis Lembaga Ekonomi</title>
     <style>
         @page { margin: 20px 25px; }
         body {
@@ -13,20 +14,6 @@
         .header { text-align: center; margin-bottom: 12px; }
         .title { font-size: 18px; font-weight: bold; margin: 0; text-transform: uppercase; }
         .subtitle { font-size: 13px; margin: 4px 0 10px; }
-
-        .summary {
-            border: 1px solid #d1d5db;
-            background: #f9fafb;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        h3 {
-            font-size: 13px;
-            margin-top: 16px;
-            margin-bottom: 6px;
-        }
 
         table {
             width: 100%;
@@ -45,7 +32,23 @@
             font-weight: bold;
         }
         tr:nth-child(even) { background: #fafafa; }
-
+        .summary {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 5px;
+            margin-bottom: 12px;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+        h3 {
+            font-size: 13px;
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
         .rekomendasi {
             border: 1px solid #d1d5db;
             background: #f0fdf4;
@@ -65,90 +68,85 @@
         .rekomendasi li {
             margin-bottom: 4px;
         }
-
-        .footer {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #6b7280;
+        .category-box {
+            text-align: center;
+            padding: 12px;
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            font-weight: bold;
         }
+        .page-break { page-break-before: always; }
     </style>
 </head>
 <body>
     <div class="header">
         <p class="title">Laporan Analisis Lembaga Ekonomi</p>
-        <p class="subtitle">Periode: {{ $periode }}</p>
+        <p class="subtitle">Periode: {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</p>
     </div>
 
     <div class="summary">
-        <p><strong>Total Penduduk Terdata:</strong> {{ number_format($totalPenduduk) }}</p>
-        <p><strong>Keterlibatan Ekonomi Rendah:</strong> {{ $rendah }} ({{ $persenRendah }}%)</p>
-        <p><strong>Keterlibatan Ekonomi Sedang:</strong> {{ $sedang }} ({{ $persenSedang }}%)</p>
-        <p><strong>Keterlibatan Ekonomi Tinggi:</strong> {{ $tinggi }} ({{ $persenTinggi }}%)</p>
-        <p><strong>Kategori Dominan:</strong> {{ strtoupper($dominan) }} ({{ $persenDominan }}%)</p>
+        <p><strong>Total Penduduk Terdata:</strong> {{ number_format($total) }}</p>
+        <p><strong>Skor Partisipasi Ekonomi:</strong> {{ $skor }} / 100</p>
+        <div class="category-box">
+            Kategori Partisipasi: {{ $kategori }}
+        </div>
     </div>
 
-    <h3>Top 10 Jenis Usaha dengan Partisipasi Tertinggi</h3>
+    <h3>Partisipasi Penduduk pada Lembaga Ekonomi</h3>
     <table>
         <thead>
             <tr>
                 <th style="width:40px;">No</th>
-                <th>Nama Lembaga / Jenis Usaha Ekonomi</th>
-                <th style="width:150px;">Jumlah Penduduk Terlibat</th>
+                <th>Nama Lembaga Ekonomi</th>
+                <th style="width:120px;">Jumlah Terlibat (YA)</th>
+                <th style="width:120px;">Jumlah Tidak Terlibat</th>
+                <th style="width:200px;">Keterangan</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($topSoal as $i => $item)
+            @foreach($master as $index => $item)
+                @php
+                    $kode = 'lemek_' . ($index + 1);
+                    $info = $indikator[$kode] ?? ['count_ya' => 0, 'count_tidak' => 0, 'keterangan' => 'Data tidak tersedia.'];
+                @endphp
                 <tr>
-                    <td align="center">{{ $i + 1 }}</td>
-                    <td>{{ $item['nama'] }}</td>
-                    <td align="center">{{ $item['jumlah'] }}</td>
+                    <td align="center">{{ $index + 1 }}</td>
+                    <td>{{ $item->lembaga }}</td>
+                    <td align="center">{{ number_format($info['count_ya']) }}</td>
+                    <td align="center">{{ number_format($info['count_tidak']) }}</td>
+                    <td>{{ $info['keterangan'] }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-    <h3>Analisis Ekonomi Desa</h3>
+    <div class="page-break"></div>
+    <h3>Ringkasan Partisipasi Lembaga Ekonomi</h3>
     <div class="summary">
-        <p>
-            • <strong>Tingkat Aktivitas Ekonomi:</strong>
-            @if($dominan === 'Tinggi')
-                Aktivitas ekonomi masyarakat sangat tinggi, menandakan produktivitas dan kemandirian warga desa dalam sektor usaha.
-            @elseif($dominan === 'Sedang')
-                Aktivitas ekonomi masyarakat tergolong cukup baik, namun perlu peningkatan kapasitas usaha dan akses permodalan.
-            @else
-                Partisipasi ekonomi masyarakat masih rendah, dibutuhkan pendampingan usaha dan program pemberdayaan ekonomi.
-            @endif
-        </p>
+        <p>• <strong>Rata-rata lembaga yang diikuti per penduduk:</strong> {{ $avg_partisipasi }} dari {{ $max_lembaga }} jenis lembaga</p>
+        <p>• <strong>Total partisipasi keseluruhan:</strong> {{ number_format($total_partisipasi) }} partisipasi individu</p>
+    </div>
 
-        <p>
-            • <strong>Interpretasi Umum:</strong>
-            Data ini menunjukkan tingkat aktivitas usaha masyarakat dalam berbagai sektor seperti koperasi, perdagangan, industri rumah tangga, dan jasa.
-            Hasil ini menjadi dasar kebijakan desa untuk memperkuat ekonomi produktif melalui BUMDes dan UMKM.
-        </p>
+    <h3>Analisis Interpretatif</h3>
+    <div class="summary">
+        <p>{{ $analisis }}</p>
     </div>
 
     <div class="rekomendasi">
-        <h4>Rekomendasi Kebijakan Ekonomi Desa</h4>
+        <h4>Rekomendasi Penguatan Lembaga Ekonomi</h4>
         <ul>
-            @if($dominan === 'Tinggi')
-                <li>Perkuat kolaborasi antar pelaku usaha melalui BUMDes dan koperasi.</li>
-                <li>Fasilitasi pengembangan usaha melalui akses permodalan dan pelatihan manajemen.</li>
-                <li>Dorong digitalisasi pemasaran untuk produk UMKM desa.</li>
-            @elseif($dominan === 'Sedang')
-                <li>Adakan pelatihan wirausaha dan inovasi produk bagi masyarakat produktif.</li>
-                <li>Kembangkan jejaring kerja sama dengan lembaga keuangan rakyat dan koperasi.</li>
-                <li>Optimalkan potensi sektor industri kecil dan perdagangan lokal.</li>
-            @else
-                <li>Identifikasi hambatan ekonomi masyarakat (permodalan, keterampilan, atau pasar).</li>
-                <li>Bangun program inkubasi usaha mikro dan dukungan BUMDes untuk sektor strategis.</li>
-                <li>Integrasikan program pemberdayaan ekonomi dengan kegiatan sosial masyarakat.</li>
-            @endif
+            @foreach($rekomendasi as $item)
+                <li>{{ $item }}</li>
+            @endforeach
         </ul>
     </div>
 
     <div class="footer">
-        <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Pembangunan Desa Cerdas</strong>.</p>
-        <p><em>Tanggal Cetak:</em> {{ $tanggal }}</p>
+        <p>Laporan ini dihasilkan otomatis oleh <strong>Sistem Ngoceh Go</strong>.</p>
+        <p><em>Tanggal Cetak:</em> {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
     </div>
 </body>
 </html>

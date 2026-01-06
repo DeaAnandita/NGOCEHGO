@@ -138,7 +138,7 @@ class LembagaMasyarakatController extends Controller
 /**
      * Export laporan analisis lembaga masyarakat ke PDF
      */
-    public function exportPdf()
+  public function exportPdf()
 {
     $data = DataLembagaMasyarakat::all();
     $totalPenduduk = $data->count();
