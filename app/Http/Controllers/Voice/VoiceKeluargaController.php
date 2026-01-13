@@ -43,7 +43,7 @@ use App\Models\MasterAsetLahan;
 use App\Models\MasterJawabLahan;
 use App\Models\MasterAsetTernak;
 use App\Models\MasterAsetPerikanan;
-use App\Models\MasterSarpraskerja;
+use App\Models\MasterSarprasKerja;
 use App\Models\MasterJawabSarpras;
 use App\Models\MasterPembangunanKeluarga;
 use App\Models\MasterJawabBangun;
@@ -72,7 +72,7 @@ class VoiceKeluargaController extends Controller
         $jawabLahan = MasterJawabLahan::pluck('jawablahan', 'kdjawablahan');
         $asetTernak = MasterAsetTernak::orderBy('kdasetternak')->pluck('asetternak', 'kdasetternak');
         $asetPerikanan = MasterAsetPerikanan::orderBy('kdasetperikanan')->pluck('asetperikanan', 'kdasetperikanan');
-        $sarprasOptions = MasterSarpraskerja::orderBy('kdsarpraskerja')->pluck('sarpraskerja', 'kdsarpraskerja');
+        $sarprasOptions = MasterSarprasKerja::orderBy('kdsarpraskerja')->pluck('sarpraskerja', 'kdsarpraskerja');
         $jawabSarprasOptions = MasterJawabSarpras::pluck('jawabsarpras', 'kdjawabsarpras');
         $bangunKeluarga = MasterPembangunanKeluarga::where('kdtypejawab', 1)
             ->orderBy('kdpembangunankeluarga')

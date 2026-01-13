@@ -113,7 +113,7 @@ class VoicePendudukController extends Controller
         ];
 
         $programSerta = MasterProgramSerta::pluck('programserta', 'kdprogramserta')->toArray();
-        $jawabProgramSerta = MasterJawabProgramSerta::pluck('jawabprogramserta', 'kdjawabprogramserta')->toArray();
+        $jawabProgramSerta = MasterJawabProgramserta::pluck('jawabprogramserta', 'kdjawabprogramserta')->toArray();
         $lembaga = MasterLembaga::pluck('lembaga', 'kdlembaga')->toArray();
         $jawabLemdes = MasterJawabLemdes::pluck('jawablemdes', 'kdjawablemdes')->toArray();
         $jawabLemmas = MasterJawabLemmas::pluck('jawablemmas', 'kdjawablemmas')->toArray();
@@ -147,7 +147,7 @@ class VoicePendudukController extends Controller
     try {
         $file = $request->file('voice_sample');
         $extension = $file->getClientOriginalExtension();
-        $filename = 'voice_validation_' . Str::random(40) . '.' . $extension;
+        $filename = 'voice_validation' . Str::random(40) . '.' . $extension;
         $path = $file->storeAs('voice_samples', $filename, 'public');
 
         // Dummy embedding untuk testing
