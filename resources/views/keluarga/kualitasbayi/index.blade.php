@@ -40,16 +40,15 @@
                     </div>
 
                     <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+
                         <!-- Dropdown Per Page -->
-                        <form method="GET" action="{{ route('keluarga.kualitasbayi.index') }}" 
-                              class="flex items-center gap-2">
-                            <label for="per_page" class="text-sm text-gray-600 whitespace-nowrap">Tampilkan</label>
+                        <form method="GET" action="{{ route('keluarga.kualitasbayi.index') }}" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             <select name="per_page" onchange="this.form.submit()"
-                                class="border border-gray-300 rounded-md px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-20 sm:w-24">
-                                <option value="5" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
-                                <option value="10" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
-                                <option value="15" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
-                                <option value="20" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
+                                class="border border-gray-300 rounded-lg px-2 py-2 text-sm w-full sm:w-32 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
+                                <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
+                                <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
+                                <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
                             </select>
 
                             <!-- Hidden search agar tetap nyantol -->
@@ -72,7 +71,7 @@
 
                         <!-- Tombol Tambah -->
                         <a href="{{ route('keluarga.kualitasbayi.create') }}"
-                            class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm text-center">
+                        class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm text-center">
                             + Tambah Data
                         </a>
                     </div>

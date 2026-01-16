@@ -39,13 +39,12 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
 
                         <!-- Dropdown Per Page -->
-                        <form method="GET" action="{{ route('keluarga.asetlahan.index') }}" class="flex flex-wrap sm:flex-nowrap items-center gap-2">
-                            <label for="per_page" class="text-sm text-gray-600">Tampilkan</label>
+                        <form method="GET" action="{{ route('keluarga.asetlahan.index') }}" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             <select name="per_page" onchange="this.form.submit()"
-                            class="border border-gray-300 rounded-md px-2 py-1 text-xs sm:px-3 sm:py-1.5 sm:text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none w-20 sm:w-24">
+                                class="border border-gray-300 rounded-lg px-2 py-2 text-sm w-full sm:w-32 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
                                 <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
                                 <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
@@ -59,19 +58,20 @@
                         </form>
 
                         <!-- Form Search -->
-                        <form method="GET" action="{{ route('keluarga.asetlahan.index') }}" class="flex items-center">
+                        <form method="GET" action="{{ route('keluarga.asetlahan.index') }}" 
+                              class="flex items-center w-full sm:w-auto">
                             <input type="text" name="search" value="{{ $search ?? '' }}"
                                 placeholder="Cari No KK / Kepala Keluarga"
-                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-56 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                             <button type="submit"
-                                    class="ml-2 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700 transition">
+                                class="ml-2 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700 transition">
                                 Cari
                             </button>
                         </form>
 
                         <!-- Tombol Tambah -->
                         <a href="{{ route('keluarga.asetlahan.create') }}"
-                        class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm">
+                        class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm text-center">
                             + Tambah Data
                         </a>
                     </div>

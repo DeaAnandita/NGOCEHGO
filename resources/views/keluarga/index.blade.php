@@ -43,9 +43,6 @@
                     <div class="flex flex-col sm:flex-row flex-wrap gap-3 w-full sm:w-auto">
                         {{-- Form Search + Dropdown --}}
                         <form method="GET" action="{{ route('dasar-keluarga.index') }}" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                            <input type="text" name="search" value="{{ request('search') }}"
-                                placeholder="Cari nama atau No KK..."
-                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-56 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                             <select name="per_page" onchange="this.form.submit()"
                                 class="border border-gray-300 rounded-lg px-2 py-2 text-sm w-full sm:w-32 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
@@ -53,8 +50,20 @@
                                 <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
                                 <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
                             </select>
+                            <!-- Hidden search agar tetap nyantol -->
+                            @if(!empty($search))
+                                <input type="hidden" name="search" value="{{ $search }}">
+                            @endif
+                        </form>
+
+                        <!-- Form Search -->
+                        <form method="GET" action="{{ route('dasar-keluarga.index') }}" 
+                              class="flex items-center w-full sm:w-auto">
+                            <input type="text" name="search" value="{{ $search ?? '' }}"
+                                placeholder="Cari No KK/Kepala Keluarga"
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-56 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                             <button type="submit"
-                                class="bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700 transition w-full sm:w-auto">
+                                class="ml-2 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700 transition">
                                 Cari
                             </button>
                         </form>

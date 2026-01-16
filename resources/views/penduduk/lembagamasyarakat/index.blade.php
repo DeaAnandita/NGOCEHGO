@@ -2,14 +2,11 @@
     <div class="flex">
         @include('penduduk.sidebar')
 
-        <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
-             <div class="bg-white rounded-2xl shadow-lg p-6">
-
-                <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-
-                    <!-- KIRI: Judul + Export -->
-                    <div class="flex items-center gap-3">
+            <div class="flex-1 py-6 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <!-- Header tetap tidak ikut scroll -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+                    <div class="flex items-center gap-3 flex-wrap">
                         <h3 class="text-xl font-bold text-gray-800">Data Lembaga Masyarakat</h3>
 
                         <!-- Dropdown Export -->
@@ -24,6 +21,7 @@
                                 </svg>
                             </button>
 
+                            <!-- Dropdown Menu -->
                             <div x-show="open" @click.away="open = false"
                                 x-transition
                                 class="absolute mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
@@ -42,47 +40,47 @@
                     </div>
 
                     <!-- KANAN: Tampilkan + Cari + Tambah -->
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
 
-                        <!-- Per Page -->
-                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" class="flex items-center gap-2">
-                            <label class="text-sm text-gray-600">Tampilkan</label>
+                        <!-- Dropdown Per Page -->
+                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             <select name="per_page" onchange="this.form.submit()"
-                                class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
+                                class="border border-gray-300 rounded-lg px-2 py-2 text-sm w-full sm:w-32 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                                 <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10</option>
                                 <option value="25" {{ $perPage == 25 ? 'selected' : '' }}>25</option>
                                 <option value="50" {{ $perPage == 50 ? 'selected' : '' }}>50</option>
                                 <option value="100" {{ $perPage == 100 ? 'selected' : '' }}>100</option>
                             </select>
+
+                            <!-- Hidden search agar tetap nyantol -->
                             @if(!empty($search))
                                 <input type="hidden" name="search" value="{{ $search }}">
                             @endif
                         </form>
 
-                        <!-- Search -->
-                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" class="flex items-center">
+                        <!-- Form Search -->
+                        <form method="GET" action="{{ route('penduduk.lemmas.index') }}" 
+                              class="flex items-center w-full sm:w-auto">
                             <input type="text" name="search" value="{{ $search ?? '' }}"
-                                placeholder="Cari NIK / No KK"
-                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400">
+                                placeholder="Cari NIK / Nama"
+                                class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full sm:w-56 focus:ring-2 focus:ring-blue-400 focus:outline-none">
                             <button type="submit"
-                                class="ml-2 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700">
+                                class="ml-2 bg-blue-600 text-white px-4 py-2 text-sm rounded-lg hover:bg-blue-700 transition">
                                 Cari
                             </button>
                         </form>
 
-                        <!-- Tambah -->
+                        <!-- Tombol Tambah -->
                         <a href="{{ route('penduduk.lemmas.create') }}"
-                        class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 shadow-sm">
+                        class="bg-green-600 text-white px-4 py-2 text-sm font-medium rounded-lg hover:bg-green-700 transition shadow-sm text-center">
                             + Tambah Data
                         </a>
-
                     </div>
                 </div>
 
-
                 <!-- Tabel scroll horizontal -->
                 <div class="relative">
-                    <div class="overflow-x-auto w-full">
+                    <div class="overflow-x-auto">
                         <table id="lemmasTable" class="min-w-[2000px] table-auto border-collapse text-sm">
                             <thead class="bg-blue-50 text-gray-600 uppercase text-xs font-semibold sticky top-0 z-10">
                                 <tr>

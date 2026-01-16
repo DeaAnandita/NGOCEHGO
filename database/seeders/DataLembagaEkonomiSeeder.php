@@ -7,36 +7,32 @@ use Illuminate\Support\Facades\DB;
 
 class DataLembagaEkonomiSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Ambil semua NIK dari data_penduduk (asumsi data ini adalah per individu yang memiliki/mengelola usaha)
         $nikList = DB::table('data_penduduk')
             ->pluck('nik')
             ->toArray();
 
         if (empty($nikList)) {
-            $this->command->warn('Tabel data_penduduk kosong! Tidak ada data lembaga ekonomi yang bisa dibuat.');
+            $this->command->warn('Tabel data_penduduk kosong!');
             return;
         }
 
-        $totalPenduduk = count($nikList);
-        $this->command->info("Membuat data lembaga ekonomi realistis untuk {$totalPenduduk} penduduk di desa...");
+        $this->command->info("Membuat data lembaga ekonomi untuk " . count($nikList) . " penduduk");
 
         $batchSize = 500;
         $data = [];
 
         foreach ($nikList as $nik) {
-            // Tingkat ekonomi/aktivitas usaha (1: rendah/miskin, 2: menengah, 3: tinggi)
-            $tingkatRand = mt_rand(1, 100);
-            if ($tingkatRand <= 40) {
-                $tingkat = 1; // 40% rendah (kurang aktif usaha)
-            } elseif ($tingkatRand <= 85) {
-                $tingkat = 2; // 45% menengah
+
+            // Tingkat ekonomi
+            $rand = mt_rand(1, 100);
+            if ($rand <= 40) {
+                $tingkat = 1; // rendah
+            } elseif ($rand <= 85) {
+                $tingkat = 2; // menengah
             } else {
-                $tingkat = 3; // 15% tinggi (lebih banyak usaha)
+                $tingkat = 3; // tinggi
             }
 
             // Default semua Tidak (3)
@@ -45,65 +41,78 @@ class DataLembagaEkonomiSeeder extends Seeder
                 $row["lemek_$i"] = 3;
             }
 
-            // Kelompok umum di desa (probabilitas tinggi)
-            $row['lemek_11'] = $this->prob(45 + 15 * $tingkat, $tingkat); // Warung kelontongan/kios (sangat umum ~50-70%)
-            $row['lemek_10'] = $this->prob(20 + 15 * $tingkat, $tingkat); // Toko/swalayan kecil
-            $row['lemek_14'] = $this->prob(15 + 10 * $tingkat, $tingkat); // Angkutan darat (ojek/mobil angkut)
-            $row['lemek_24'] = $this->prob(20 + 15 * $tingkat, $tingkat); // Usaha peternakan
-            $row['lemek_25'] = $this->prob(15 + 10 * $tingkat, $tingkat); // Usaha perikanan (jika relevan)
-            $row['lemek_26'] = $this->prob(30 + 20 * $tingkat, $tingkat); // Usaha perkebunan/pertanian kecil
+            // Usaha umum desa
+            $row['lemek_11'] = $this->prob3(45, 10, $tingkat); // Warung
+            $row['lemek_10'] = $this->prob3(25, 10, $tingkat); // Toko kecil
+            $row['lemek_14'] = $this->prob3(20, 10, $tingkat); // Angkutan
+            $row['lemek_24'] = $this->prob3(25, 10, $tingkat); // Peternakan
+            $row['lemek_25'] = $this->prob3(20, 10, $tingkat); // Perikanan
+            $row['lemek_26'] = $this->prob3(35, 15, $tingkat); // Pertanian
 
-            // Jasa tukang & kecil (umum di desa)
-            $this->applyCommon($row, [35,36,37,38,39,40,41], $tingkat, 10 + 10 * $tingkat); // Tukang kayu, batu, jahit, cukur, dll.
+            // Tukang & jasa kecil
+            $this->applyCommon($row, [35,36,37,38,39,40,41], $tingkat, 20, 10);
 
-            // Koperasi & simpan pinjam (sedang ~10-20%)
-            $row['lemek_1']  = $this->prob(8 + 8 * $tingkat, $tingkat);  // Koperasi
-            $row['lemek_17'] = $this->prob(12 + 10 * $tingkat, $tingkat); // Kelompok simpan pinjam
+            // Koperasi & simpan pinjam
+            $row['lemek_1']  = $this->prob3(10, 8, $tingkat);
+            $row['lemek_17'] = $this->prob3(15, 10, $tingkat);
 
-            // Industri kecil (makanan, kerajinan) ~15-30%
-            $this->applyCommon($row, [2,3,4,5], $tingkat, 15 + 12 * $tingkat);
+            // Industri rumahan
+            $this->applyCommon($row, [2,3,4,5], $tingkat, 18, 10);
 
-            // Usaha besar/modern (hotel, bank, industri besar) sangat jarang di desa (<2%)
-            $this->applyRare($row, [54,56,59,62,64], $tingkat, 0.5); // Hotel, villa, bank, dll.
+            // Usaha besar (sangat jarang)
+            $this->applyRare($row, [54,56,59,62,64], $tingkat, 1, 1);
 
-            // Hiburan tradisional & lain (jarang)
-            $this->applyRare($row, [24,25,26,27,28,29,30,31], $tingkat, 2 + 2 * $tingkat); // Bioskop, grup musik, dll.
+            // Hiburan & lain-lain
+            $this->applyRare($row, [24,25,26,27,28,29,30,31], $tingkat, 3, 3);
 
             $data[] = $row;
 
             if (count($data) >= $batchSize) {
                 DB::table('data_lembagaekonomi')->insert($data);
-                $this->command->info("Inserted " . count($data) . " data lembaga ekonomi.");
                 $data = [];
             }
         }
 
         if (!empty($data)) {
             DB::table('data_lembagaekonomi')->insert($data);
-            $this->command->info("Inserted sisa " . count($data) . " data lembaga ekonomi.");
         }
 
-        $this->command->info("Seeder DataLembagaEkonomi selesai! Data realistis desa: mayoritas warung kecil, peternakan, tukang; koperasi sedang; usaha besar jarang.");
+        $this->command->info('Seeder DataLembagaEkonomi selesai (Ya / Pernah / Tidak)');
     }
 
-    private function prob(float $baseChance, int $tingkat): int
+    /**
+     * Probabilitas 3 jawaban:
+     * - Ya
+     * - Pernah
+     * - Tidak
+     */
+    private function prob3(float $yaBase, float $pernahBase, int $tingkat): int
     {
-        $chance = $baseChance + ($tingkat - 1) * 10;
-        $chance = min($chance, 95);
-        return mt_rand(1, 100) <= $chance ? 1 : 3; // 1=Ya, 3=Tidak (2=Pernah jarang digunakan)
+        $yaChance     = min($yaBase + ($tingkat - 1) * 10, 90);
+        $pernahChance = min($pernahBase + ($tingkat - 1) * 5, 30);
+
+        $rand = mt_rand(1, 100);
+
+        if ($rand <= $yaChance) {
+            return 1; // Ya
+        } elseif ($rand <= ($yaChance + $pernahChance)) {
+            return 2; // Pernah
+        }
+
+        return 3; // Tidak
     }
 
-    private function applyCommon(array &$row, array $fields, int $tingkat, float $base): void
+    private function applyCommon(array &$row, array $fields, int $tingkat, float $ya, float $pernah): void
     {
         foreach ($fields as $f) {
-            $row["lemek_$f"] = $this->prob($base, $tingkat);
+            $row["lemek_$f"] = $this->prob3($ya, $pernah, $tingkat);
         }
     }
 
-    private function applyRare(array &$row, array $fields, int $tingkat, float $base): void
+    private function applyRare(array &$row, array $fields, int $tingkat, float $ya, float $pernah): void
     {
         foreach ($fields as $f) {
-            $row["lemek_$f"] = $this->prob($base, $tingkat);
+            $row["lemek_$f"] = $this->prob3($ya, $pernah, $tingkat);
         }
     }
 }

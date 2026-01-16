@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NGOCEH GO - Pendataan Keluarga Desa Kaliwungu</title>
+    <title>NGOCEH GO - Pendataan Kependudukan Desa Kaliwungu Kudus</title>
     @vite('resources/css/app.css')
 
     <!-- Font resmi: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <meta name="description" content="Platform resmi pendataan keluarga berbasis suara dan data untuk program penanggulangan kemiskinan Desa Kaliwungu, Kecamatan Kaliwungu, Kabupaten Kudus.">
+    <meta name="description" content="Platform resmi pendataan kependudukan berbasis suara dan data untuk program penanggulangan kemiskinan Desa Kaliwungu, Kecamatan Kaliwungu, Kabupaten Kudus.">
 </head>
 
 <body class="bg-gray-50 min-h-screen flex flex-col font-[Poppins] text-gray-800">
