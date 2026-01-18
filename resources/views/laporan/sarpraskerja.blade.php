@@ -1,195 +1,211 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <style>
-        @page { margin: 25px 30px; }
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            color: #111;
-            line-height: 1.5;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 14px;
-        }
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
-            text-transform: uppercase;
-        }
-        .subtitle {
-            font-size: 13px;
-            margin-top: 6px;
-        }
+<meta charset="UTF-8">
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #d1d5db;
-            padding: 8px;
-            font-size: 12px;
-            vertical-align: top;
-        }
-        th {
-            background-color: #f3f4f6;
-            text-align: center;
-            font-weight: bold;
-        }
-        tr:nth-child(even) {
-            background-color: #fafafa;
-        }
+<style>
+@page { margin: 20px; }
 
-        .summary {
-            border: 1px solid #d1d5db;
-            background-color: #f9fafb;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 14px;
-        }
+body {
+    font-family: DejaVu Sans, sans-serif;
+    font-size: 9px;
+    color: #111;
+}
 
-        h3 {
-            font-size: 13px;
-            margin-top: 18px;
-            margin-bottom: 6px;
-        }
+h2 {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 2px;
+}
 
-        .analysis {
-            border: 1px solid #d1d5db;
-            background-color: #f0f9ff;
-            padding: 10px;
-            border-radius: 6px;
-        }
+h3 {
+    font-size: 11px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+}
 
-        .rekomendasi {
-            border: 1px solid #d1d5db;
-            background-color: #f0fdf4;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 12px;
-        }
-        .rekomendasi h4 {
-            margin: 0 0 6px;
-            font-size: 13px;
-            color: #166534;
-        }
-        .rekomendasi ul {
-            margin: 0;
-            padding-left: 18px;
-        }
-        .rekomendasi li {
-            margin-bottom: 4px;
-        }
+/* ================= TABLE UMUM ================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
 
-        .footer {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #6b7280;
-            text-align: center;
-        }
-    </style>
+th, td {
+    border: 1px solid #ccc;
+    padding: 4px;
+    font-size: 8.5px;
+    text-align: center;
+    vertical-align: middle;
+    word-wrap: break-word;
+}
+
+th {
+    background-color: #f3f4f6;
+    font-weight: bold;
+}
+
+td small {
+    font-size: 7.5px;
+    color: #555;
+}
+
+.col-no { width: 28px; }
+.col-sarpras { width: 140px; text-align: left; }
+.col-dominan { width: 120px; text-align: left; font-weight: bold; }
+
+/* ================= BOX ================= */
+.section-box {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    background-color: #fafafa;
+}
+
+.section-box p {
+    margin: 4px 0;
+    font-size: 9px;
+}
+
+.section-title {
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #d1d5db;
+    padding-bottom: 3px;
+}
+
+/* ================= ANALISIS ================= */
+.analysis {
+    margin-top: 20px;
+}
+
+.analysis p {
+    margin: 4px 0 0 16px;
+    padding: 6px 8px;
+    border-left: 4px solid #2563eb;
+    background-color: #ffffff;
+    line-height: 1.4;
+}
+
+.analysis .dominan {
+    font-weight: bold;
+    color: #991b1b;
+}
+
+/* ================= REKOMENDASI (WARNA DIUBAH SAJA) ================= */
+.rekomendasi {
+    background-color: #f0fdf4;        /* hijau muda */
+    border: 1px solid #22c55e;        /* hijau */
+}
+
+.rekomendasi .section-title {
+    color: #166534;                   /* hijau tua */
+    border-bottom: 1px solid #22c55e;
+}
+
+.rekomendasi ul {
+    margin: 6px 0 0 18px;
+    padding: 0;
+}
+
+.rekomendasi li {
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    background-color: #ffffff;
+    border-left: 4px solid #16a34a;   /* aksen hijau */
+    line-height: 1.5;
+    font-size: 8.8px;
+}
+</style>
 </head>
+
 <body>
 
-    {{-- ================= HEADER ================= --}}
-    <div class="header">
-        <p class="title">Laporan Analisis Sarana dan Prasarana Kerja</p>
-        <p class="subtitle">
-            Periode {{ $periode }}
-        </p>
-    </div>
+<h2>LAPORAN ANALISIS SARANA DAN PRASARANA KERJA</h2>
+<p style="text-align:center">Periode {{ $periode }}</p>
 
-    {{-- ================= RINGKASAN ================= --}}
-    <div class="summary">
-        <p><strong>Total Keluarga Terdata:</strong> {{ number_format($totalKeluarga) }} KK</p>
-        <p><strong>Skor Kepemilikan Sarpras Rata-rata:</strong> {{ number_format($skorRataRata, 2) }}</p>
-        <p><strong>Kategori Keluarga Dominan:</strong> {{ $dominan }}</p>
+<!-- ================= RINGKASAN ================= -->
+<div class="section-box">
+    <p><strong>Total Keluarga Terdata:</strong> {{ $totalKeluarga }} keluarga</p>
+    <p><strong>Tingkat Pemenuhan Indikator (Rata-rata):</strong> {{ number_format($skorRataRata,2) }}%</p>
+    <p><strong>Interpretasi Kondisi Desa:</strong> {{ $dominan }}</p>
+</div>
+
+<!-- ================= REKAP SARPRAS ================= -->
+<h3>Rekap Status Kepemilikan Sarpras</h3>
+
+<table>
+<thead>
+<tr>
+    <th rowspan="2" class="col-no">No</th>
+    <th rowspan="2" class="col-sarpras">Sarpras</th>
+    <th colspan="{{ count($jawabMaster) }}">Status Kepemilikan</th>
+    <th rowspan="2" class="col-dominan">Dominan</th>
+</tr>
+<tr>
+@foreach($jawabMaster as $label)
+    <th>{{ \Illuminate\Support\Str::limit($label, 18) }}</th>
+@endforeach
+</tr>
+</thead>
+
+<tbody>
+@foreach($rekapDetail as $i => $row)
+<tr>
+    <td class="col-no">{{ $i + 1 }}</td>
+    <td class="col-sarpras">{{ $row['nama'] }}</td>
+
+    @foreach($jawabMaster as $kd => $label)
+        <td>
+            {{ $row['detail'][$kd]['jumlah'] }}
+            <br>
+            <small>{{ $row['detail'][$kd]['persen'] }}%</small>
+        </td>
+    @endforeach
+
+    <td class="col-dominan">{{ $row['dominan'] }}</td>
+</tr>
+@endforeach
+</tbody>
+</table>
+
+<!-- ================= ANALISIS ================= -->
+<div class="section-box analysis">
+    <div class="section-title">Analisis Interpretatif</div>
+
+    @foreach($rekapDetail as $row)
         <p>
-            <strong>Distribusi Kategori:</strong><br>
-            Tinggi {{ $persenTinggi }}% &nbsp;|&nbsp;
-            Sedang {{ $persenSedang }}% &nbsp;|&nbsp;
-            Rendah {{ $persenRendah }}%
-        </p>
-    </div>
-
-    {{-- ================= TABEL SARPRAS ================= --}}
-    <h3>Jumlah Keluarga yang Memiliki Sarana dan Prasarana Kerja</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 40px;">No</th>
-                <th>Jenis Sarana / Prasarana Kerja</th>
-                <th style="width: 160px;">Jumlah Keluarga</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($indikator as $index => $item)
-                <tr>
-                    <td align="center">{{ $index + 1 }}</td>
-                    <td>{{ $item['nama'] }}</td>
-                    <td align="center">{{ $item['nilai'] }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    {{-- ================= ANALISIS ================= --}}
-    <h3>Analisis Interpretatif</h3>
-    <div class="analysis">
-        <p>
-            <strong>Kondisi Umum:</strong><br>
-            {{ $interpretasi }}
-        </p>
-
-        <p>
-            <strong>Distribusi Kepemilikan Sarpras:</strong><br>
-            @if($persenTinggi > 60)
-                Kepemilikan sarana dan prasarana kerja sudah cukup merata pada sebagian besar keluarga.
-            @elseif($persenSedang > 50)
-                Kepemilikan sarpras berada pada tingkat menengah dan belum sepenuhnya merata.
+            <strong>{{ strtoupper($row['nama']) }}</strong>
+            didominasi
+            <span class="dominan">{{ strtoupper($row['dominan']) }}</span>.
+            @if($row['kodeDominan'] == 6)
+                Mayoritas keluarga belum memiliki sarana ini.
+            @elseif($row['kodeDominan'] == 2)
+                Sarana tersedia namun dalam kondisi tidak layak.
+            @elseif(in_array($row['kodeDominan'], [3,4,5]))
+                Kepemilikan masih bergantung pihak lain.
             @else
-                Sebagian besar keluarga masih mengalami keterbatasan dalam kepemilikan sarana kerja.
+                Sarana sudah mendukung produktivitas ekonomi keluarga.
             @endif
         </p>
+    @endforeach
+</div>
 
-        <p>
-            <strong>Implikasi terhadap Produktivitas Ekonomi:</strong><br>
-            @if($dominan === 'Tinggi')
-                Kondisi ini menunjukkan potensi ekonomi desa yang baik dan dapat dikembangkan lebih lanjut.
-            @elseif($dominan === 'Sedang')
-                Produktivitas ekonomi masih dapat ditingkatkan melalui intervensi sarana kerja yang tepat.
-            @else
-                Rendahnya kepemilikan sarana kerja berpotensi menghambat produktivitas dan pendapatan keluarga.
-            @endif
-        </p>
-    </div>
+<!-- ================= REKOMENDASI ================= -->
+<div class="section-box rekomendasi">
+    <div class="section-title">Rekomendasi</div>
+    <ul>
+        @foreach($rekomendasi as $item)
+            <li>{{ $item }}</li>
+        @endforeach
+    </ul>
+</div>
 
-    {{-- ================= REKOMENDASI ================= --}}
-    <div class="rekomendasi">
-        <h4>Rekomendasi Kebijakan Pemerintah Desa</h4>
-        <ul>
-            @foreach($rekomendasi as $item)
-                <li>{{ $item }}</li>
-            @endforeach
-        </ul>
-    </div>
-
-    {{-- ================= FOOTER ================= --}}
-    <div class="footer">
-        <p>
-            Laporan ini dihasilkan secara otomatis oleh
-            <strong>Sistem Informasi Desa Kaliwungu</strong>
-        </p>
-        <p>
-            <em>Tanggal Cetak:</em> {{ $tanggal }}
-        </p>
-    </div>
+<p style="text-align:center; margin-top:10px">
+    <em>Tanggal Cetak: {{ $tanggal }}</em>
+</p>
 
 </body>
 </html>

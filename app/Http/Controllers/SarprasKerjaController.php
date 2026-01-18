@@ -130,14 +130,20 @@ class SarprasKerjaController extends Controller
     }
 
     /* ============================
-       1️⃣ Hitung skor per keluarga
+       MASTER DATA
+    ============================= */
+    $masterSarpras = MasterSarprasKerja::pluck('sarpraskerja', 'kdsarpraskerja')->toArray();
+    $jawabMaster   = MasterJawabSarpras::pluck('jawabsarpras', 'kdjawabsarpras')->toArray();
+
+    /* ============================
+       1️⃣ HITUNG SKOR PER KELUARGA
     ============================= */
     $skorTotal = [];
     foreach ($data as $row) {
         $skor = 0;
         for ($i = 1; $i <= 25; $i++) {
             if ((int)$row->{"sarpraskerja_$i"} !== 6) {
-                $skor += 1; // hanya hitung kepemilikan
+                $skor++;
             }
         }
         $skorTotal[] = $skor;
@@ -146,7 +152,7 @@ class SarprasKerjaController extends Controller
     $skorRataRata = round(array_sum($skorTotal) / $totalKeluarga, 2);
 
     /* ============================
-       2️⃣ Kategori Keluarga
+       2️⃣ KATEGORI KELUARGA
     ============================= */
     $rendah = $sedang = $tinggi = 0;
     foreach ($skorTotal as $skor) {
@@ -161,66 +167,106 @@ class SarprasKerjaController extends Controller
 
     $kategori = ['Rendah' => $rendah, 'Sedang' => $sedang, 'Tinggi' => $tinggi];
     arsort($kategori);
-    $dominan = array_key_first($kategori);
+    $dominanKategori = array_key_first($kategori);
 
     /* ============================
-       3️⃣ JUMLAH KK YANG MEMILIKI SARPRAS
+       3️⃣ REKAP JUMLAH MEMILIKI
     ============================= */
-    $master = MasterSarprasKerja::pluck('sarpraskerja', 'kdsarpraskerja')->toArray();
     $indikator = [];
-
-    foreach ($master as $kode => $nama) {
+    foreach ($masterSarpras as $kode => $nama) {
         $jumlahPunya = $data->filter(function ($item) use ($kode) {
             return (int)$item->{"sarpraskerja_$kode"} !== 6;
         })->count();
 
         $indikator[] = [
-            'kode'  => $kode,
             'nama'  => $nama,
-            'nilai' => $jumlahPunya . ' Keluarga',
+            'nilai' => $jumlahPunya . ' Keluarga'
         ];
     }
 
     /* ============================
-       4️⃣ INTERPRETASI
+       4️⃣ REKAP DETAIL JAWABAN (1–6)
     ============================= */
-    $interpretasi = match ($dominan) {
-        'Tinggi' => 'Sebagian besar keluarga telah memiliki sarana dan prasarana kerja yang mendukung aktivitas ekonomi.',
-        'Sedang' => 'Kepemilikan sarana kerja cukup, namun masih belum merata di seluruh keluarga.',
+    $rekapDetail = [];
+
+    foreach ($masterSarpras as $kode => $namaSarpras) {
+
+        $detail = [];
+        $totalSarpras = 0;
+
+        foreach ($jawabMaster as $kdJawab => $labelJawab) {
+            $jumlah = $data->filter(function ($item) use ($kode, $kdJawab) {
+                return (int)$item->{"sarpraskerja_$kode"} === (int)$kdJawab;
+            })->count();
+
+            $detail[$kdJawab] = [
+                'jumlah' => $jumlah,
+                'persen' => 0
+            ];
+
+            $totalSarpras += $jumlah;
+        }
+
+        foreach ($detail as $kd => $val) {
+            $detail[$kd]['persen'] = $totalSarpras > 0
+                ? round(($val['jumlah'] / $totalSarpras) * 100, 1)
+                : 0;
+        }
+
+        $kodeDominan = collect($detail)->sortByDesc('jumlah')->keys()->first();
+
+        $rekapDetail[] = [
+            'nama'        => $namaSarpras,
+            'total'       => $totalSarpras,
+            'detail'      => $detail,
+            'dominan'     => $jawabMaster[$kodeDominan] ?? '-',
+            'kodeDominan' => $kodeDominan
+        ];
+    }
+
+    /* ============================
+       5️⃣ INTERPRETASI UMUM
+    ============================= */
+    $interpretasi = match ($dominanKategori) {
+        'Tinggi' => 'Sebagian besar keluarga telah memiliki sarana dan prasarana kerja yang memadai.',
+        'Sedang' => 'Kepemilikan sarana kerja cukup, namun belum merata.',
         default  => 'Sebagian besar keluarga belum memiliki sarana dan prasarana kerja yang memadai.',
     };
 
     /* ============================
-       5️⃣ REKOMENDASI KEBIJAKAN
+       6️⃣ REKOMENDASI
     ============================= */
     $rekomendasi = [
-        'Memprioritaskan bantuan sarana kerja bagi keluarga yang belum memiliki prasarana usaha.',
-        'Mengembangkan sarana kerja bersama (kelompok usaha) untuk menekan biaya produksi.',
-        'Mengintegrasikan data sarpras kerja dalam perencanaan anggaran desa.',
-        'Melakukan pemetaan usaha keluarga untuk meningkatkan efektivitas bantuan.',
+        'Memprioritaskan bantuan sarana kerja bagi keluarga yang belum memiliki.',
+        'Melakukan peremajaan alat kerja yang tidak layak pakai.',
+        'Mengembangkan sarana kerja bersama berbasis kelompok.',
+        'Mengintegrasikan data sarpras kerja ke perencanaan anggaran desa.'
     ];
 
     /* ============================
-       6️⃣ GENERATE PDF
+       7️⃣ GENERATE PDF
     ============================= */
     $pdf = Pdf::loadView('laporan.sarpraskerja', [
-        'periode'        => Carbon::now()->translatedFormat('F Y'),
-        'tanggal'        => Carbon::now()->translatedFormat('d F Y'),
-        'totalKeluarga'  => $totalKeluarga,
-        'skorRataRata'   => $skorRataRata,
-        'rendah'         => $rendah,
-        'sedang'         => $sedang,
-        'tinggi'         => $tinggi,
-        'persenRendah'   => $persenRendah,
-        'persenSedang'   => $persenSedang,
-        'persenTinggi'   => $persenTinggi,
-        'dominan'        => $dominan,
-        'indikator'      => $indikator,
-        'interpretasi'   => $interpretasi,
-        'rekomendasi'    => $rekomendasi,
-    ])->setPaper('a4', 'portrait');
+    'periode'        => Carbon::now()->translatedFormat('F Y'),
+    'tanggal'        => Carbon::now()->translatedFormat('d F Y'),
+    'totalKeluarga'  => $totalKeluarga,
+    'skorRataRata'   => $skorRataRata,
+    'rendah'         => $rendah,
+    'sedang'         => $sedang,
+    'tinggi'         => $tinggi,
+    'persenRendah'   => $persenRendah,
+    'persenSedang'   => $persenSedang,
+    'persenTinggi'   => $persenTinggi,
+    'dominan'        => $dominanKategori,
+    'indikator'      => $indikator,
+    'rekapDetail'    => $rekapDetail,
+    'jawabMaster'    => $jawabMaster,
+    'interpretasi'   => $interpretasi,
+    'rekomendasi'    => $rekomendasi,
+])->setPaper('a4', 'portrait');
 
-    return $pdf->stream('Laporan-Analisis-Sarpras-Kerja.pdf');
+return $pdf->stream('Laporan-Analisis-Sarpras-Kerja.pdf');
+
 }
 
 }
