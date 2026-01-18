@@ -35,9 +35,9 @@
                                             class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
                                         <option value="">-- Silahkan Pilih --</option>
                                         @foreach($masterJawab as $jawab)
-                                            <option value="{{ $jawab->kdjawab }}"
-                                                {{ old("kualitasibuhamil_{$kualitas->kdkualitasibuhamil}", $kualitasibuhamil->{"kualitasibuhamil_{$kualitas->kdkualitasibuhamil}"} ?? '') == $jawab->kdjawab ? 'selected' : '' }}>
-                                                {{ $jawab->jawab }}
+                                            <option value="{{ $jawab->kdjawabkualitasibuhamil }}"
+                                                {{ old("kualitasibuhamil_{$kualitas->kdkualitasibuhamil}", $kualitasibuhamil->{"kualitasibuhamil_{$kualitas->kdkualitasibuhamil}"} ?? '') == $jawab->kdjawabkualitasibuhamil ? 'selected' : '' }}>
+                                                {{ $jawab->jawabkualitasibuhamil }}
                                             </option>
                                         @endforeach
                                     </select>

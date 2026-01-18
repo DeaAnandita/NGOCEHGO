@@ -41,7 +41,7 @@
                                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Silahkan Pilih --</option>
                                         @foreach($masterJawab as $jawab)
-                                            <option value="{{ $jawab->kdjawab }}">{{ $jawab->jawab }}</option>
+                                            <option value="{{ $jawab->kdjawabkualitasibuhamil }}">{{ $jawab->jawabkualitasibuhamil }}</option>
                                         @endforeach
                                     </select>
                                     @error("kualitasibuhamil_{$kualitas->kdkualitasibuhamil}")
