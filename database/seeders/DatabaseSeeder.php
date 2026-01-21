@@ -10,12 +10,18 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder {
-    public function run(): void {
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
         $this->call([
+            MasterAdmPembangunanSeeder::class,
+            MasterAgendaSeeder::class,
+            MasterKegiatanSeeder::class,
+            MasterKelembagaanSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
-            
+            MasterKeputusanSeeder::class,
             MasterAsetKeluargaSeeder::class,
             MasterAgamaSeeder::class,
             MasterAktaNikahSeeder::class,
@@ -27,6 +33,10 @@ class DatabaseSeeder extends Seeder {
             MasterCaraPerolehanAirSeeder::class,
             MasterWilayahLengkapSeeder::class,
             MasterDusunSeeder::class,
+            PengurusKelembagaanSeeder::class,
+            KelembagaanKeuanganSeeder::class,
+            MasterAdminUmumSeeder::class,
+
             MasterFasilitasTempatBabSeeder::class,
             MasterHubunganKeluargaSeeder::class,
             MasterHubunganKepalaKeluargaSeeder::class,
@@ -90,7 +100,7 @@ class DatabaseSeeder extends Seeder {
             MasterTercantumDalamKKSeeder::class,
             MasterTingkatSulitDisabilitasSeeder::class,
             MasterJawabLahanSeeder::class,
-            
+
             DataPendudukSeeder::class,
             DataAsetKeluargaSeeder::class,
             DataAsetLahanSeeder::class,

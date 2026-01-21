@@ -7,34 +7,147 @@ use Illuminate\Support\Str;
 
 // Models master
 use App\Models\{
-    MasterAgama, MasterAktaNikah, MasterAsetKeluarga, MasterAsetLahan,
-    MasterAsetTernak, MasterAsetPerikanan, MasterBahanBakarMemasak,
-    MasterCaraPembuanganSampah, MasterCaraPerolehanAir, MasterDusun,
-    MasterFasilitasTempatBab, MasterHubunganKeluarga, MasterHubunganKepalaKeluarga, MasterImunisasi,
-    MasterInventaris, MasterJabatan, MasterJawab, MasterJawabBangun,
-    MasterJawabKonflik, MasterJawabKualitasBayi, MasterJawabKualitasIbuHamil,
-    MasterJawabLemdes, MasterJawabLemek, MasterJawabLemmas, MasterJawabSarpras, MasterJawabProgramSerta,
-    MasterJawabTempatPersalinan, MasterJenisAtapBangunan, MasterJenisBahanGalian,
-    MasterJenisDindingBangunan, MasterJenisDisabilitas, MasterJenisFisikBangunan,
-    MasterJenisKelahiran, MasterJenisKelamin, MasterJenisLantaiBangunan,
-    MasterJenisLembaga, MasterKartuIdentitas, MasterKabupaten, MasterKecamatan, MasterDesa,
-    MasterKondisiAtapBangunan, MasterKondisiDindingBangunan, MasterKondisiLantaiBangunan,
-    MasterKondisiLapanganUsaha, MasterLapanganUsaha, MasterKondisiSumberAir, MasterKonflikSosial,
-    MasterKualitasBayi, MasterKualitasIbuHamil, MasterLembaga, MasterManfaatMataAir,
-    MasterMutasiKeluar, MasterMutasiMasuk, MasterOmsetUsaha, MasterPartisipasiSekolah,
-    MasterPekerjaan, MasterPembangunanKeluarga, MasterPembuanganAkhirTinja,
-    MasterPendapatanPerbulan, MasterPenyakitKronis, MasterPertolonganPersalinan,
-    MasterProgramSerta, MasterProvinsi, MasterSarprasKerja, MasterStatusKawin,
-    MasterStatusKedudukanKerja, MasterStatusPemilikBangunan, MasterStatusPemilikLahan,
-    MasterStatusTinggal, MasterSumberAirMinum, MasterSumberDayaTerpasang, MasterSumberPeneranganUtama,
-    MasterTempatPersalinan, MasterTempatUsaha, MasterTercantumDalamKk,
-    MasterTingkatSulitDisabilitas, MasterTypeJawab, MasterIjasahTerakhir,
+    MasterPeriodeKelembagaanAkhir,
+    MasterJabatanKelembagaan,
+    MasterUnitKelembagaan,
+    MasterPeriodeKelembagaan,
+    MasterStatusPengurusKelembagaan,
+    MasterJenisSkKelembagaan,
+    MasterAgama,
+    MasterAktaNikah,
+    MasterAsetKeluarga,
+    MasterAsetLahan,
+    MasterAsetTernak,
+    MasterAsetPerikanan,
+    MasterBahanBakarMemasak,
+    MasterCaraPembuanganSampah,
+    MasterCaraPerolehanAir,
+    MasterDusun,
+    MasterFasilitasTempatBab,
+    MasterHubunganKeluarga,
+    MasterHubunganKepalaKeluarga,
+    MasterImunisasi,
+    MasterInventaris,
+    MasterJabatan,
+    MasterJawab,
+    MasterJawabBangun,
+    MasterJawabKonflik,
+    MasterJawabKualitasBayi,
+    MasterJawabKualitasIbuHamil,
+    MasterJawabLemdes,
+    MasterJawabLemek,
+    MasterJawabLemmas,
+    MasterJawabSarpras,
+    MasterJawabProgramSerta,
+    MasterJawabTempatPersalinan,
+    MasterJenisAtapBangunan,
+    MasterJenisBahanGalian,
+    MasterJenisDindingBangunan,
+    MasterJenisDisabilitas,
+    MasterJenisFisikBangunan,
+    MasterJenisKelahiran,
+    MasterJenisKelamin,
+    MasterJenisLantaiBangunan,
+    MasterJenisLembaga,
+    MasterKartuIdentitas,
+    MasterKabupaten,
+    MasterKecamatan,
+    MasterDesa,
+    MasterKondisiAtapBangunan,
+    MasterKondisiDindingBangunan,
+    MasterKondisiLantaiBangunan,
+    MasterKondisiLapanganUsaha,
+    MasterLapanganUsaha,
+    MasterKondisiSumberAir,
+    MasterKonflikSosial,
+    MasterKualitasBayi,
+    MasterKualitasIbuHamil,
+    MasterLembaga,
+    MasterManfaatMataAir,
+    MasterMutasiKeluar,
+    MasterMutasiMasuk,
+    MasterOmsetUsaha,
+    MasterPartisipasiSekolah,
+    MasterPekerjaan,
+    MasterPembangunanKeluarga,
+    MasterPembuanganAkhirTinja,
+    MasterPendapatanPerbulan,
+    MasterPenyakitKronis,
+    MasterPertolonganPersalinan,
+    MasterProgramSerta,
+    MasterProvinsi,
+    MasterSarprasKerja,
+    MasterStatusKawin,
+    MasterStatusKedudukanKerja,
+    MasterStatusPemilikBangunan,
+    MasterStatusPemilikLahan,
+    MasterStatusTinggal,
+    MasterSumberAirMinum,
+    MasterSumberDayaTerpasang,
+    MasterSumberPeneranganUtama,
+    MasterTempatPersalinan,
+    MasterTempatUsaha,
+    MasterTercantumDalamKk,
+    MasterTingkatSulitDisabilitas,
+    MasterTypeJawab,
+    MasterIjasahTerakhir,
+    MasterJenisAgenda,
+    MasterJenisKeputusan,
+    MasterKriteriaKeputusan,
+    MasterMetodeKeputusan,
+    MasterStatusAgenda,
+    MasterStatusAnggaran,
+    MasterStatusLpj,
+    MasterStatusPencairan,
+    MasterTempatAgenda,
 };
 
 class MasterController extends Controller
 {
     // Mapping nama master ke model
     private $masterMap = [
+        'sasaran'      => \App\Models\MasterSasaran::class,
+        'bantuan'      => \App\Models\MasterBantuan::class,
+        'pendidikan'   => \App\Models\MasterPendidikan::class,
+        'kader_bidang' => \App\Models\MasterKaderBidang::class,
+        'status_kader' => \App\Models\MasterStatusKader::class,
+        'kegiatan'     => \App\Models\MasterKegiatan::class,
+        'lokasi'       => \App\Models\MasterLokasi::class,
+        'pelaksana'    => \App\Models\MasterPelaksana::class,
+       'jenisperaturandesa'  => \App\Models\MasterJenisPeraturanDesa::class,
+        'jenisagenda_umum'   => \App\Models\MasterJenisAgendaUmum::class,
+        'jeniskeputusan_umum' => \App\Models\MasterJenisKeputusanUmum::class,
+
+        // Inventaris
+        'asalbarang'   => \App\Models\MasterAsalBarang::class,
+        'pengguna'     => \App\Models\MasterPengguna::class,
+        'satuanbarang' => \App\Models\MasterSatuanBarang::class,
+
+        // Aparat
+        'aparat' => \App\Models\MasterAparat::class,
+
+        // Tanah Kas Desa
+        'perolehantkd' => \App\Models\MasterPerolehanTkd::class,
+        'jenistkd'     => \App\Models\MasterJenisTkd::class,
+        'patok'       => \App\Models\MasterPatok::class,
+        'papannama'   => \App\Models\MasterPapanNama::class,
+ 
+        // Pertanahan Desa
+        'statushak_tanah'  => \App\Models\MasterStatusHakTanah::class,
+        'penggunaan_tanah' => \App\Models\MasterPenggunaanTanah::class,
+        'mutasi_tanah'    => \App\Models\MasterMutasiTanah::class,
+        'jenispemilik'    => \App\Models\MasterJenisPemilik::class,
+
+        'status_anggaran'  => MasterStatusAnggaran::class,
+        'status_pencairan' => MasterStatusPencairan::class,
+        'status_lpj'       => MasterStatusLpj::class,
+        'jenis_agenda'   => MasterJenisAgenda::class,
+        'status_agenda'  => MasterStatusAgenda::class,
+        'tempat_agenda'  => MasterTempatAgenda::class,
+        'jenis_keputusan' => MasterJenisKeputusan::class,
+        'kriteria_keputusan' => MasterKriteriaKeputusan::class,
+        'metode_keputusan' => MasterMetodeKeputusan::class,
+
         'agama' => MasterAgama::class,
         'aktanikah' => MasterAktaNikah::class,
         'asetkeluarga' => MasterAsetKeluarga::class,
@@ -42,7 +155,7 @@ class MasterController extends Controller
         'asetternak' => MasterAsetTernak::class,
         'asetperikanan' => MasterAsetPerikanan::class,
         'bahanbakarmemasak' => MasterBahanBakarMemasak::class,
-        'carapembuangansampah' => MasterCaraPembuanganSampah ::class,
+        'carapembuangansampah' => MasterCaraPembuanganSampah::class,
         'caraperolehanair' => MasterCaraPerolehanAir::class,
         'dusun' => MasterDusun::class,
         'fasilitastempatbab' => MasterFasilitasTempatBab::class,
@@ -119,6 +232,12 @@ class MasterController extends Controller
         'kabupaten' => MasterKabupaten::class,
         'kecamatan' => MasterKecamatan::class,
         'desa' => MasterDesa::class,
+        'jabatan_kelembagaan' => MasterJabatanKelembagaan::class,
+        'unit_kelembagaan' => MasterUnitKelembagaan::class,
+        'periode_kelembagaan' => MasterPeriodeKelembagaan::class,
+        'periode_kelembagaan_akhir' => MasterPeriodeKelembagaanAkhir::class,
+        'status_pengurus_kelembagaan' => MasterStatusPengurusKelembagaan::class,
+        'jenis_sk_kelembagaan' => MasterJenisSkKelembagaan::class,
     ];
 
     // List master
@@ -197,7 +316,6 @@ class MasterController extends Controller
         //if ($master === 'desa') $relasi['kecamatan'] = Kecamatan::all();
 
         return view('master.create', compact('master', 'relasi', 'typejawab', 'jenislembaga', 'provinsi', 'kabupaten', 'kecamatan'));
-
     }
 
     // Simpan master baru
@@ -211,12 +329,49 @@ class MasterController extends Controller
         $primaryKey = $model->getKeyName();
 
         $table = $model->getTable();
-         // ambil nama kolom dari database
+        // ambil nama kolom dari database
         $columns = \Schema::getColumnListing($table);
         $data = $request->only($columns);
 
         // Tentukan field "nama" secara otomatis
-        $namaField = match($master) {
+        $namaField = match ($master) {
+            'sasaran'      => 'sasaran',
+            'bantuan'      => 'bantuan',
+            'pendidikan'   => 'pendidikan',
+            'kader_bidang' => 'bidang',
+            'status_kader' => 'statuskader',
+            'kegiatan'     => 'kegiatan',
+            'lokasi'       => 'lokasi',
+            'pelaksana'    => 'pelaksana',
+            'jenisperaturandesa'  => 'jenisperaturandesa',
+            'jenisagenda_umum'   => 'jenisagenda_umum',
+            'jeniskeputusan_umum' => 'jeniskeputusan_umum',
+
+            'asalbarang'   => 'asalbarang',
+            'pengguna'     => 'pengguna',
+            'satuanbarang' => 'satuanbarang',
+
+            'aparat' => 'aparat',
+
+            'perolehantkd' => 'perolehantkd',
+            'jenistkd'     => 'jenistkd',
+            'patok'       => 'patok',
+            'papannama'   => 'papannama',
+
+            'statushak_tanah'   => 'statushaktanah',
+            'penggunaan_tanah' => 'penggunaantanah',
+            'mutasi_tanah'     => 'mutasitanah',
+            'jenispemilik'     => 'jenispemilik',
+
+            'status_anggaran'   => 'status_anggaran',
+            'status_pencairan'  => 'status_pencairan',
+            'status_lpj'        => 'status_lpj',
+            'jenis_agenda'   => 'jenis_agenda',
+            'status_agenda'  => 'status_agenda',
+            'tempat_agenda'  => 'tempat_agenda',
+            'jenis_keputusan'   => 'jenis_keputusan',
+            'kriteria_keputusan' => 'kriteria_keputusan',
+            'metode_keputusan'  => 'metode_keputusan',
             'agama' => 'agama',
             'aktanikah' => 'aktanikah',
             'asetkeluarga' => 'asetkeluarga',
@@ -231,7 +386,7 @@ class MasterController extends Controller
             'fasilitastempatbab' => 'fasilitastempatbab',
             'hubungankeluarga' => 'hubungankeluarga',
             'hubungankepalakeluarga' => 'hubungankepalakeluarga',
-            'jasahterakhir' => 'jasahterakhir', 
+            'jasahterakhir' => 'jasahterakhir',
             'imunisasi' => 'imunisasi',
             'ijasahterakhir' => 'ijasahterakhir',
             'inventaris' => 'inventaris',
@@ -255,7 +410,7 @@ class MasterController extends Controller
             'jeniskelahiran' => 'jeniskelahiran',
             'jeniskelamin' => 'jeniskelamin',
             'jenislantaibangunan' => 'jenislantaibangunan',
-            'jenislembaga' => 'jenislembaga',            
+            'jenislembaga' => 'jenislembaga',
             'kartuidentitas' => 'kartuidentitas',
             'kondisiatapbangunan' => 'kondisiatapbangunan',
             'kondisidindingbangunan' => 'kondisidindingbangunan',
@@ -299,6 +454,12 @@ class MasterController extends Controller
             'kabupaten' => 'kabupaten',
             'kecamatan' => 'kecamatan',
             'desa' => 'desa',
+            'jabatan_kelembagaan' => 'jabatan',
+            'unit_kelembagaan' => 'nama_unit',
+            'periode_kelembagaan' => 'tahun_awal',
+            'periode_kelembagaan_akhir' => 'akhir',
+            'status_pengurus_kelembagaan' => 'status_pengurus',
+            'jenis_sk_kelembagaan' => 'jenis_sk',
             default => 'name',
         };
 
@@ -326,14 +487,13 @@ class MasterController extends Controller
         try {
             $modelClass::create($data);
             return redirect()->route('master.index', ['master' => $master])
-                            ->with('success', 'Data berhasil disimpan!');
+                ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             //dd($e->getMessage());
             return redirect()->back()
-                            ->withInput()
-                            ->withErrors([$primaryKey => 'Kode sudah ada atau terjadi kesalahan!']);
+                ->withInput()
+                ->withErrors([$primaryKey => 'Kode sudah ada atau terjadi kesalahan!']);
         }
-        
     }
 
 

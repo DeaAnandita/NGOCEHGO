@@ -102,7 +102,7 @@ return new class extends Migration
             $table->integer('kdcaraperolehanair')->primary();
             $table->string('caraperolehanair');
         });
-        
+
         // 1. Provinsi
         Schema::create('master_provinsi', function (Blueprint $table) {
             $table->integer('kdprovinsi')->primary(); // 11-96 → cukup integer
@@ -116,9 +116,9 @@ return new class extends Migration
             $table->string('kabupaten');
 
             $table->foreign('kdprovinsi')
-                  ->references('kdprovinsi')
-                  ->on('master_provinsi')
-                  ->onDelete('cascade');
+                ->references('kdprovinsi')
+                ->on('master_provinsi')
+                ->onDelete('cascade');
         });
 
         // 3. Kecamatan → PAKAI bigInteger
@@ -128,9 +128,9 @@ return new class extends Migration
             $table->string('kecamatan');
 
             $table->foreign('kdkabupaten')
-                  ->references('kdkabupaten')
-                  ->on('master_kabupaten')
-                  ->onDelete('cascade');
+                ->references('kdkabupaten')
+                ->on('master_kabupaten')
+                ->onDelete('cascade');
         });
 
         // 4. Desa/Kelurahan → PAKAI bigInteger
@@ -140,9 +140,9 @@ return new class extends Migration
             $table->string('desa');
 
             $table->foreign('kdkecamatan')
-                  ->references('kdkecamatan')
-                  ->on('master_kecamatan')
-                  ->onDelete('cascade');
+                ->references('kdkecamatan')
+                ->on('master_kecamatan')
+                ->onDelete('cascade');
         });
 
         // master_fasilitastempatbab
@@ -425,11 +425,262 @@ return new class extends Migration
             $table->integer('kdinventaris')->primary();
             $table->string('inventaris');
         });
+        Schema::create('master_jabatan_kelembagaan', function (Blueprint $table) {
+            $table->integer('kdjabatan')->primary();
+            $table->string('jabatan');
+        });
 
+        // MASTER UNIT / BIDANG KELEMBAGAAN
+        Schema::create('master_unit_kelembagaan', function (Blueprint $table) {
+            $table->integer('kdunit')->primary();
+            $table->string('nama_unit');
+        });
+
+        // MASTER PERIODE KELEMBAGAAN
+        Schema::create('master_periode_kelembagaan', function (Blueprint $table) {
+            $table->integer('kdperiode')->primary();
+            $table->string('tahun_awal');
+        });
+        Schema::create('master_periode_kelembagaan_akhir', function (Blueprint $table) {
+            $table->integer('kdperiode')->primary();   // ini = tahun awal
+            $table->string('akhir');                  // tahun akhir
+        });
+
+        // MASTER STATUS PENGURUS KELEMBAGAAN
+        Schema::create('master_status_pengurus_kelembagaan', function (Blueprint $table) {
+            $table->integer('kdstatus')->primary();
+            $table->string('status_pengurus');
+        });
+
+        // MASTER JENIS SK KELEMBAGAAN
+        Schema::create('master_jenis_sk_kelembagaan', function (Blueprint $table) {
+            $table->integer('kdjenissk')->primary();
+            $table->string('jenis_sk');
+        });
+        Schema::create('master_jenis_keputusan', function (Blueprint $table) {
+            $table->integer('kdjenis')->primary();
+            $table->string('jenis_keputusan');
+        });
+        Schema::create('master_kriteria_keputusan', function (Blueprint $table) {
+            $table->integer('kdkriteria')->primary();
+            $table->string('kriteria');
+        });
+
+        Schema::create('master_metode_keputusan', function (Blueprint $table) {
+            $table->integer('kdmetode')->primary();
+            $table->string('metode');
+        });
+        Schema::create('master_status_keputusan', function (Blueprint $table) {
+            $table->integer('kdstatus')->primary();
+            $table->string('status_keputusan');
+        });
+        Schema::create('master_unit_keputusan', function (Blueprint $table) {
+            $table->integer('kdunit')->primary();
+            $table->string('unit_keputusan');
+        });
+        Schema::create('master_jenis_kegiatan', function (Blueprint $table) {
+            $table->integer('kdjenis')->primary();
+            $table->string('jenis_kegiatan');
+        });
+        Schema::create('master_sumber_dana', function (Blueprint $table) {
+            $table->integer('kdsumber')->primary();
+            $table->string('sumber_dana');
+        });
+        Schema::create('master_status_kegiatan', function (Blueprint $table) {
+            $table->integer('kdstatus')->primary();
+            $table->string('status_kegiatan');
+        });
+        Schema::create('master_jenis_agenda', function (Blueprint $table) {
+            $table->integer('kdjenis')->primary();
+            $table->string('jenis_agenda');
+        });
+        Schema::create('master_status_agenda', function (Blueprint $table) {
+            $table->integer('kdstatus')->primary();
+            $table->string('status_agenda');
+        });
+        Schema::create('master_tempat_agenda', function (Blueprint $table) {
+            $table->integer('kdtempat')->primary();
+            $table->string('tempat_agenda');
+        });
+        Schema::create('master_status_anggaran', function (Blueprint $table) {
+            $table->integer('kdstatus')->primary();
+            $table->string('status_anggaran');
+        });
+        Schema::create('master_status_pencairan', function (Blueprint $table) {
+            $table->integer('kdstatus')->primary();
+            $table->string('status_pencairan');
+        });
+        Schema::create('master_status_lpj', function (Blueprint $table) {
+            $table->integer('kdstatus')->primary();
+            $table->string('status_lpj');
+        });
+        Schema::create('master_jenisperaturandesa', function (Blueprint $table) {
+            $table->integer('kdjenisperaturandesa')->primary();
+            $table->string('jenisperaturandesa');
+        });
+        // master_asalbarang
+        Schema::create('master_asalbarang', function (Blueprint $table) {
+            $table->integer('kdasalbarang')->primary();
+            $table->string('asalbarang');
+        });
+
+        // master_pengguna
+        Schema::create('master_pengguna', function (Blueprint $table) {
+            $table->integer('kdpengguna')->primary();
+            $table->string('kodepengguna')->nullable();
+            $table->string('pengguna');
+        });
+
+        // master_satuanbarang
+        Schema::create('master_satuanbarang', function (Blueprint $table) {
+            $table->integer('kdsatuanbarang')->primary();
+            $table->string('satuanbarang');
+        });
+
+        // master_aparat
+        Schema::create('master_aparat', function (Blueprint $table) {
+            $table->integer('kdaparat')->primary();
+            $table->string('aparat');
+        });
+
+        // master_perolehantkd
+        Schema::create('master_perolehantkd', function (Blueprint $table) {
+            $table->integer('kdperolehantkd')->primary();
+            $table->string('perolehantkd');
+        });
+
+        // master_jenistkd
+        Schema::create('master_jenistkd', function (Blueprint $table) {
+            $table->integer('kdjenistkd')->primary();
+            $table->string('jenistkd');
+        });
+
+        // master_patok
+        Schema::create('master_patok', function (Blueprint $table) {
+            $table->integer('kdpatok')->primary();
+            $table->string('patok');
+        });
+
+        // master_papannama
+        Schema::create('master_papannama', function (Blueprint $table) {
+            $table->integer('kdpapannama')->primary();
+            $table->string('papannama');
+        });
+
+        // master_jenisagenda
+        Schema::create('master_jenisagenda_umum', function (Blueprint $table) {
+            $table->integer('kdjenisagenda_umum')->primary();
+            $table->string('jenisagenda_umum');
+        });
+
+        Schema::create('master_jeniskeputusan_umum', function (Blueprint $table) {
+            $table->integer('kdjeniskeputusan_umum')->primary();
+            $table->string('jeniskeputusan_umum');
+        });
+
+        Schema::create('master_statushak_tanah', function (Blueprint $table) {
+            $table->integer('kdstatushaktanah')->primary();
+            $table->string('statushaktanah');
+        });
+
+        Schema::create('master_penggunaan_tanah', function (Blueprint $table) {
+            $table->integer('kdpenggunaantanah')->primary();
+            $table->string('penggunaantanah');
+        });
+
+        Schema::create('master_mutasi_tanah', function (Blueprint $table) {
+            $table->integer('kdmutasitanah')->primary();
+            $table->string('mutasitanah');
+        });
+
+        Schema::create('master_jenispemilik', function (Blueprint $table) {
+            $table->integer('kdjenispemilik')->primary();
+            $table->string('jenispemilik');
+        });
+        Schema::create('master_sasaran', function (Blueprint $table) {
+            $table->integer('kdsasaran')->primary();
+            $table->string('sasaran');
+        });
+
+        Schema::create('master_bantuan', function (Blueprint $table) {
+            $table->integer('kdbantuan')->primary();
+            $table->string('bantuan');
+        });
+
+        Schema::create('master_pendidikan', function (Blueprint $table) {
+            $table->integer('kdpendidikan')->primary();
+            $table->string('pendidikan');
+        });
+
+        Schema::create('master_kader_bidang', function (Blueprint $table) {
+            $table->integer('kdbidang')->primary();
+            $table->string('bidang');
+        });
+
+        Schema::create('master_status_kader', function (Blueprint $table) {
+            $table->integer('kdstatuskader')->primary();
+            $table->string('statuskader');
+        });
+
+        Schema::create('master_kegiatan', function (Blueprint $table) {
+            $table->integer('kdkegiatan')->primary();
+            $table->string('kegiatan');
+        });
+
+        Schema::create('master_lokasi', function (Blueprint $table) {
+            $table->integer('kdlokasi')->primary();
+            $table->string('lokasi');
+        });
+
+        Schema::create('master_pelaksana', function (Blueprint $table) {
+            $table->integer('kdpelaksana')->primary();
+            $table->string('pelaksana');
+        });
     }
 
     public function down(): void
     {
+        Schema::dropIfExists('master_lokasi');
+        Schema::dropIfExists('master_pelaksana');
+        Schema::dropIfExists('master_kegiatan');
+        Schema::dropIfExists('master_status_kader');
+        Schema::dropIfExists('master_kader_bidang');
+        Schema::dropIfExists('master_pendidikan');
+        Schema::dropIfExists('master_sumberdana');
+        Schema::dropIfExists('master_bantuan');
+        Schema::dropIfExists('master_sasaran');
+        Schema::dropIfExists('master_jenispemilik');
+        Schema::dropIfExists('master_mutasi_tanah');
+        Schema::dropIfExists('master_penggunaan_tanah');
+        Schema::dropIfExists('master_statushak_tanah');
+        Schema::dropIfExists('master_jeniskeputusan_umum');
+        Schema::dropIfExists('master_jenisagenda_umum');
+        Schema::dropIfExists('master_papannama');
+        Schema::dropIfExists('master_patok');
+        Schema::dropIfExists('master_jenistkd');
+        Schema::dropIfExists('master_perolehantkd');
+        Schema::dropIfExists('master_aparat');
+        Schema::dropIfExists('master_satuanbarang');
+        Schema::dropIfExists('master_pengguna');
+        Schema::dropIfExists('master_asalbarang');
+        Schema::dropIfExists('master_jenisperaturandesa');
+        Schema::dropIfExists('master_status_lpj');
+        Schema::dropIfExists('master_status_pencairan');
+        Schema::dropIfExists('master_status_anggaran');
+        Schema::dropIfExists('master_tempat_agenda');
+        Schema::dropIfExists('master_status_agenda');
+        Schema::dropIfExists('master_jenis_agenda');
+        Schema::dropIfExists('master_metode_keputusan');
+        Schema::dropIfExists('master_kriteria_keputusan');
+        Schema::dropIfExists('master_jenis_keputusan');
+        Schema::dropIfExists('master_unit_keputusan');
+        Schema::dropIfExists('master_status_keputusan');
+        Schema::dropIfExists('master_jenis_sk_kelembagaan');
+        Schema::dropIfExists('master_status_pengurus_kelembagaan');
+        Schema::dropIfExists('master_periode_kelembagaan');
+        Schema::dropIfExists('master_periode_kelembagaan_akhir');
+        Schema::dropIfExists('master_unit_kelembagaan');
+        Schema::dropIfExists('master_jabatan_kelembagaan');
         Schema::dropIfExists('master_asetkeluarga');
         Schema::dropIfExists('master_asetlahan');
         Schema::dropIfExists('master_asetternak');
@@ -508,4 +759,3 @@ return new class extends Migration
         Schema::dropIfExists('master_inventaris');
     }
 };
-

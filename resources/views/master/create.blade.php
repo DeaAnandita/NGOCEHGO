@@ -8,7 +8,44 @@
 
                 @php
                     $model = strtolower($master);
-                    $primaryKey = match($model) {
+                    $primaryKey = match ($model) {
+                        'sasaran' => 'kdsasaran',
+                        'bantuan' => 'kdbantuan',
+                        'pendidikan' => 'kdpendidikan',
+                        'kader_bidang' => 'kdbidang',
+                        'status_kader' => 'kdstatuskader',
+                        'kegiatan' => 'kdkegiatan',
+                        'lokasi' => 'kdlokasi',
+                        'pelaksana' => 'kdpelaksana',
+                        'jenisperaturandesa' => 'kdjenisperaturandesa',
+                        'jenisagenda_umum' => 'kdjenisagenda_umum',
+                        'jeniskeputusan_umum' => 'kdjeniskeputusan_umum',
+                        'asalbarang' => 'kdasalbarang',
+                        'pengguna' => 'kdpengguna',
+                        'satuanbarang' => 'kdsatuanbarang',
+                        'aparat' => 'kdaparat',
+                        'perolehantkd' => 'kdperolehantkd',
+                        'jenistkd' => 'kdjenistkd',
+                        'patok' => 'kdpatok',
+                        'papannama' => 'kdpapannama',
+                        'statushak_tanah' => 'kdstatushaktanah',
+                        'penggunaan_tanah' => 'kdpenggunaantanah',
+                        'mutasi_tanah' => 'kdmutasitanah',
+                        'jenispemilik' => 'kdjenispemilik',
+                        'jenis_agenda' => 'kdjenis',
+                        'status_agenda' => 'kdstatus',
+                        'tempat_agenda' => 'kdtempat',
+                        'jenis_keputusan' => 'kdjenis',
+                        'unit_keputusan' => 'kdunit',
+                        'status_keputusan' => 'kdstatus',
+                        'kriteria_keputusan' => 'kdkriteria',
+                        'metode_keputusan' => 'kdmetode',
+                        'jabatan_kelembagaan' => 'kdjabatan',
+                        'unit_kelembagaan' => 'kdunit',
+                        'periode_kelembagaan' => 'kdperiode',
+                        'periode_kelembagaan_akhir' => 'kdperiode',
+                        'status_pengurus_kelembagaan' => 'kdstatus',
+                        'jenis_sk_kelembagaan' => 'kdjenissk',
                         'agama' => 'kdagama',
                         'aktanikah' => 'kdaktanikah',
                         'asetkeluarga' => 'kdasetkeluarga',
@@ -86,12 +123,57 @@
                         'tempatpersalinan' => 'kdtempatpersalinan',
                         'tempatusaha' => 'kdtempatusaha',
                         'tercantumdalamkk' => 'kdtercantumdalamkk',
+                        'statu_sanggaran' => 'kdstatus',
+                        'status_pencairan' => 'kdstatus',
+                        'status_lpj' => 'kdstatus',
                         'tingkatsulitdisabilitas' => 'kdtingkatsulitdisabilitas',
                         'typejawab' => 'kdtypejawab',
                         default => 'id',
                     };
 
-                    $namaField = match($model) {
+                    $namaField = match ($model) {
+                        'sasaran' => 'sasaran',
+                        'bantuan' => 'bantuan',
+                        'pendidikan' => 'pendidikan',
+                        'kader_bidang' => 'bidang',
+                        'status_kader' => 'statuskader',
+                        'kegiatan' => 'kegiatan',
+                        'lokasi' => 'lokasi',
+                        'pelaksana' => 'pelaksana',
+                        'jenisperaturandesa' => 'jenisperaturandesa',
+                        'jenisagenda_umum' => 'jenisagenda_umum',
+                        'jeniskeputusan_umum' => 'jeniskeputusan_umum',
+                        'asalbarang' => 'asalbarang',
+                        'pengguna' => 'pengguna',
+                        'satuanbarang' => 'satuanbarang',
+                        'aparat' => 'aparat',
+                        'perolehantkd' => 'perolehantkd',
+                        'jenistkd' => 'jenistkd',
+                        'patok' => 'patok',
+                        'papannama' => 'papannama',
+                        'statushak_tanah' => 'statushaktanah',
+                        'penggunaan_tanah' => 'penggunaantanah',
+                        'mutasi_tanah' => 'mutasitanah',
+                        'jenispemilik' => 'jenispemilik',
+
+                        'status_anggaran' => 'status_anggaran',
+                        'status_pencairan' => 'status_pencairan',
+                        'status_lpj' => 'status_lpj',
+                        'jenis_agenda' => 'jenis_agenda',
+                        'status_agenda' => 'status_agenda',
+                        'tempat_agenda' => 'tempat_agenda',
+                        'unit_keputusan' => 'unit_keputusan',
+                        'status_keputusan' => 'status_keputusan',
+                        'jenis_keputusan' => 'jenis_keputusan',
+                        'kriteria_keputusan' => 'kriteria',
+                        'metode_keputusan' => 'metode',
+                        'jabatan_kelembagaan' => 'jabatan',
+                        'unit_kelembagaan' => 'nama_unit',
+                        'periode_kelembagaan' => 'tahun_awal',
+                        'periode_kelembagaan_akhir' => 'akhir',
+
+                        'status_pengurus_kelembagaan' => 'status_pengurus',
+                        'jenis_sk_kelembagaan' => 'jenis_sk',
                         'agama' => 'agama',
                         'aktanikah' => 'aktanikah',
                         'asetkeluarga' => 'asetkeluarga',
@@ -178,7 +260,7 @@
                 <div class="flex flex-col">
                     <label class="mb-1 font-medium">Kode</label>
                     <input type="text" name="{{ $primaryKey }}" value="{{ old($primaryKey) }}"
-                           class="border p-2 rounded w-full @error($primaryKey) border-red-500 @enderror">
+                        class="border p-2 rounded w-full @error($primaryKey) border-red-500 @enderror">
                     @error($primaryKey)
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -187,19 +269,20 @@
                 <div class="flex flex-col">
                     <label class="mb-1 font-medium">Nama</label>
                     <input type="text" name="{{ $namaField }}" value="{{ old($namaField) }}"
-                           class="border p-2 rounded w-full @error($namaField) border-red-500 @enderror">
+                        class="border p-2 rounded w-full @error($namaField) border-red-500 @enderror">
                     @error($namaField)
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
-                @if(!empty($typejawab))
+                @if (!empty($typejawab))
                     <div class="mb-4">
                         <label for="kdtypejawab" class="block font-medium text-gray-700">Type Jawab</label>
                         <select name="kdtypejawab" id="kdtypejawab" class="w-full border rounded-md p-2">
                             <option value="">-- Pilih Type Jawab --</option>
                             @foreach ($typejawab as $t)
-                                <option value="{{ $t->kdtypejawab }}" {{ old('kdtypejawab') == $t->kdtypejawab ? 'selected' : '' }}>
+                                <option value="{{ $t->kdtypejawab }}"
+                                    {{ old('kdtypejawab') == $t->kdtypejawab ? 'selected' : '' }}>
                                     {{ $t->kdtypejawab }} {{ $t->typejawab }}
                                 </option>
                             @endforeach
@@ -207,13 +290,14 @@
                     </div>
                 @endif
 
-                @if(!empty($jenislembaga))
+                @if (!empty($jenislembaga))
                     <div class="mb-4">
                         <label for="kdjenislembaga" class="block font-medium text-gray-700">Jenis Lembaga</label>
                         <select name="kdjenislembaga" id="kdjenislembaga" class="w-full border rounded-md p-2">
                             <option value="">-- Pilih Jenis Lembaga --</option>
                             @foreach ($jenislembaga as $t)
-                                <option value="{{ $t->kdjenislembaga }}" {{ old('kdjenislembaga') == $t->kdjenislembaga ? 'selected' : '' }}>
+                                <option value="{{ $t->kdjenislembaga }}"
+                                    {{ old('kdjenislembaga') == $t->kdjenislembaga ? 'selected' : '' }}>
                                     {{ $t->kdjenislembaga }} {{ $t->jenislembaga }}
                                 </option>
                             @endforeach
@@ -221,13 +305,14 @@
                     </div>
                 @endif
 
-                @if(!empty($provinsi))
+                @if (!empty($provinsi))
                     <div class="mb-4">
                         <label for="kdprovinsi" class="block font-medium text-gray-700">Provinsi</label>
                         <select name="kdprovinsi" id="kdprovinsi" class="w-full border rounded-md p-2">
                             <option value="">-- Pilih Provinsi --</option>
                             @foreach ($provinsi as $t)
-                                <option value="{{ $t->kdprovinsi }}" {{ old('kdprovinsi') == $t->kdprovinsi ? 'selected' : '' }}>
+                                <option value="{{ $t->kdprovinsi }}"
+                                    {{ old('kdprovinsi') == $t->kdprovinsi ? 'selected' : '' }}>
                                     {{ $t->provinsi }}
                                 </option>
                             @endforeach
@@ -235,13 +320,14 @@
                     </div>
                 @endif
 
-                @if(!empty($kabupaten))
+                @if (!empty($kabupaten))
                     <div class="mb-4">
                         <label for="kdkabupaten" class="block font-medium text-gray-700">kabupaten</label>
                         <select name="kdkabupaten" id="kdkabupaten" class="w-full border rounded-md p-2">
                             <option value="">-- Pilih Kabupaten --</option>
                             @foreach ($kabupaten as $t)
-                                <option value="{{ $t->kdkabupaten }}" {{ old('kdkabupaten') == $t->kdkabupaten ? 'selected' : '' }}>
+                                <option value="{{ $t->kdkabupaten }}"
+                                    {{ old('kdkabupaten') == $t->kdkabupaten ? 'selected' : '' }}>
                                     {{ $t->kabupaten }}
                                 </option>
                             @endforeach
@@ -249,13 +335,14 @@
                     </div>
                 @endif
 
-                @if(!empty($kecamatan))
+                @if (!empty($kecamatan))
                     <div class="mb-4">
                         <label for="kdkecamatan" class="block font-medium text-gray-700">Kecamatan</label>
                         <select name="kdkecamatan" id="kdkecamatan" class="w-full border rounded-md p-2">
                             <option value="">-- Pilih Kecamatan --</option>
                             @foreach ($kecamatan as $t)
-                                <option value="{{ $t->kdkecamatan }}" {{ old('kdkecamatan') == $t->kdkecamatan ? 'selected' : '' }}>
+                                <option value="{{ $t->kdkecamatan }}"
+                                    {{ old('kdkecamatan') == $t->kdkecamatan ? 'selected' : '' }}>
                                     {{ $t->kecamatan }}
                                 </option>
                             @endforeach
@@ -267,7 +354,8 @@
                     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
                         Simpan
                     </button>
-                    <a href="{{ route('master.index', $master) }}" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">
+                    <a href="{{ route('master.index', $master) }}"
+                        class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">
                         Batal
                     </a>
                 </div>

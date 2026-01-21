@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class DataPenduduk extends Model
 {
@@ -17,8 +19,8 @@ class DataPenduduk extends Model
 
     protected $fillable = [
         'nik',
-		'no_kk',
-		'kdmutasimasuk',
+        'no_kk',
+        'kdmutasimasuk',
         'penduduk_tanggalmutasi',
         'penduduk_kewarganegaraan',
         'penduduk_nourutkk',
@@ -45,17 +47,17 @@ class DataPenduduk extends Model
         'kdkecamatan',
         'kddesa',
     ];
-	
-	
-	    /**
+
+
+    /**
      * Relasi ke data kelahiran.
      */
     public function kelahiran()
     {
         return $this->hasMany(Kelahiran::class, 'nik', 'nik');
     }
-	
-	    /**
+
+    /**
      * Relasi ke data sosialekonomi.
      */
     public function sosialekonomi()
@@ -63,7 +65,7 @@ class DataPenduduk extends Model
         return $this->hasMany(DataSosialEkonomi::class, 'nik', 'nik');
     }
 
-	    /**
+    /**
      * Relasi ke data usahaart.
      */
     public function usahaart()
@@ -71,38 +73,38 @@ class DataPenduduk extends Model
         return $this->hasMany(DataUsahaArt::class, 'nik', 'nik');
     }
 
-	    /**
+    /**
      * Relasi ke data programserta.
      */
     public function programserta()
     {
         return $this->hasMany(DataProgramSerta::class, 'nik', 'nik');
     }
-	
-		    /**
+
+    /**
      * Relasi ke data lemdes.
      */
     public function lemdes()
     {
         return $this->hasMany(DataLemdes::class, 'nik', 'nik');
     }
-	
-		    /**
+
+    /**
      * Relasi ke data lemmas.
      */
     public function lemmas()
     {
         return $this->hasMany(DataLemmas::class, 'nik', 'nik');
     }
-	
-		    /**
+
+    /**
      * Relasi ke data lemek.
      */
     public function lemek()
     {
         return $this->hasMany(DataLemek::class, 'nik', 'nik');
     }
-	
+
     /**
      * Relasi ke data keluarga.
      */
@@ -162,5 +164,29 @@ class DataPenduduk extends Model
     public function pekerjaan()
     {
         return $this->belongsTo(MasterPekerjaan::class, 'kdpekerjaan', 'kdpekerjaan');
+    }
+    public function cekNik(Request $request)
+    {
+        $request->validate([
+            'nik' => ['required', 'digits:16']
+        ]);
+
+        $p = DataPenduduk::find($request->nik); // karena PK = nik
+
+        if (!$p) {
+            return response()->json(['found' => false]);
+        }
+
+        return response()->json([
+            'found' => true,
+            'data' => [
+                'nik' => $p->nik,
+                'nama' => $p->penduduk_namalengkap,
+                'tempat_lahir' => $p->penduduk_tempatlahir,
+                'tanggal_lahir' => $p->penduduk_tanggallahir,
+                'kewarganegaraan' => $p->penduduk_kewarganegaraan,
+                // catatan: jenis_kelamin/agama/pekerjaan/alamat belum bisa otomatis tanpa join / kolom teks
+            ]
+        ]);
     }
 }

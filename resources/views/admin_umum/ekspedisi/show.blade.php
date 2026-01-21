@@ -1,0 +1,110 @@
+<x-app-layout>
+    <div class="flex">
+        @include('admin_umum.sidebar')
+
+        <div class="flex-1 py-6 px-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">
+                        Detail Buku Ekspedisi
+                    </h2>
+                    <a href="{{ route('admin-umum.ekspedisi.index') }}"
+                        class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg text-sm">
+                        Kembali
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    {{-- FILE --}}
+                    <div class="bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center">
+                        <div class="w-32 h-32 flex items-center justify-center bg-white rounded-xl border mb-4">
+                            <x-heroicon-o-document class="w-16 h-16 text-gray-400" />
+                        </div>
+
+                        @if ($data->ekspedisi_file)
+                            <a href="{{ asset('storage/' . $data->ekspedisi_file) }}" target="_blank"
+                                class="text-sm text-blue-600 underline">
+                                Download File
+                            </a>
+                        @else
+                            <p class="text-sm text-gray-500">Tidak ada file</p>
+                        @endif
+                    </div>
+
+                    {{-- DATA UTAMA --}}
+                    <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+
+                        <div>
+                            <span class="text-gray-500">Kode Ekspedisi</span>
+                            <div class="font-semibold">{{ $data->kdekspedisi ?? '-' }}</div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">Tanggal Ekspedisi</span>
+                            <div class="font-semibold">
+                                {{ \Carbon\Carbon::parse($data->ekspedisi_tanggal)->format('d-m-Y') }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">Nomor Surat</span>
+                            <div class="font-semibold">{{ $data->ekspedisi_nomorsurat ?? '-' }}</div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">Tanggal Surat</span>
+                            <div class="font-semibold">
+                                {{ $data->ekspedisi_tanggalsurat ? \Carbon\Carbon::parse($data->ekspedisi_tanggalsurat)->format('d-m-Y') : '-' }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">Identitas Surat</span>
+                            <div class="font-semibold">{{ $data->ekspedisi_identitassurat ?? '-' }}</div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">User Input</span>
+                            <div class="font-semibold">{{ $data->userinput ?? '-' }}</div>
+                        </div>
+
+                        <div>
+                            <span class="text-gray-500">Waktu Input</span>
+                            <div class="font-semibold">{{ $data->inputtime ?? '-' }}</div>
+                        </div>
+
+                    </div>
+                </div>
+
+                {{-- ISI & KETERANGAN --}}
+                <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                    <div class="bg-gray-50 rounded-xl p-4 sm:col-span-2">
+                        <p class="text-sm text-gray-600 mb-2">Isi Surat</p>
+                        <div class="text-sm">
+                            {{ $data->ekspedisi_isisurat ?? '-' }}
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-4 sm:col-span-2">
+                        <p class="text-sm text-gray-600 mb-2">Keterangan</p>
+                        <div class="text-sm">
+                            {{ $data->ekspedisi_keterangan ?? '-' }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="mt-8 flex justify-end">
+                    <a href="{{ route('admin-umum.ekspedisi.edit', $data->kdekspedisi) }}"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow">
+                        Edit
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</x-app-layout>
