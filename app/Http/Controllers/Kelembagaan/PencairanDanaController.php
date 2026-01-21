@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Kelembagaan;
 
 use App\Exports\PencairanExport;
 use App\Http\Controllers\Controller;
-use App\Models\kegiatan;
+use App\Models\Kegiatan;
 use App\Models\PencairanDana;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -35,7 +35,7 @@ class PencairanDanaController extends Controller
 
     public function create()
     {
-        $kegiatan = kegiatan::all();
+        $kegiatan = Kegiatan::all();
         return view('kelembagaan.pencairan.create', compact('kegiatan'));
     }
 

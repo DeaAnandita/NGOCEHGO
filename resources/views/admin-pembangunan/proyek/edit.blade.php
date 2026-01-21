@@ -32,7 +32,8 @@
                         <div>
                             <label>Kode Proyek</label>
                             <input type="text" id="kode" name="kdproyek"
-                                value="{{ old('kdproyek', $item->kdproyek) }}" class="w-full rounded-lg border-gray-300">
+                                value="{{ old('kdproyek', $item->kdproyek) }}"
+                                class="w-full rounded-lg border-gray-300">
                             <p id="kodeError" class="text-red-600 text-xs"></p>
                         </div>
 
@@ -95,14 +96,14 @@
                             </select>
                             <p id="sumberError" class="text-red-600 text-xs"></p>
                         </div>
-
                         <div>
                             <label>Nominal</label>
                             <input type="number" id="nominal" name="proyek_nominal"
-                                value="{{ old('proyek_nominal', $item->proyek_nominal) }}"
-                                class="w-full rounded-lg border-gray-300">
+                                value="{{ old('proyek_nominal', rtrim(rtrim($item->proyek_nominal, '0'), '.')) }}"
+                                step="0.01" class="w-full rounded-lg border-gray-300">
                             <p id="nominalError" class="text-red-600 text-xs"></p>
                         </div>
+
 
                         <div>
                             <label>Manfaat</label>

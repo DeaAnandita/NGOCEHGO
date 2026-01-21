@@ -80,12 +80,12 @@
                         <thead class="bg-gray-100 text-center">
                             <tr>
                                 <th class="p-2">No</th>
-                                <th>Penerima</th>
+                                <th>Jenis Bantuan</th>
                                 <th>Sasaran</th>
                                 <th>Jenis Bantuan</th>
                                 <th>Sumber Dana</th>
-                                <th>Tanggal</th>
-                                <th>Keterangan</th>
+                                <th>Tanggal Mulai</th>
+                                <th>Tanggal Selesai</th>
                                 <th class="w-32">Aksi</th>
                             </tr>
                         </thead>
@@ -96,16 +96,19 @@
                                     <td class="p-2">{{ $data->firstItem() + $i }}</td>
 
                                     <td class="font-medium">
-                                        {{ $b->penduduk->nama ?? $b->nama_penerima }}
+                                        {{ $b->bantuan_nama }}
                                     </td>
 
                                     <td>{{ $b->sasaran->sasaran ?? '-' }}</td>
                                     <td>{{ $b->bantuan->bantuan ?? '-' }}</td>
                                     <td>{{ $b->sumber->sumber_dana ?? '-' }}</td>
 
-                                    <td>{{ \Carbon\Carbon::parse($b->tanggal_bantuan)->format('d-m-Y') }}</td>
-                                    <td>{{ $b->keterangan }}</td>
-
+                                    <td>
+                                        {{ \Carbon\Carbon::parse($b->bantuan_awal)->format('d-m-Y') }}
+                                    </td>
+                                    <td>
+                                        {{ $b->bantuan_akhir ? \Carbon\Carbon::parse($b->bantuan_akhir)->format('d-m-Y') : '-' }}
+                                    </td>
                                     {{-- AKSI --}}
                                     <td>
                                         <div class="flex justify-center gap-2">

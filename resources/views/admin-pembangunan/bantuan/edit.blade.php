@@ -102,11 +102,17 @@
                         <div>
                             <label>Jumlah</label>
                             <input type="number" id="jumlah" name="bantuan_jumlah"
-                                value="{{ old('bantuan_jumlah', $item->bantuan_jumlah) }}"
+                                value="{{ old('bantuan_jumlah', rtrim(rtrim($item->bantuan_jumlah, '0'), '.')) }}"
                                 class="w-full rounded-lg border-gray-300">
                             <p id="jumlahError" class="text-red-600 text-xs"></p>
                         </div>
 
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label>Keterangan</label>
+                        <textarea id="keterangan" name="bantuan_keterangan" class="w-full rounded-lg border-gray-300" rows="3"
+                            placeholder="Opsional...">{{ old('bantuan_keterangan', $item->bantuan_keterangan) }}</textarea>
+                        <p id="keteranganError" class="text-red-600 text-xs"></p>
                     </div>
 
                     <div class="mt-10 flex justify-end gap-3">

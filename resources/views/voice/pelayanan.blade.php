@@ -148,8 +148,8 @@
     </style>
     <script>
         /* ============================================================
-                                                                                                                                               STATE
-                                                                                                                                            ============================================================ */
+                                                                                                                                                                                                       STATE
+                                                                                                                                                                                                    ============================================================ */
         let currentModul = 1;
         let lastTranscript = "";
         let isRendering = false;
@@ -157,6 +157,8 @@
         let answers = {};
         let allowListen = true;
         let silenceTimer = null;
+        let ttsCooldownUntil = 0;
+        let ignoreSpeechInput = false;
 
         // ===============================
         // NIK AUTOFILL STATE
@@ -365,23 +367,19 @@
             return s;
         }
         async function repeatQuestionFlow() {
-            if (isPaused) return;
-            if (isSpeaking) return;
-            if (isProcessingAnswer) return;
+            if (isPaused || isSpeaking || isProcessingAnswer) return;
 
-            // kalau sedang konfirmasi NIK, jangan ulang pertanyaan lain
             if (awaitingNikConfirm) {
                 await speak("Jawab ya atau tidak");
                 return;
             }
 
-            // ulang pertanyaan yang sama
-            await speak("Saya ulangi pertanyaannya");
-            await speakQuestion();
+            // ✅ ulang pertanyaan aman
+            await askQuestionWithMicOff(true);
 
-            // setelah TTS selesai, timer diam dimulai lagi
             resetSilenceTimer();
         }
+
 
         function resetSilenceTimer() {
             if (silenceTimer) clearTimeout(silenceTimer);
@@ -599,34 +597,46 @@
         function speak(text) {
             return new Promise(resolve => {
                 if (!text) return resolve();
+
                 isSpeaking = true;
+                ignoreSpeechInput = true; // ✅ blok input SR saat TTS
+                ttsCooldownUntil = Date.now() + 1200; // ✅ anti-echo setelah TTS
 
                 if (recognition) {
-                    recognition.onend = null;
-                    recognition.stop();
+                    try {
+                        recognition.onend = null;
+                    } catch (e) {}
+                    try {
+                        recognition.stop();
+                    } catch (e) {}
                 }
 
                 const u = new SpeechSynthesisUtterance(text);
                 u.lang = "id-ID";
+
                 u.onend = () => {
                     isSpeaking = false;
 
-                    if (!isPaused && allowListen && recognition) {
-                        setTimeout(() => {
+                    // ✅ tunggu sebentar biar suara TTS benar-benar hilang
+                    setTimeout(() => {
+                        ignoreSpeechInput = false;
+
+                        if (!isPaused && allowListen) {
                             try {
                                 recognition.start();
                             } catch (e) {}
-                        }, 1000);
-                    }
+                        }
 
-                    resetSilenceTimer();
-                    resolve();
+                        resetSilenceTimer();
+                        resolve();
+                    }, 700);
                 };
 
-
+                speechSynthesis.cancel(); // optional biar tidak numpuk
                 speechSynthesis.speak(u);
             });
         }
+
 
         function isEchoOfQuestion(transcript) {
             const q = questions[currentModul][step];
@@ -1052,6 +1062,28 @@
                 setTimeout(() => isProcessingAnswer = false, 50);
             }
         }
+        async function askQuestionWithMicOff(repeat = false) {
+            if (!recognition) return;
+
+            // ambil pertanyaan aktif SEKARANG
+            const q = questions[currentModul]?.[step];
+            if (!q) return;
+
+            // matiin mic dulu
+            try {
+                recognition.abort();
+            } catch (e) {}
+
+            // jeda biar stop bener
+            await new Promise(r => setTimeout(r, 120));
+
+            if (repeat) {
+                await speak("Saya ulangi pertanyaannya");
+                await speak(q.label); // ✅ sekarang q sudah ada
+            } else {
+                await speak(q.label);
+            }
+        }
 
         /* ============================================================
            VOICE
@@ -1062,6 +1094,7 @@
             isPaused = false;
             isListening = true;
 
+            // UI tombol mic
             document.getElementById('recordBtn').classList.add('recording');
             document.getElementById('recordIcon').innerHTML = `
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
@@ -1080,36 +1113,53 @@
             recognition.interimResults = true;
 
             recognition.onresult = e => {
-                resetSilenceTimer();
-
                 const r = e.results[e.results.length - 1];
                 const text = (r[0].transcript || "").trim();
                 if (!text) return;
 
-                // ✅ PRIORITAS: konfirmasi NIK
+                // ✅ blok input kalau TTS sedang/baru selesai (hindari "jawab sendiri")
+                if (typeof ignoreSpeechInput !== "undefined" && ignoreSpeechInput) return;
+                if (Date.now() < ttsCooldownUntil) return;
+
+                // ✅ reset timer diam HANYA kalau ini input yang boleh diproses
+                resetSilenceTimer();
+
+                // =========================================
+                // 1) MODE KONFIRMASI NIK (YA/TIDAK)
+                // =========================================
                 if (awaitingNikConfirm) {
+                    // boleh tampilkan interim di voice-status biar user lihat
                     document.getElementById("voice-status").innerText = text;
 
-                    if (r.isFinal) {
-                        lastTranscript = "";
-                        processVoiceAnswer(text);
-                    }
-                    return;
+                    // proses hanya saat final
+                    if (!r.isFinal) return;
 
+                    // tampilkan jawaban final user di input
+                    const input = document.getElementById("inputAnswer");
+                    if (input) input.value = text;
+
+                    document.getElementById("voice-status").innerText = "Mendengarkan...";
+
+                    // anti dobel
+                    if (text === lastTranscript) return;
+                    lastTranscript = text;
+
+                    processVoiceAnswer(text);
+                    return;
                 }
 
                 const q = questions[currentModul][step];
 
-                // ===============================
-                // NIK LIVE (DEBOUNCE)
-                // ===============================
+                // =========================================
+                // 2) KHUSUS NIK: butuh INTERIM + DEBOUNCE
+                // =========================================
                 if (q && q.field === "nik") {
                     const digits = extractDigits(text);
 
                     if (digits) {
-                        const candidate = pickNik16(digits); // bukan slice(0,16)
+                        const candidate = pickNik16(digits);
 
-                        // simpan yang terpanjang biar ga mundur
+                        // simpan kandidat paling panjang/stabil
                         if (candidate.length >= nikDigitsLive.length) {
                             nikDigitsLive = candidate;
                         } else {
@@ -1117,9 +1167,11 @@
                             if (!prefixSame) nikDigitsLive = candidate;
                         }
 
+                        // tampilkan progress NIK di voice-status
                         document.getElementById("voice-status").innerText = formatNik(nikDigitsLive);
                     }
 
+                    // debounce timer (hanya submit sekali saat jeda)
                     if (nikTimer) clearTimeout(nikTimer);
 
                     nikTimer = setTimeout(async () => {
@@ -1127,11 +1179,17 @@
 
                         if (nikDigitsLive.length === 16) {
                             const fullNik = nikDigitsLive;
+
+                            // reset state NIK live
                             nikDigitsLive = "";
                             nikLastDigits = "";
                             nikPauseCount = 0;
 
-                            await processVoiceAnswer(fullNik); // ✅ proses FINAL cuma di sini
+                            // anti dobel
+                            lastTranscript = "";
+
+                            // ✅ submit sekali di sini
+                            await processVoiceAnswer(fullNik);
                             return;
                         }
 
@@ -1144,34 +1202,37 @@
                     return;
                 }
 
+                // =========================================
+                // 3) SELAIN NIK: tampilkan live, submit saat FINAL
+                // =========================================
 
+                // (opsional) echo pertanyaan: cek hanya saat FINAL
+                if (r.isFinal && isEchoOfQuestion(text)) return;
 
-                // ===============================
-                // selain NIK: proses saat final
-                // ===============================
-                // selain NIK: tampilkan live transcript di input (bukan voice-status)
+                // tampilkan live transcript di input
                 const input = document.getElementById("inputAnswer");
                 if (input) input.value = text;
 
-                // status tetap mendengarkan
                 document.getElementById("voice-status").innerText = "Mendengarkan...";
 
-                if (r.isFinal) {
-                    if (text === lastTranscript) return;
-                    lastTranscript = text;
-                    processVoiceAnswer(text);
-                }
+                // submit hanya saat final
+                if (!r.isFinal) return;
 
+                if (text === lastTranscript) return;
+                lastTranscript = text;
+
+                processVoiceAnswer(text);
             };
 
-
             recognition.onend = () => {
+                // restart SR kalau masih mode listen dan tidak sedang speak/proses
                 if (!isPaused && !isProcessingAnswer && !isSpeaking && allowListen) {
                     setTimeout(() => {
                         try {
                             recognition.start();
                         } catch (e) {}
                     }, 300);
+
                     document.getElementById('recordBtn').classList.add('recording');
                     document.getElementById('recordIcon').innerHTML = `
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
@@ -1185,10 +1246,13 @@
             resetSilenceTimer();
             recognition.start();
             initVisualizer();
+
+            // tanya pertama kali
             setTimeout(() => {
                 speakQuestion();
             }, 300);
         }
+
 
         function stopListening() {
             isPaused = true;

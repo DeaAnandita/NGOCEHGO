@@ -91,6 +91,12 @@
                                 value="{{ old('bantuan_jumlah') }}" class="w-full rounded-lg border-gray-300">
                             <p id="jumlahError" class="text-red-600 text-xs"></p>
                         </div>
+                        <div class="sm:col-span-2">
+                            <label>Keterangan</label>
+                            <textarea id="keterangan" name="bantuan_keterangan" class="w-full rounded-lg border-gray-300" rows="3"
+                                placeholder="Opsional...">{{ old('bantuan_keterangan') }}</textarea>
+                            <p id="keteranganError" class="text-red-600 text-xs"></p>
+                        </div>
 
                     </div>
 
