@@ -15,14 +15,29 @@ use Illuminate\Support\Facades\Schema;
 
 class SuratController extends Controller
 {
+    public function __construct()
+    {
+        \Carbon\Carbon::setLocale('id');
+    }
+
     // ==============================
     // LIST DATA
     // ==============================
     public function index()
     {
-        $surats = Surat::orderBy('created_at', 'desc')->get();
+        $user = Auth::user();
+
+        $surats = Surat::query()
+            ->when($user->role_id == 2, function ($q) use ($user) {
+                // user biasa: hanya lihat surat miliknya
+                $q->where('user_id', $user->id);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('pelayanan.surat.index', compact('surats'));
     }
+
 
     // ==============================
     // FORM BUAT

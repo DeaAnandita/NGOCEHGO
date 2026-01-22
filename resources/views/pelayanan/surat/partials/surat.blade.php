@@ -2,7 +2,13 @@
     $tanggalSurat = $surat->tanggal_surat ?? ($surat->approved_at ?? $surat->created_at);
     $tanggalSurat = $tanggalSurat ? \Carbon\Carbon::parse($tanggalSurat) : null;
 @endphp
+@php
+    $isPdf = $isPdf ?? false;
 
+    $img = function ($path) use ($isPdf) {
+        return $isPdf ? public_path($path) : asset($path);
+    };
+@endphp
 <div style="width:800px;margin:auto;padding:30px;font-family:'Times New Roman';font-size:12pt">
 
     {{-- KOP SURAT --}}
@@ -124,9 +130,8 @@
                 Kepala Desa Kaliwungu<br><br>
 
                 @if ($surat->barcode_verifikasi_path)
-                    <img src="{{ asset($surat->barcode_verifikasi_path) }}" width="90">
+                    <img src="{{ $img($surat->barcode_verifikasi_path) }}" width="90">
                 @endif
-
                 <br><br>
                 @if ($surat->kode_verifikasi)
                     <p style="text-align:center;font-size:10px;margin-top:15px">
