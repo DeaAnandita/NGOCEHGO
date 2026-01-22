@@ -18,6 +18,6 @@ class LpjKegiatan extends Model
 
     public function kegiatan()
     {
-        return $this->belongsTo(Kegiatan::class, 'kegiatan_id');
+        return $this->belongsTo(kegiatan::class, 'kegiatan_id');
     }
 }
