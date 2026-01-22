@@ -116,15 +116,125 @@
                     <x-heroicon-o-home class="w-5 h-5" />
                     <span>Dashboard</span>
                 </a>
+
+                <!-- Menu Kependudukan dengan Submenu -->
+                <div x-data="{ open: {{ request()->routeIs('dasar-keluarga.*') || request()->routeIs('dasar-penduduk.*') ? 'true' : 'false' }} }">
+                    <button @click="open = !open"
+                        class="flex items-center justify-between w-full gap-3 px-4 py-2 rounded-lg text-sm 
+                        {{ request()->routeIs('voice.keluarga.*') ||
+                        request()->routeIs('voice.penduduk.*') ||
+                        request()->routeIs('voice.kelembagaan.*') ||
+                        request()->routeIs('voice.pelayanan.*') ||
+                        request()->routeIs('voice.pembangunan.*') ||
+                        request()->routeIs('voice.admin-umum.*')
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'text-gray-700 hover:bg-gray-100' }}">
+
+                        <div class="flex items-center gap-3">
+                            <x-heroicon-o-user-group class="w-5 h-5" />
+                            <span>Kependudukan</span>
+                        </div>
+                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                            stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Submenu -->
+                    <div x-show="open" x-collapse class="mt-1 space-y-1 pl-10">
+                        <a href="{{ route('dasar-keluarga.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                        {{ request()->routeIs('dasar-keluarga.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+                            <x-heroicon-o-user class="w-5 h-5" />
+                            <span>Data Keluarga</span>
+                        </a>
+                        <a href="{{ route('dasar-penduduk.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                        {{ request()->routeIs('dasar-penduduk.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+                            <x-heroicon-o-user class="w-5 h-5" />
+                            <span>Data Penduduk</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Menu Kependudukan dengan Submenu -->
+                <div x-data="{
+                    open: {{ request()->routeIs('voice.keluarga.*') ||
+                    request()->routeIs('voice.penduduk.*') ||
+                    request()->routeIs('voice.kelembagaan.*') ||
+                    request()->routeIs('voice.pelayanan.*') ||
+                    request()->routeIs('voice.pembangunan.*') ||
+                    request()->routeIs('voice.admin-umum.*')
+                        ? 'true'
+                        : 'false' }}
+                    }">
+                    <button @click="open = !open"
+                        class="flex items-center justify-between w-full gap-3 px-4 py-2 rounded-lg  text-sm 
+                            {{ request()->routeIs('voice.keluarga.index*') || request()->routeIs('voice.penduduk.index*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                        <div class="flex items-center gap-3">
+                            <x-heroicon-o-megaphone class="w-5 h-5" />
+                            <span>Voice Input</span>
+                        </div>
+                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                            stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <!-- Submenu -->
+                    <div x-show="open" x-collapse class="mt-1 space-y-1 pl-10">
+                        <a href="{{ route('voice.keluarga.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                        {{ request()->routeIs('voice.keluarga.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+                            <x-heroicon-o-speaker-wave class="w-5 h-5" />
+                            <span>Voice Keluarga</span>
+                        </a>
+                        <a href="{{ route('voice.penduduk.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                        {{ request()->routeIs('voice.penduduk.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+                            <x-heroicon-o-speaker-wave class="w-5 h-5" />
+                            <span>Voice Penduduk</span>
+                        </a>
+                        <a href="{{ route('voice.kelembagaan.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                            {{ request()->routeIs('voice.kelembagaan.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+
+                            <x-heroicon-o-building-office-2 class="w-5 h-5" />
+                            <span>Voice Kelembagaan</span>
+                        </a>
+                        <a href="{{ route('voice.pelayanan.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                            {{ request()->routeIs('voice.pelayanan.*') ? 'bg-indigo-50 text-indigo-700' : '' }}">
+
+                            <x-heroicon-o-document-text class="w-5 h-5" />
+                            <span>Voice Pelayanan</span>
+                        </a>
+                        <a href="{{ route('voice.pembangunan.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                            {{ request()->routeIs('voice.pembangunan.*') ? 'bg-indigo-50 text-indigo-700' : '' }}">
+
+                            <x-heroicon-o-building-office-2 class="w-5 h-5" />
+                            <span>Voice Administrasi Pembangunan</span>
+                        </a>
+                        <a href="{{ route('voice.admin-umum.index') }}"
+                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
+                            {{ request()->routeIs('voice.admin-umum.*') ? 'bg-blue-50 text-blue-700' : '' }}">
+
+                            <x-heroicon-o-microphone class="w-5 h-5" />
+                            <span>Voice Administrasi Umum</span>
+                        </a>
+
+
+                    </div>
+                </div>
                 {{-- ============================= --}}
                 {{-- ADMINISTRASI UMUM --}}
                 {{-- ============================= --}}
                 <div x-data="{ open: {{ request()->routeIs('admin-umum.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open"
                         class="flex items-center justify-between w-full gap-3 px-4 py-2 rounded-lg text-sm
-        {{ request()->routeIs('admin-umum.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
+                        {{ request()->routeIs('admin-umum.*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
 
-                        <div class="flex items-center gap-3">
+                        <div class="flex gap-3">
                             <x-heroicon-o-book-open class="w-5 h-5" />
                             <span>Administrasi Umum</span>
                         </div>
@@ -197,115 +307,9 @@
                     </div>
                 </div>
 
-                <!-- Menu Kependudukan dengan Submenu -->
-                <div x-data="{ open: {{ request()->routeIs('dasar-keluarga.*') || request()->routeIs('dasar-penduduk.*') ? 'true' : 'false' }} }">
-                    <button @click="open = !open"
-                        class="flex items-center justify-between w-full gap-3 px-4 py-2 rounded-lg text-sm 
-    {{ request()->routeIs('voice.keluarga.*') ||
-    request()->routeIs('voice.penduduk.*') ||
-    request()->routeIs('voice.kelembagaan.*') ||
-    request()->routeIs('voice.pelayanan.*') ||
-    request()->routeIs('voice.pembangunan.*') ||
-    request()->routeIs('voice.admin-umum.*')
-        ? 'bg-blue-100 text-blue-700'
-        : 'text-gray-700 hover:bg-gray-100' }}">
+                
 
-                        <div class="flex items-center gap-3">
-                            <x-heroicon-o-user-group class="w-5 h-5" />
-                            <span>Kependudukan</span>
-                        </div>
-                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
-                            stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    <!-- Submenu -->
-                    <div x-show="open" x-collapse class="mt-1 space-y-1 pl-10">
-                        <a href="{{ route('dasar-keluarga.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-                        {{ request()->routeIs('dasar-keluarga.*') ? 'bg-blue-50 text-blue-700' : '' }}">
-                            <x-heroicon-o-user class="w-5 h-5" />
-                            <span>Data Keluarga</span>
-                        </a>
-                        <a href="{{ route('dasar-penduduk.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-                        {{ request()->routeIs('dasar-penduduk.*') ? 'bg-blue-50 text-blue-700' : '' }}">
-                            <x-heroicon-o-user class="w-5 h-5" />
-                            <span>Data Penduduk</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Menu Kependudukan dengan Submenu -->
-                <div x-data="{
-                    open: {{ request()->routeIs('voice.keluarga.*') ||
-                    request()->routeIs('voice.penduduk.*') ||
-                    request()->routeIs('voice.kelembagaan.*') ||
-                    request()->routeIs('voice.pelayanan.*') ||
-                    request()->routeIs('voice.pembangunan.*') ||
-                    request()->routeIs('voice.admin-umum.*')
-                        ? 'true'
-                        : 'false' }}
-                }">
-                    <button @click="open = !open"
-                        class="flex items-center justify-between w-full gap-3 px-4 py-2 rounded-lg  text-sm 
-                            {{ request()->routeIs('voice.keluarga.index*') || request()->routeIs('voice.penduduk.index*') ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100' }}">
-                        <div class="flex items-center gap-3">
-                            <x-heroicon-o-megaphone class="w-5 h-5" />
-                            <span>Voice Input</span>
-                        </div>
-                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
-                            stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-                    <!-- Submenu -->
-                    <div x-show="open" x-collapse class="mt-1 space-y-1 pl-10">
-                        <a href="{{ route('voice.keluarga.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-                        {{ request()->routeIs('voice.keluarga.*') ? 'bg-blue-50 text-blue-700' : '' }}">
-                            <x-heroicon-o-speaker-wave class="w-5 h-5" />
-                            <span>Voice Keluarga</span>
-                        </a>
-                        <a href="{{ route('voice.penduduk.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-                        {{ request()->routeIs('voice.penduduk.*') ? 'bg-blue-50 text-blue-700' : '' }}">
-                            <x-heroicon-o-speaker-wave class="w-5 h-5" />
-                            <span>Voice Penduduk</span>
-                        </a>
-                        <a href="{{ route('voice.kelembagaan.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-   {{ request()->routeIs('voice.kelembagaan.*') ? 'bg-blue-50 text-blue-700' : '' }}">
-
-                            <x-heroicon-o-building-office-2 class="w-5 h-5" />
-                            <span>Voice Kelembagaan</span>
-                        </a>
-                        <a href="{{ route('voice.pelayanan.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-   {{ request()->routeIs('voice.pelayanan.*') ? 'bg-indigo-50 text-indigo-700' : '' }}">
-
-                            <x-heroicon-o-document-text class="w-5 h-5" />
-                            <span>Voice Pelayanan</span>
-                        </a>
-                        <a href="{{ route('voice.pembangunan.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-   {{ request()->routeIs('voice.pembangunan.*') ? 'bg-indigo-50 text-indigo-700' : '' }}">
-
-                            <x-heroicon-o-building-office-2 class="w-5 h-5" />
-                            <span>Voice Administrasi Pembangunan</span>
-                        </a>
-                        <a href="{{ route('voice.admin-umum.index') }}"
-                            class="flex items-center gap-3 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 text-sm
-   {{ request()->routeIs('voice.admin-umum.*') ? 'bg-blue-50 text-blue-700' : '' }}">
-
-                            <x-heroicon-o-microphone class="w-5 h-5" />
-                            <span>Voice Administrasi Umum</span>
-                        </a>
-
-
-                    </div>
-                </div>
+                
                 <div x-data="{ open: {{ request()->routeIs('kelembagaan.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open"
                         class="flex items-center justify-between w-full gap-3 px-4 py-2 rounded-lg text-sm
