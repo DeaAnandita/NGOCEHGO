@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\{
     MasterJenisAgenda,
     MasterJenisKeputusan,
-    MasterJenisTkd,
-    MasterPerolehanTkd,
+    MasterJenisTKD,
+    MasterPerolehanTKD,
     MasterPatok,
     MasterPapanNama,
     MasterAparat,
@@ -123,7 +123,7 @@ class MasterAdminUmumSeeder extends Seeder
                 ['05', 'Tambak']
             ] as $j
         ) {
-            MasterJenisTkd::updateOrCreate(['kdjenistkd' => $j[0]], ['jenistkd' => $j[1]]);
+            MasterJenisTKD::updateOrCreate(['kdjenistkd' => $j[0]], ['jenistkd' => $j[1]]);
         }
 
         // ============================
@@ -138,7 +138,7 @@ class MasterAdminUmumSeeder extends Seeder
                 ['05', 'Tanah Hibah']
             ] as $p
         ) {
-            MasterPerolehanTkd::updateOrCreate(['kdperolehantkd' => $p[0]], ['perolehantkd' => $p[1]]);
+            MasterPerolehanTKD::updateOrCreate(['kdperolehantkd' => $p[0]], ['perolehantkd' => $p[1]]);
         }
 
         // ============================
