@@ -57,7 +57,7 @@ class VoiceKelembagaanController extends Controller
             'jenis_agenda'  => \App\Models\MasterJenisAgenda::pluck('jenis_agenda', 'kdjenis'),
             'status_agenda' => \App\Models\MasterStatusAgenda::pluck('status_agenda', 'kdstatus'),
             'tempat_agenda' => \App\Models\MasterTempatAgenda::pluck('tempat_agenda', 'kdtempat'),
-            'kegiatan' => \App\Models\Kegiatan::pluck('nama_kegiatan', 'id'),
+            'kegiatan' => \App\Models\kegiatan::pluck('nama_kegiatan', 'id'),
 
         ];
 

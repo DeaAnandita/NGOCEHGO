@@ -718,7 +718,7 @@ Route::prefix('api')->group(function () {
     Route::get('/surat/verifikasi/{kode}', [SuratController::class, 'verifikasi'])->name('surat.verifikasi');
 });
 Route::get('/voice/kegiatan/{id}/sisa', function ($id) {
-    $kegiatan = \App\Models\Kegiatan::findOrFail($id);
+    $kegiatan = \App\Models\kegiatan::findOrFail($id);
 
     $sudah = $kegiatan->pencairanDana()->sum('jumlah');
     $sisa = $kegiatan->pagu_anggaran - $sudah;
