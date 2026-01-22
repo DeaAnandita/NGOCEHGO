@@ -85,6 +85,11 @@ use App\Http\Controllers\Kelembagaan\LpjKegiatanController;
 use App\Http\Controllers\Kelembagaan\PencairanDanaController;
 use App\Http\Controllers\Kelembagaan\RealisasiPengeluaranController;
 
+Route::get('/demo-login', function () {
+    Auth::loginUsingId(1); // ID user demo
+    return redirect('/dashboard');
+});
+
 Route::get('/export-all-keluarga', function () {
     return \App\Exports\ExportAllDataKeluarga::export();
 })->name('export.all.keluarga');
@@ -712,8 +717,8 @@ Route::prefix('api')->group(function () {
         });
 
     /* =========================
-   VERIFIKASI QR (PUBLIC)
-========================= */
+    VERIFIKASI QR (PUBLIC)
+    ========================= */
 
     Route::get('/surat/verifikasi/{kode}', [SuratController::class, 'verifikasi'])->name('surat.verifikasi');
 });
@@ -731,6 +736,7 @@ Route::get('/voice/kegiatan/{id}/sisa', function ($id) {
 });
 Route::get('/pelayanan/surat/cek-nik', [SuratController::class, 'cekNik'])
     ->name('pelayanan.surat.cek-nik');
+
 // ===============================
 // AUTH
 // ===============================

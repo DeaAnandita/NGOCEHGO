@@ -2,8 +2,21 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
+    <style>
+a:hover {
+    color: #0d6efd;
+}
+</style>
+
     <form method="POST" action="{{ route('login') }}">
         @csrf
+
+        <a href="/demo-login" class="text-decoration-none">
+            <div class="border rounded p-3 text-center bg-blue-100 mb-4 hover:bg-blue-100 cursor-pointer">
+                <strong>Mode Demo</strong><br>
+                <small class="text-muted">Masuk tanpa login untuk keperluan presentasi</small>
+            </div>
+        </a>
 
         <!-- Email Address -->
         <div>
