@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Kelembagaan;
 
 use App\Exports\LpjExport;
 use App\Http\Controllers\Controller;
-use App\Models\Kegiatan;
+use App\Models\kegiatan;
 use App\Models\LpjKegiatan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;

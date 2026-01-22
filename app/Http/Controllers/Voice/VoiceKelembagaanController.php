@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Voice;
 use App\Http\Controllers\Controller;
 use App\Models\AgendaKelembagaan;
 use App\Models\AnggaranKelembagaan;
-use App\Models\Kegiatan;
+use App\Models\kegiatan;
 use App\Models\KegiatanAnggaran;
 use App\Models\Keputusan;
 use Illuminate\Http\Request;

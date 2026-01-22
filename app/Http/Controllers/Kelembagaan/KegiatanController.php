@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Kelembagaan;
 use App\Exports\KegiatanExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Kegiatan;
+use App\Models\kegiatan;
 use App\Models\{
     MasterJenisKegiatan,
     MasterStatusKegiatan,

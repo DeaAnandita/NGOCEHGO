@@ -6,7 +6,7 @@ use App\Exports\AnggaranExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AnggaranKelembagaan;
-use App\Models\Kegiatan;
+use App\Models\kegiatan;
 use App\Models\{
     MasterUnitKeputusan,
     MasterPeriodeKelembagaan,
