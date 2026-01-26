@@ -7,7 +7,7 @@
                 <!-- Header tetap tidak ikut scroll -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
                     <div class="flex items-center gap-3 flex-wrap">
-                        <h3 class="text-xl font-bold text-gray-800">Data Aset Keluarga</h3>
+                        <h3 class="text-xl font-bold text-gray-800">Data Aset Lahan</h3>
 
                         <!-- Dropdown Export -->
                         <div x-data="{ open: false }" class="relative">
