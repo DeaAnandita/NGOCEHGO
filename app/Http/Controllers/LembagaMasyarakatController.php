@@ -87,7 +87,7 @@ class LembagaMasyarakatController extends Controller
 
         DataLembagaMasyarakat::create($data);
 
-        return redirect()->route('penduduk.lembagamasyarakat.index')->with('success', 'Data lembaga masyarakat berhasil ditambahkan.');
+        return redirect()->route('penduduk.lemmas.index')->with('success', 'Data lembaga masyarakat berhasil ditambahkan.');
     }
 
     /**
@@ -122,7 +122,7 @@ class LembagaMasyarakatController extends Controller
 
         $lembagaMasyarakat->update($data);
 
-        return redirect()->route('penduduk.lembagamasyarakat.index')->with('success', 'Data lembaga masyarakat berhasil diperbarui.');
+        return redirect()->route('penduduk.lemmas.index')->with('success', 'Data lembaga masyarakat berhasil diperbarui.');
     }
 
     /**
@@ -133,7 +133,7 @@ class LembagaMasyarakatController extends Controller
         $lembagaMasyarakat = DataLembagaMasyarakat::where('nik', $nik)->firstOrFail();
         $lembagaMasyarakat->delete();
 
-        return redirect()->route('penduduk.lembagaMmasyarakat.index')->with('success', 'Data lembaga masyarakat berhasil dihapus.');
+        return redirect()->route('penduduk.lemmas.index')->with('success', 'Data lembaga masyarakat berhasil dihapus.');
     }
 /**
      * Export laporan analisis lembaga masyarakat ke PDF
