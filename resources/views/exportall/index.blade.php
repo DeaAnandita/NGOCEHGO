@@ -58,7 +58,7 @@
                 </a>
 
                 {{-- TABEL PENDUDUK --}}
-                <a href="{{ route('dasar-penduduk.index') }}"
+                <a href="{{ route('export.all.penduduk') }}"
                    class="group bg-gradient-to-br from-green-100 to-green-50 
                           hover:from-green-200 hover:to-green-100 
                           border border-green-200 p-6 rounded-2xl shadow 

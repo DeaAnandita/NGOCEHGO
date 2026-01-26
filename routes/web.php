@@ -94,6 +94,10 @@ Route::get('/export-all-keluarga', function () {
     return \App\Exports\ExportAllDataKeluarga::export();
 })->name('export.all.keluarga');
 
+Route::get('/export-all-penduduk', function () {
+    return \App\Exports\ExportAllDataPenduduk::export();
+})->name('export.all.penduduk');
+
 // AJAX Wilayah (untuk keluarga)
 Route::get('/get-kabupaten/{kdprovinsi}', [VoiceKeluargaController::class, 'getKabupaten']);
 Route::get('/get-kecamatan/{kdkabupaten}', [VoiceKeluargaController::class, 'getKecamatan']);
@@ -116,7 +120,7 @@ Route::prefix('admin/voice')->name('voice.')->middleware('auth')->group(function
     // Voice Keluarga
     // -----------------------------
     Route::get('/keluarga', [VoiceKeluargaController::class, 'index'])->name('keluarga.index');
-    Route::post('/validate', [VoiceKeluargaController::class, 'validateVoice'])->name('validate');
+    Route::post('/keluarga/validate', [VoiceKeluargaController::class, 'validateVoice'])->name('keluarga.validate');
     Route::post('/keluarga/store-all', [VoiceKeluargaController::class, 'storeAll'])
         ->name('keluarga.store-all'); // ← ROUTE KHUSUS KELUARGA
 
@@ -124,7 +128,7 @@ Route::prefix('admin/voice')->name('voice.')->middleware('auth')->group(function
     // Voice Penduduk
     // -----------------------------
     Route::get('/penduduk', [VoicePendudukController::class, 'index'])->name('penduduk.index');
-    Route::post('/validate', [VoicePendudukController::class, 'validateVoice'])->name('validate');
+    Route::post('/penduduk/validate', [VoicePendudukController::class, 'validateVoice'])->name('penduduk.validate');
     Route::post('/penduduk/store-all', [VoicePendudukController::class, 'storeAll'])
         ->name('penduduk.store-all'); // ← ROUTE KHUSUS PENDUDUK
 

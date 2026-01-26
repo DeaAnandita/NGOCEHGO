@@ -98,7 +98,7 @@
     </script>
 </head>
 
-<body class="antialiased text-gray-800" x-data="{ sidebarOpen: false, settingsOpen: false }">
+<body class="antialiased text-gray-800" x-data="{ sidebarOpen: false }">
     <!-- Sidebar Utama -->
     <aside id="sidebar" x-bind:class="sidebarOpen ? 'ml-0' : '-ml-64'"
         class="w-64 bg-white shadow-md h-screen fixed transition-all duration-300 z-40">
@@ -487,7 +487,7 @@
     <div class="flex flex-col min-h-screen transition-all duration-300" :class="sidebarOpen ? 'lg:ml-64' : 'ml-0'">
 
         <!-- Navbar -->
-        <header class="sticky top-0 z-20 bg-white shadow">
+        <header class="sticky top-0 z-[60] bg-white shadow">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
                 <div class="flex items-center gap-2">
                     <button @click="sidebarOpen = !sidebarOpen"
@@ -500,18 +500,37 @@
                     </button>
                 </div>
 
+<<<<<<< HEAD
                 <div class="relative">
                     <button @click="settingsOpen = !settingsOpen" class="flex items-center gap-2 focus:outline-none">
                         <span>{{ Auth::user()->name }}</span>
                         <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2"
                             viewBox="0 0 24 24">
+=======
+                <div class="relative" 
+                     x-data="{ settingsOpen: false }">
+                    <button @click="settingsOpen = !settingsOpen" 
+                            class="flex items-center gap-2 focus:outline-none hover:bg-gray-50 px-3 py-2 rounded-md transition-colors">
+                        <span class="text-gray-700 font-medium">{{ Auth::user()->name }}</span>
+                        <svg class="w-4 h-4 text-gray-600 transition-transform duration-200" 
+                             :class="settingsOpen ? 'rotate-180' : ''"
+                             fill="none" stroke="currentColor" stroke-width="2"
+                             viewBox="0 0 24 24">
+>>>>>>> 6f2c952 (update)
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
 
+<<<<<<< HEAD
                     <div x-show="settingsOpen" @click.outside="settingsOpen = false"
                         class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
                         x-cloak>
+=======
+                    <div x-show="settingsOpen" 
+                         @click="settingsOpen = false"
+                         class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-[100] py-1" 
+                         x-transition x-cloak>
+>>>>>>> 6f2c952 (update)
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>

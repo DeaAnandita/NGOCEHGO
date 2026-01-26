@@ -1,6 +1,6 @@
 <x-app-layout>
     @slot('progresspenduduk')
-        <div class="sticky top-16 left-0 right-0 z-40 bg-white shadow-md border-b">
+        <div class="sticky top-16 left-0 right-0 z-30 bg-white shadow-md border-b">
             <div class="max-w-7xl mx-auto overflow-x-auto scrollbar-hide">
                 <div id="progressSteps" class="flex items-center space-x-6 px-6 py-4 min-w-max">
                     <!-- JS generate -->
@@ -41,7 +41,7 @@
                     <svg id="recordIcon" xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4" />
                     </svg>
-                    <span class="absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-75 hidden" id="pulseRing"></span>
+                    <span class="absolute inset-0 rounded-full animate-ping bg-green-400 opacity-75 hidden" id="pulseRing"></span>
                 </button>
                 <!-- Visualizer + Placeholder Text -->
                 <div class="relative w-72 h-16 bg-gradient-to-r from-gray-50 to-gray-100 rounded-full shadow-inner overflow-hidden flex items-center justify-center">
@@ -129,7 +129,7 @@
             {type:"text",label:"Sebutkan nama lengkap penduduk",field:"penduduk_namalengkap"},
             {type:"text",label:"Dimana tempat lahirnya?",field:"penduduk_tempatlahir"},
             {type:"date",label:"Tanggal lahir?",field:"penduduk_tanggallahir"},
-            {type:"select",label:"Apa golongan darahnya?",field:"penduduk_goldarah",options:{"a":"A","b":"B","ab":"AB","o":"O"}},
+            {type:"select",label:"Apa golongan darahnya?",field:"penduduk_goldarah",options:{"a":"A","ab":"AB","b":"B","o":"O"}},
             {type:"text",label:"Sebutkan nomor akta lahir",field:"penduduk_noaktalahir"},
             {type:"skip",label:"Kewarganegaraan",field:"penduduk_kewarganegaraan",default:"INDONESIA"},
             {type:"select",label:"Apa jenis kelaminnya?",field:"kdjeniskelamin",options:masters.jenis_kelamin},
@@ -148,6 +148,7 @@
             {type:"text",label:"Sebutkan nama ibu",field:"penduduk_namaibu"},
             {type:"text",label:"Sebutkan nama tempat bekerja (jika ada)",field:"penduduk_namatempatbekerja"},
             {type:"select",label:"Apa pekerjaannya?",field:"kdpekerjaan",options:masters.pekerjaan}
+            
         ];
         // MODUL 2: KELAHIRAN
         questions[2] = [
@@ -207,13 +208,113 @@
         ];
         // MODUL 7: LEMBAGA MASYARAKAT
         questions[7] = [           
-            {type:"select",label:"Apakah bapak/ibu pengurus RT?",field:"lemmas_1",options:masters.jawab_lemmas}
+            {type:"select",label:"Apakah bapak/ibu pengurus RT?",field:"lemmas_1",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus RW?",field:"lemmas_3",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus LPM atau LKMD?",field:"lemmas_5",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus PKK?",field:"lemmas_7",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus lembaga adat?",field:"lemmas_9",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus Karang Taruna?",field:"lemmas_10",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pernah jadi Hansip atau Linmas?",field:"lemmas_12",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus poskamling?",field:"lemmas_13",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi perempuan?",field:"lemmas_14",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi bapak-bapak?",field:"lemmas_16",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi keagamaan?",field:"lemmas_18",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi wartawan?",field:"lemmas_20",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus Posyandu?",field:"lemmas_22",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus Posyantekdes?",field:"lemmas_23",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus kelompok tani atau nelayan?",field:"lemmas_24",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus lembaga gotong royong?",field:"lemmas_26",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi profesi guru?",field:"lemmas_28",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi dokter atau tenaga medis?",field:"lemmas_30",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi pensiunan?",field:"lemmas_32",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi pemirsa atau pendengar?",field:"lemmas_34",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus kelompok pencinta alam?",field:"lemmas_36",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus organisasi ilmu pengetahuan?",field:"lemmas_38",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu memiliki atau mendirikan yayasan?",field:"lemmas_40",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus yayasan?",field:"lemmas_41",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus satgas kebersihan?",field:"lemmas_43",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus satgas kebakaran?",field:"lemmas_45",options:masters.jawab_lemmas},
+            {type:"select",label:"Apakah bapak/ibu pengurus posko bencana?",field:"lemmas_47",options:masters.jawab_lemmas}
+            ];
 
-                    ];
         // MODUL 8: LEMBAGA EKONOMI
         questions[8] = [
-            {type:"select",label:"Apakah memiliki atau terlibat dalam Koperasi?",field:"lemek_1",options:masters.jawab_lemek}
+            {type:"select",label:"Apakah memiliki atau terlibat dalam Koperasi?",field:"lemek_1",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki Unit Usaha Simpan Pinjam?",field:"lemek_2",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri kerajinan tangan?",field:"lemek_3",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri pakaian/jahit menjahit?",field:"lemek_4",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri pengolahan makanan/minuman?",field:"lemek_5",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha industri alat rumah tangga?",field:"lemek_6",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan bahan bangunan?",field:"lemek_7",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan alat pertanian/perkebunan?",field:"lemek_8",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha restoran/rumah makan/warung makan?",field:"lemek_9",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki toko kelontong/swalayan/minimarket?",field:"lemek_10",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki warung kelontong/kios/toko kecil?",field:"lemek_11",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan darat (mobil/bus/truk)?",field:"lemek_12",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan sungai/perahu motor?",field:"lemek_13",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan laut/kapal?",field:"lemek_14",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha angkutan udara?",field:"lemek_15",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha jasa ekspedisi/pengiriman barang?",field:"lemek_16",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang sumur/bor air?",field:"lemek_17",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola pasar harian?",field:"lemek_18",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola pasar mingguan?",field:"lemek_19",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola pasar ternak?",field:"lemek_20",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan hasil bumi atau tambang?",field:"lemek_21",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perdagangan antar pulau?",field:"lemek_22",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai pengijon (pemberi modal hasil bumi)?",field:"lemek_23",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tengkulak/pedagang pengumpul?",field:"lemek_24",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha peternakan (sapi, kambing, ayam, dll)?",field:"lemek_25",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perikanan (tambak, budidaya ikan)?",field:"lemek_26",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perkebunan (kelapa sawit, karet, dll)?",field:"lemek_27",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah tergabung dalam kelompok simpan pinjam wanita/arisan?",field:"lemek_28",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha produksi minuman (sirup, kopi, dll)?",field:"lemek_29",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha apotek/toko obat/farmasi?",field:"lemek_30",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha karoseri/modifikasi kendaraan?",field:"lemek_31",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha penitipan/garasi kendaraan bermotor?",field:"lemek_32",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perakitan elektronik/reparasi?",field:"lemek_33",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pengolahan kayu/mebel?",field:"lemek_34",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki atau mengelola bioskop?",field:"lemek_35",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha film keliling/bioskop berjalan?",field:"lemek_36",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup sandiwara/drama/teater?",field:"lemek_37",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup lawak/komedi?",field:"lemek_38",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup tari Jaipongan?",field:"lemek_39",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup wayang orang/golek?",field:"lemek_40",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup musik/band/orkes?",field:"lemek_41",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki grup vokal/paduan suara?",field:"lemek_42",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha persewaan genset/tenaga listrik?",field:"lemek_43",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pengecer gas elpiji/BBM eceran?",field:"lemek_44",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha air minum isi ulang/AMDK?",field:"lemek_45",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang kayu/mebel?",field:"lemek_46",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang batu/bangunan?",field:"lemek_47",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang jahit/bordir/konveksi?",field:"lemek_48",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang cukur/pangkas rambut?",field:"lemek_49",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang service elektronik?",field:"lemek_50",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang las/besi?",field:"lemek_51",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai tukang pijat/urut/refleksi?",field:"lemek_52",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Notaris?",field:"lemek_53",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Pengacara/Advokat?",field:"lemek_54",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Konsultan Manajemen?",field:"lemek_55",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Konsultan Teknik?",field:"lemek_56",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah berprofesi sebagai Pejabat Pembuat Akta Tanah (PPAT)?",field:"lemek_57",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha losmen/pondok wisata?",field:"lemek_58",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha wisma/penginapan?",field:"lemek_59",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha asrama/kos-kosan?",field:"lemek_60",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha persewaan kamar?",field:"lemek_61",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki rumah kontrakan?",field:"lemek_62",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki mess/pondok pekerja?",field:"lemek_63",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha hotel?",field:"lemek_64",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha home stay?",field:"lemek_65",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha villa?",field:"lemek_66",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha town house/apartemen sewa?",field:"lemek_67",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha perusahaan asuransi?",field:"lemek_68",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki lembaga keuangan mikro/bukan bank?",field:"lemek_69",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki Lembaga Perkreditan Rakyat (LPR)?",field:"lemek_70",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pegadaian?",field:"lemek_71",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki Bank Perkreditan Rakyat (BPR)?",field:"lemek_72",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha penyewaan alat pesta/tenda?",field:"lemek_73",options:masters.jawab_lemek},
+            {type:"select",label:"Apakah memiliki usaha pengolahan dan penjualan hasil hutan?",field:"lemek_74",options:masters.jawab_lemek}
         ];
+       
        
         const wilayahQuestions = [
             {type:"select",label:"Provinsi asalnya apa?",field:"kdprovinsi",options:provinsiOptions},
@@ -263,8 +364,14 @@
             const n=normalize(text); let best=null,score=0;
             Object.entries(options).forEach(([id,name])=>{
                 const nn=normalize(name); let s=0;
-                if(nn.includes(n))s=1000;else if(n.includes(nn))s=800;
-                else nn.split(' ').forEach(w=>{if(n.includes(w))s+=w.length*3;});
+                if(nn === n)s=2000; // Exact match highest priority
+                else if(nn.includes(n))s=1000;
+                else if(n.includes(nn))s=800;
+                else {
+                    let matchCount = 0;
+                    nn.split(' ').forEach(w=>{if(n.includes(w))matchCount++;});
+                    s = matchCount * 50; // More matching words = higher score
+                }
                 if(s>score){score=s;best=[id,name];}
             });
             return score>3?best:null;
@@ -273,9 +380,9 @@
             let input = (omset ?? '').toString().toLowerCase().trim();
 
             // Deteksi kasus "tidak berpenghasilan" atau variasinya
-            if (input === '' || 
+            if (input === '' ||
                 /tidak ada|tidak berpenghasilan|nol|kosong|tidak punya|tanpa penghasilan/i.test(input)) {
-                return '0'; // Kode untuk "tidak berpenghasilan"
+                return '1';
             }
 
             let angka = parseFloat(input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.')) || 0;
@@ -289,21 +396,16 @@
                 angka *= 1000;
             }
 
-            if (angka <= 1000000) return '1';        // ≤ 1 juta
-            if (angka <= 5000000) return '2';        // 1–5 juta
-            if (angka <= 10000000) return '3';       // 5–10 juta
-            return '4';                              // > 10 juta
+            if (angka <= 1000000) return '2';        // ≤ 1 juta
+            if (angka <= 5000000) return '3';        // 1–5 juta
+            if (angka <= 10000000) return '4';       // 5–10 juta
+            return '5';                              // > 10 juta
         }
         function mapPendapatanToCode(pendapatan) {
             if (!pendapatan) return '0';
 
             let input = pendapatan.toString().toLowerCase().trim();
 
-            // Deteksi kasus "tidak berpendapatan" atau variasinya
-            if (input === '' || 
-                /tidak ada|tidak berpendapatan|nol|tidak punya|tanpa pendapatan|belum bekerja|belum berpenghasilan/i.test(input)) {
-                return '0'; // Kode untuk "tidak berpendapatan"
-            }
 
             // Ambil angka saja
             let angkaStr = input.replace(/[^\d.,]/g, '').replace(/\./g, '').replace(/,/g, '.');
@@ -328,13 +430,13 @@
             return new Promise(r=>{
                 if(isSpeaking)return r(); isSpeaking=true;
                 const u=new SpeechSynthesisUtterance(t);
-                u.lang='id-ID'; u.rate=1.2;
+                u.lang='id-ID'; u.rate=1.25;
                 u.onend=()=>{isSpeaking=false;r();};
                 speechSynthesis.speak(u);
             });
         }
         // ==================== CORE FUNCTIONS (LENGKAP) ====================
-        function initFresh(){
+        async function initFresh(){
             localStorage.clear();
             currentModul=1; step=0;
             answers={
@@ -455,9 +557,11 @@
                 let cols = 3;
                 let gridClass = `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-${cols} gap-3 max-w-5xl mx-auto`;
                 html+=`<div class="${gridClass}">`;
-                Object.entries(q.options).forEach(([id,nama])=>{
+                const optsArray = Object.entries(q.options);
+                optsArray.forEach(([id,nama], index)=>{
                     const sel=answers[q.field]==id?'selected':'';
-                    html+=`<div class="option-card ${sel}" data-value="${id}" data-text="${nama}"><span class="text-sm font-medium">${nama}</span></div>`;
+                    const displayText = nama;
+                    html+=`<div class="option-card ${sel}" data-value="${id}" data-text="${nama}"><span class="text-sm font-medium">${displayText}</span></div>`;
                 });
                 html+='</div>';
             }else{
@@ -473,7 +577,11 @@
                 c.onclick=()=>{
                     document.querySelectorAll('.option-card').forEach(x=>x.classList.remove('selected'));
                     c.classList.add('selected');
-                    processVoiceAnswer(c.dataset.text.toLowerCase());
+                    // Untuk klik manual, langsung set value tanpa voice processing
+                    const currentQ = questions[currentModul][step];
+                    answers[currentQ.field] = c.dataset.value;
+                    saveData();
+                    nextQuestion(1200);
                 };
             });
         }
@@ -538,12 +646,17 @@
         q.type === "select" &&
         currentModul !== 5 &&                                    // Program Serta tidak dibacakan (terlalu banyak)
         ![6, 7, 8].includes(currentModul) &&                     // Lembaga juga tidak (ratusan pertanyaan)
-        !["kdprovinsi", "kdkabupaten", "kdkecamatan", "kddesa", "kdpekerjaan", "kdlapanganusaha"].includes(q.field)
+        !["kdprovinsi", "kdkabupaten", "kdkecamatan", "kddesa", "kdlapanganusaha"].includes(q.field)
     ) {
-        const opts = Object.values(q.options);
-        for (let i = 0; i < opts.length; i++) {
+        const sortedOpts = Object.entries(q.options).sort(([a], [b]) => {
+            const numA = parseInt(a) || 0;
+            const numB = parseInt(b) || 0;
+            if (numA !== numB) return numA - numB;
+            return a.localeCompare(b);
+        });
+        for (let i = 0; i < sortedOpts.length; i++) {
             // Fix Buddha & Konghucu juga di master lain kalau ada
-            let nama = opts[i];
+            let nama = sortedOpts[i][1];
             if (nama === "BUDHA") nama = "Buddha";
             if (nama === "KONGHUCHU") nama = "Khonghucu";
             if (nama === "PERIKANAN BUDIDAYA") nama = "perikanan budidaya";
@@ -553,11 +666,68 @@
             if (nama === "RP. 2 JUTA S/D RP. 3 JUTA") nama = "RP. 2 JUTA Sampai Dengan RP. 3 JUTA";
             if (nama === "RP. 1 JUTA S/D RP. 5 JUTA") nama = "RP. 1 JUTA Sampai Dengan RP. 5 JUTA";
             if (nama === "RP. 5 JUTA S/D RP. 10 JUTA") nama = "RP. 5 JUTA Sampai Dengan RP. 10 JUTA";
+            if (nama === "≤ 1 JUTA") nama = "kurang dari sama dengan 1 juta";
+            if (nama === "1–1,5 JUTA") nama = "1 sampai 1,5 juta";
+            if (nama === "1,5–2 JUTA") nama = "1,5 sampai 2 juta";
+            if (nama === "2–3 JUTA") nama = "2 sampai 3 juta";
+            if (nama === "> 3 JUTA") nama = "lebih dari 3 juta";
+            if (nama === "≤ 1 JUTA") nama = "kurang dari sama dengan 1 juta";
+            if (nama === "1–5 JUTA") nama = "1 sampai 5 juta";
+            if (nama === "5–10 JUTA") nama = "5 sampai 10 juta";
+            if (nama === "> 10 JUTA") nama = "lebih dari 10 juta";
+            if (nama === "SUDAH SEMUA") nama = "sudah semua";
+            if (nama === "BELUM SEMUA") nama = "belum semua";
             if (nama === "PASPORT") nama = "paspor";
             if (nama === "LEVER") nama = "lever";
             
-            await speak(`${i + 1}. ${cleanOptionText(nama)}`);
-            if (i < opts.length - 1) await new Promise(r => setTimeout(r, 150));
+            // Special handling for income options - use validation text
+            let speakText = `${i + 1} ${cleanOptionText(nama)}`;
+            
+            // Jangan membacakan pilihan pekerjaan
+            if (q.field === "kdpekerjaan") {
+                return;
+            }
+            
+            // Special handling untuk golongan darah
+            // Urutan: 1.A, 2.AB, 3.B, 4.O
+            if (q.field === "penduduk_goldarah") {
+                const nomorVerbal = ['', 'satu', 'dua', 'tiga', 'empat'];
+                const key = sortedOpts[i][0];
+                const golDarahMap = {'a': 'A', 'ab': 'AB', 'b': 'B', 'o': 'O'};
+                const golDarahText = golDarahMap[key] || nama;
+                // DIBACAKAN LEBIH JELAS UNTUK AB - TERPISAH "A B" BUKAN "AB"
+                if (key === 'ab') {
+                    speakText = `${nomorVerbal[i + 1]} A B`;
+                } else {
+                    speakText = `${nomorVerbal[i + 1]} ${golDarahText}`;
+                }
+            }
+            
+            if (q.field === "kdpendapatanperbulan") {
+                const pendapatanKonfirmasi = {
+                    0: 'tidak berpendapatan',
+                    1: 'kurang dari 1 juta', 
+                    2: '1 Juta sampai dengan 1,5 juta', 
+                    3: '1,5 juta sampai dengan 2 juta', 
+                    4: '2 juta sampai dengan 3 juta', 
+                    5: 'lebih dari 3 juta'
+                };
+                speakText = `${i + 1} ${pendapatanKonfirmasi[i] || cleanOptionText(nama)}`;
+            }
+            if (q.field === "kdomsetusaha") {
+                const omsetKonfirmasi = {
+                    1: 'tidak berpenghasilan',
+                    2: 'kurang dari atau sama dengan 1 juta rupiah',
+                    3: '1 juta sampai dengan 5 juta rupiah',
+                    4: '5 juta sampai dengan 10 juta rupiah',
+                    5: 'lebih dari atau sama dengan 10 juta rupiah'
+                };
+                const nomorVerbal = ['', 'satu', 'dua', 'tiga', 'empat', 'lima'];
+                speakText = `${nomorVerbal[i + 1]} ${omsetKonfirmasi[i + 1] || cleanOptionText(nama)}`;
+            }
+            
+            await speak(speakText);
+            if (i < sortedOpts.length - 1) await new Promise(r => setTimeout(r, 150));
         }
     }
 
@@ -625,14 +795,67 @@
             // 2. GOLONGAN DARAH
             // ===================================================================
             if (q.field === "penduduk_goldarah") {
-                const map = { "a": "a", "b": "b", "ab": "ab", "o": "o", "a b": "ab", "abe": "ab", "a be": "ab" };
-                const key = lowerText.replace(/\s+/g, ' ');
-                if (map[key]) {
-                    value = map[key];
+                // Mapping dari input suara ke nilai kode (lowercase)
+                // Urutan: 1.A, 2.AB, 3.B, 4.O
+                const map = {
+                    // Pilihan 1 = A
+                    "a": "a", "ay": "a", "ei": "a",
+                    "satu": "a", "pilihan satu": "a", "pilihan 1": "a",
+                    // Pilihan 2 = AB (VALIDASI LEBIH LENGKAP)
+                    "ab": "ab", "a b": "ab", "abe": "ab", "a be": "ab", "ab darah": "ab",
+                    "aab": "ab", "aa": "ab", // Variasi AB yang sering terdengar
+                    "dua": "ab", "pilihan dua": "ab", "pilihan 2": "ab",
+                    "ab positif": "ab", "ab negatif": "ab",
+                    // Pilihan 3 = B
+                    "b": "b", "be": "b",
+                    "tiga": "b", "pilihan tiga": "b", "pilihan 3": "b",
+                    // Pilihan 4 = O
+                    "o": "o", "oh": "o", "nol": "o",
+                    "empat": "o", "pilihan empat": "o", "pilihan 4": "o"
+                };
+                const key = lowerText.replace(/\s+/g, ' ').trim();
+                let matchedValue = null;
+                
+                // VALIDASI KHUSUS UNTUK AB
+                // Deteksi lebih sensitif untuk AB yang sering terdengar seperti "A A" atau "dua"
+                if (key === "ab" || key === "a b" || key === "a a" || key === "aab" || 
+                    key === "abe" || key === "a be" || key === "dua" || 
+                    (key.includes("ab") && !key.includes("a b"))) {
+                    matchedValue = "ab";
+                }
+                // Cek exact match
+                else if (map[key]) {
+                    matchedValue = map[key];
+                }
+                // Jika tidak ada, coba fuzzy match
+                else {
+                    for (const [k, v] of Object.entries(map)) {
+                        if (key.includes(k) || k.includes(key)) {
+                            matchedValue = v;
+                            break;
+                        }
+                    }
+                }
+                
+                if (matchedValue) {
+                    value = matchedValue;
                     selectCard(value);
                     answers[q.field] = value;
+                    const golDarahTextMap = {"a": "A", "ab": "AB", "b": "B", "o": "O"};
+                    const golDarahText = golDarahTextMap[matchedValue] || matchedValue.toUpperCase();
+                    
+                    // KONFIRMASI KHUSUS UNTUK AB - DIBACAKAN LEBIH JELAS
+                    if (matchedValue === "ab") {
+                        await speak(`Golongan darah A B. Lanjut.`);
+                    } else {
+                        await speak(`Golongan darah ${golDarahText}. Lanjut.`);
+                    }
+                    
                     saveData();
                     nextQuestion(1200);
+                    return;
+                } else {
+                    await speak("Golongan darah tidak dikenali. Ulangi dengan menyebut: A (satu), A B (dua), B (tiga), atau O (empat).");
                     return;
                 }
             }
@@ -696,13 +919,29 @@
             }
 
             else if (q.field === "penduduk_nourutkk") {
-                const num = text.replace(/\D/g, '');
-                if (!num || parseInt(num) < 1 || parseInt(num) > 99) {
-                    await speak("Nomor urut KK harus dari 1 sampai 99.");
+                // Coba deteksi angka langsung
+                const numMatch = text.match(/\d+/g);
+                let nilai = null;
+
+                if (numMatch) {
+                    nilai = parseInt(numMatch.join(''));
+                } else {
+                    // Coba konversi terbilang
+                    nilai = terbilangKeAngka(text);
+                }
+
+                if (nilai === null || isNaN(nilai) || nilai < 1 || nilai > 99) {
+                    await speak("Nomor urut KK harus dari 1 sampai 99. Ulangi dengan bilang angka atau terbilang, contoh: satu, dua belas.");
                     return;
                 }
-                value = num.padStart(2, '0'); // otomatis jadi 01, 02, ..., 99
+
+                value = nilai.toString().padStart(2, '0'); // otomatis jadi 01, 02, ..., 99
                 document.getElementById('inputAnswer').value = value;
+                await speak(`Nomor urut KK ${nilai}. Lanjut.`);
+                answers[q.field] = value;
+                saveData();
+                nextQuestion(1500);
+                return;
             }
 
             else if (q.field === "penduduk_noaktalahir") {
@@ -721,9 +960,10 @@
             // ===================================================================
             if (q.field === "kdomsetusaha") {
                 const kode = mapOmsetToCode(text);
-                const konfirmasi = {'1': '≤ 1 juta', '2': '1–5 juta', '3': '5–10 juta', '4': '> 10 juta' };
+                const konfirmasi = {'1': 'tidak berpenghasilan', '2': 'kurang dari atau sama dengan 1 juta rupiah', '3': ' 1 juta sampai dengan 5 juta rupiah', '4': '5 juta sampai dengan 10 juta rupiah', '5': 'lebih dari atau sama dengan 10 juta rupiah' };
                 answers[q.field] = kode;
-                await speak(`Omset ${konfirmasi[kode]} rupiah. Lanjut.`);
+                const teksKonfirmasi = kode === '1' ? `${konfirmasi[kode]}. Lanjut.` : `${konfirmasi[kode]}. Lanjut.`;
+                await speak(teksKonfirmasi);
                 saveData();
                 nextQuestion(1500);
                 return;
@@ -734,15 +974,13 @@
             // ===================================================================
             if (q.field === "kdpendapatanperbulan") {
                 const kode = mapPendapatanToCode(text);
-                if (kode === '0') {
-                    await speak("Pendapatan tidak terdeteksi. Ulangi dengan bilang angka, contoh: satu juta, dua setengah juta.");
-                    return;
-                }
                 const konfirmasi = {
-                    '1': '≤ 1 juta', '2': '1–1,5 juta', '3': '1,5–2 juta', '4': '2–3 juta', '5': '> 3 juta'
+                    '0': 'tidak berpendapatan',
+                    '1': 'kurang dari 1 juta', '2': '1 Juta sampai dengan 1,5 juta', '3': '1,5 juta sampai dengan 2 juta', '4': '2 juta sampai dengan 3 juta', '5': '> 3 juta'
                 };
                 answers[q.field] = kode;
-                await speak(`Pendapatan ${konfirmasi[kode]} per bulan. Lanjut.`);
+                const teksKonfirmasi = kode === '0' ? `${konfirmasi[kode]}. Lanjut.` : `Pendapatan ${konfirmasi[kode]} per bulan. Lanjut.`;
+                await speak(teksKonfirmasi);
                 const inputEl = document.getElementById('inputAnswer');
                 if (inputEl) inputEl.value = konfirmasi[kode];
                 saveData();
@@ -772,7 +1010,84 @@
             // 10. TIPE UMUM (select / text / number)
             // ===================================================================
             if (q.type === "select") {
-                const match = findBestMatch(text, q.options);
+                // Preprocessing khusus untuk imunisasi
+                let processedText = lowerText;
+                if (q.field === "kdimunisasi") {
+                    processedText = processedText.replace(/\bke\s+satu\b/g, '1')
+                                                 .replace(/\bke\s+dua\b/g, '2')
+                                                 .replace(/\bke\s+tiga\b/g, '3')
+                                                 .replace(/\bke\s+empat\b/g, '4')
+                                                 .replace(/\bke\s+lima\b/g, '5')
+                                                 .replace(/\bke\s+enam\b/g, '6')
+                                                 .replace(/\bke\s+tujuh\b/g, '7')
+                                                 .replace(/\bke\s+delapan\b/g, '8')
+                                                 .replace(/\bke\s+sembilan\b/g, '9')
+                                                 .replace(/\bke\s+sepuluh\b/g, '10')
+                                                 .replace(/\bkesatu\b/g, '1')
+                                                 .replace(/\bkedua\b/g, '2')
+                                                 .replace(/\bketiga\b/g, '3')
+                                                 .replace(/\bkeempat\b/g, '4')
+                                                 .replace(/\bkKelima\b/g, '5')
+                                                 .replace(/\bkeenam\b/g, '6')
+                                                 .replace(/\bketujuh\b/g, '7')
+                                                 .replace(/\bkedelapan\b/g, '8')
+                                                 .replace(/\bkesembilan\b/g, '9')
+                                                 .replace(/\bkesepuluh\b/g, '10')
+                                                 .replace(/\bke-(\d+)\b/g, '$1')
+                                                 .replace(/\bke(\d+)\b/g, '$1');
+                    
+                    // Logic khusus untuk mendeteksi jenis vaksin + angka
+                    const jenisMatch = processedText.match(/(dpt|polio|bcg|campak|rubella|hepatitis|pentavalen)/i);
+                    const angkaMatch = processedText.match(/(\d+)/);
+                    if (jenisMatch && angkaMatch) {
+                        const jenis = jenisMatch[0].toUpperCase();
+                        const angka = angkaMatch[0];
+                        const targets = [`${jenis} ${angka}`, `${jenis}${angka}`, `${jenis}-${angka}`];
+                        for (const [id, name] of Object.entries(q.options)) {
+                            const normName = normalize(name);
+                            if (targets.some(t => normName.includes(normalize(t)))) {
+                                value = id;
+                                selectCard(value);
+                                answers[q.field] = value;
+                                saveData();
+                                nextQuestion(1200);
+                                return;
+                            }
+                        }
+                    }
+                }
+                
+                // Deteksi "ke X" atau langsung angka, atau "ke X" (kecuali untuk imunisasi)
+                const pilihanMatch = q.field !== "kdimunisasi" ? lowerText.match(/(?:ke\s+)?(\d+)|(?:ke\s+)?satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh/i) : null;
+                let nomor = -1;
+                if (pilihanMatch) {
+                    if (pilihanMatch[1]) {
+                        nomor = parseInt(pilihanMatch[1]) - 1; // 0-based
+                    } else {
+                        // Handle terbilang
+                        const terbilang = pilihanMatch[0].match(/satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh/);
+                        if (terbilang) {
+                            const angkaMap = {satu:0, dua:1, tiga:2, empat:3, lima:4, enam:5, tujuh:6, delapan:7, sembilan:8, sepuluh:9};
+                            nomor = angkaMap[terbilang[0]];
+                        }
+                    }
+                    const sortedOpts = Object.entries(q.options).sort(([a], [b]) => {
+                        const numA = parseInt(a) || 0;
+                        const numB = parseInt(b) || 0;
+                        if (numA !== numB) return numA - numB;
+                        return a.localeCompare(b);
+                    });
+                    if (nomor >= 0 && nomor < sortedOpts.length) {
+                        value = sortedOpts[nomor][0];
+                        selectCard(value);
+                        answers[q.field] = value;
+                        saveData();
+                        nextQuestion(1200);
+                        return;
+                    }
+                }
+                
+                const match = findBestMatch(processedText, q.options);
                 if (!match) {
                     await speak("Pilihan tidak dikenali. Mohon ulangi.");
                     return;
@@ -996,7 +1311,7 @@
                 html += `<div><label class="block text-xs font-medium mb-1">Golongan Darah</label>
                     <select name="penduduk_goldarah" class="w-full border rounded-lg p-2.5" required>
                         <option value="">-- Pilih --</option>
-                        ${['A','B','AB','O'].map(v => `<option value="${v}" ${golDarah===v?'selected':''}>${v}</option>`).join('')}
+                        ${['A','AB','B','O'].map(v => `<option value="${v}" ${golDarah===v?'selected':''}>${v}</option>`).join('')}
                     </select></div>`;
 
                 // 6. No. Akta Lahir (otomatis AKL-)
@@ -1533,7 +1848,11 @@
             try{
                 const res=await fetch("{{ route('voice.penduduk.store-all') }}",{
                     method:"POST",
-                    headers:{"X-CSRF-TOKEN":token,"Accept":"application/json"},
+                    headers:{
+                        "X-CSRF-TOKEN":token,
+                        "Accept":"application/json",
+                        "X-Requested-With":"XMLHttpRequest"
+                    },
                     body:fd
                 });
                 const data=await res.json();
@@ -1564,7 +1883,7 @@
         document.getElementById('restartBtn').addEventListener('click', function() {
             questions[currentModul].forEach(q => {
                 delete answers[q.field];
-            });
+            }); 
             document.getElementById('inputArea').classList.remove('hidden');
             document.getElementById('reviewForm').classList.add('hidden');
             isReviewMode = false;
@@ -1622,11 +1941,12 @@
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         const response = await Promise.race([
-            fetch("{{ route('voice.validate') }}", {
+        fetch('/admin/voice/penduduk/validate', {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": token,
-                    "Accept": "application/json"
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest"
                     // JANGAN SET "Content-Type": "multipart/form-data" → biarkan browser handle
                 },
                 body: formData  // <--- WAJIB ADA!
@@ -1683,5 +2003,13 @@ document.getElementById('bypassValidation')?.addEventListener('click', async () 
     if (isListening) await speakQuestionAndOptions();
 });
         initFresh();
+        // Membacakan pesan sambutan dan pertanyaan pertama setelah halaman load
+        setTimeout(async () => {
+            await speak("Selamat datang di sistem input data penduduk via suara. Klik tombol mikrofon hijau untuk memulai pengisian data.");
+            await new Promise(r => setTimeout(r, 800));
+            if (!isListening) {
+                await speakQuestionAndOptions();
+            }
+        }, 500);
     </script>
 </x-app-layout>

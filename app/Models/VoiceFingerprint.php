@@ -15,6 +15,8 @@ class VoiceFingerprint extends Model
         'no_kk',      // Nomor Kartu Keluarga (opsional, untuk grouping)
         'nik',        // NIK penduduk - primary identifier untuk voice print
         'embedding',  // Vector embedding suara (disimpan sebagai JSON)
+        'filename',   // Nama file audio
+        'status',     // Status voice print (verified, pending, etc)
     ];
 
     /**

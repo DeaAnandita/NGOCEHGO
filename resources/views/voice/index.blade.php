@@ -1315,7 +1315,7 @@
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
         const response = await Promise.race([
-            fetch("{{ route('voice.validate') }}", {
+            fetch("{{ route('voice.keluarga.validate') }}", {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": token,

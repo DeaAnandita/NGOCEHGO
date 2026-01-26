@@ -102,41 +102,128 @@
 
     <div class="page-break"></div>
 
-    <h2>5. Sebaran Keluarga dan Anggota per Desa</h2>
+    <h2>5A. Rekapitulasi Penduduk & KK Keseluruhan</h2>
     <table>
-        <thead><tr><th>Wilayah (Desa, Kecamatan)</th><th>Jumlah Keluarga</th><th>Jumlah Penduduk</th><th>Rata-rata Anggota/KK</th></tr></thead>
+        <tr><th>Total KK</th><th>Total Penduduk</th></tr>
+        <tr>
+            <td class="right">{{ number_format($rekapPenduduk->total_keluarga) }}</td>
+            <td class="right">{{ number_format($rekapPenduduk->total_penduduk) }}</td>
+        </tr>
+    </table>
+    <div class="catatan">
+    <b>Interpretasi 5A: Rekapitulasi Penduduk & KK Keseluruhan</b><br>
+    Laporan menunjukkan bahwa total jumlah keluarga (KK) sebanyak <strong>{{ number_format($rekapPenduduk->total_keluarga) }}</strong> KK dengan total penduduk sebesar <strong>{{ number_format($rekapPenduduk->total_penduduk) }}</strong> jiwa. Informasi ini menjadi dasar penting dalam merencanakan layanan publik seperti kesehatan, pendidikan dan fasilitas umum lainnya.
+    Jumlah penduduk ini mencerminkan potensi SDM yang tersedia dan dapat digunakan sebagai acuan dalam pengambilan keputusan pembangunan desa yang lebih tepat sasaran.
+    </div>
+    <h2>5B. Rekap Berdasarkan Dusun / Lingkungan</h2>
+    <table>
+        <thead><tr><th>Dusun</th><th>Total KK</th><th>Total Penduduk</th></tr></thead>
         <tbody>
-            @foreach($dataKK as $row)
-                <tr>
-                    <td>{{ $row['wilayah'] }}</td>
-                    <td class="right">{{ number_format($row['keluarga']) }}</td>
-                    <td class="right">{{ number_format($row['penduduk']) }}</td>
-                    <td class="right">{{ $row['rata'] }}</td>
-                </tr>
+            @foreach($perDusunPenduduk as $row)
+            <tr>
+                <td>{{ $row->dusun }}</td>
+                <td class="right">{{ number_format($row->total_keluarga) }}</td>
+                <td class="right">{{ number_format($row->total_penduduk) }}</td>
+            </tr>
             @endforeach
         </tbody>
     </table>
-
     <div class="catatan">
-        <b>Interpretasi:</b> Rata-rata anggota per kartu keluarga yang tinggi (>5 orang) mengindikasikan keluarga besar dengan kemungkinan memiliki potensi kesulitan memenuhi kebutuhan dasar. Ketimpangan antarwilayah (misalnya satu dusun padat penduduk) dapat memperburuk akses terhadap layanan publik. Perubahan tahunan dipengaruhi oleh migrasi internal atau pembangunan infrastruktur. Data ini penting untuk pemetaan prioritas bantuan agar lebih tepat sasaran pada wilayah dengan beban tertinggi.
+    <b>Interpretasi 5B: Rekap Berdasarkan Dusun / Lingkungan</b><br>
+    Dari rekap per dusun/lingkungan, tampak bahwa jumlah keluarga dan penduduk berbeda-beda antar dusun. Dusun dengan jumlah penduduk besar menunjukkan area yang padat aktivitas sosial dan ekonomi, sementara dusun dengan jumlah penduduk lebih sedikit bisa menandakan area yang belum berkembang atau lebih terpencil.
+    Perbedaan ini penting untuk mengidentifikasi kebutuhan layanan dasar seperti fasilitas kesehatan dan pendidikan, serta untuk memprioritaskan alokasi anggaran pembangunan berdasarkan kebutuhan penduduk di setiap dusun.
+    </div>
+    <div class="page-break"></div>
+
+    <h2>5C. Rekap Berdasarkan RW / RT</h2>
+    @foreach($rekapPendudukByRw as $rw => $rts)
+        <strong>RW {{ $rw }}</strong>
+        <table>
+            <thead>
+                <tr><th>RT</th><th>Total KK</th><th>Total Penduduk</th></tr>
+            </thead>
+            <tbody>
+                @foreach($rts as $row)
+                <tr>
+                    <td>{{ $row->rt }}</td>
+                    <td class="right">{{ number_format($row->total_keluarga) }}</td>
+                    <td class="right">{{ number_format($row->total_penduduk) }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endforeach
+
+    <!-- Interpretasi 5C hanya sekali di sini — setelah semua RW/RT ditampilkan -->
+    <div class="catatan">
+        <b>Interpretasi 5C: Rekap Berdasarkan RW / RT</b><br>
+        Rekap RW/RT memberikan gambaran lengkap mengenai sebaran jumlah keluarga dan penduduk di tingkat lingkungan terkecil (RT) berdasarkan kelompok RW. Struktur ini membantu mengidentifikasi RT atau RW dengan jumlah penduduk yang relatif tinggi atau rendah.  
+        RT/RW dengan angka penduduk dan keluarga yang tinggi bisa menjadi fokus perencanaan program sosial & ekonomi, misalnya fasilitasi layanan kesehatan bergerak, prioritas dalam bantuan sosial (PKH, BPNT, BLT), atau kelompok pemberdayaan ekonomi lokal.  
+        Data ini juga relevan untuk pembagian sasaran layanan berbasis komunitas, pengembangan jalur darurat kesehatan, serta perencanaan distribusi sumber daya desa yang lebih efisien.
     </div>
 
     <div class="page-break"></div>
 
     <h2>6. Rekomendasi Intervensi Pemerintah</h2>
     <table>
-        <thead><tr><th>Indikator</th><th>Analisis</th><th>Rekomendasi</th></tr></thead>
+        <thead>
+            <tr>
+                <th>Indikator</th>
+                <th>Analisis & Rekomendasi</th>
+            </tr>
+        </thead>
         <tbody>
-            <tr><td>Pengangguran</td><td>{{ $persenTidakBekerja }}% penduduk belum bekerja.</td><td>Program padat karya, pelatihan kerja, bantuan modal usaha kecil.</td></tr>
-            <tr><td>Mutasi Tinggi</td><td>Mobilitas tinggi berpotensi menyebabkan ketimpangan ekonomi.</td><td>Program reintegrasi keluarga migran dan bantuan adaptasi ekonomi.</td></tr>
-            <tr><td>Struktur Keluarga</td><td>Banyak tanggungan dalam satu keluarga.</td><td>Bantuan pangan, pendidikan, dan program keluarga berencana.</td></tr>
-            <tr><td>Agama & Sosial</td><td>Potensi kolaborasi lembaga sosial dan keagamaan.</td><td>Pemberdayaan komunitas berbasis keagamaan.</td></tr>
+            <tr>
+                <td>Pengangguran</td>
+                <td>
+                    {{ $persenTidakBekerja }}% penduduk belum bekerja. Ini berarti banyak warga belum mendapat pekerjaan layak.  
+                    <b>Rekomendasi:</b> Perlu program pelatihan kerja sesuai kebutuhan pasar (mis. digital, keterampilan usaha), peluang kerja lokal, dan dukungan modal usaha kecil untuk pemuda dan pencari kerja.
+                </td>
+            </tr>
+            <tr>
+                <td>Mutasi Penduduk</td>
+                <td>
+                    Mobilitas penduduk yang tinggi dapat menciptakan ketidakseimbangan sosial-ekonomi di desa.  
+                    <b>Rekomendasi:</b> Perkuat sistem pendaftaran penduduk dan layanan adaptasi sosial bagi warga pendatang agar mereka cepat terintegrasi dan dapat berkontribusi pada ekonomi lokal.
+                </td>
+            </tr>
+            <tr>
+                <td>Struktur Keluarga</td>
+                <td>
+                    Banyak keluarga memiliki tanggungan (anak, lansia, orang yang tidak bekerja), yang bisa menambah beban ekonomi rumah tangga.  
+                    <b>Rekomendasi:</b> Fasilitasi program bantuan pangan, beasiswa pendidikan anak miskin, serta penyuluhan keluarga berencana untuk meningkatkan kesejahteraan keluarga.
+                </td>
+            </tr>
+            <tr>
+                <td>Kepadatan Dusun</td>
+                <td>
+                    Ada variasi jumlah penduduk antar dusun; dusun yang lebih padat memerlukan lebih banyak layanan dasar.  
+                    <b>Rekomendasi:</b> Prioritaskan pembangunan fasilitas kesehatan (posyandu/klinik desa), pendidikan (PAUD/TK), dan ruang publik untuk warga di dusun dengan kepadatan tinggi.
+                </td>
+            </tr>
+            <tr>
+                <td>RW / RT Padat</td>
+                <td>
+                    Beberapa RW/RT memiliki jumlah keluarga dan penduduk lebih tinggi daripada rata-rata.  
+                    <b>Rekomendasi:</b> Gunakan RW/RT sebagai basis program pemberdayaan mikro (mis. pelatihan usaha komunitas, bank sampah, kelompok ibu produktif) untuk membantu penduduk bangkit secara ekonomi.
+                </td>
+            </tr>
+            <tr>
+                <td>Komunitas & Sosial</td>
+                <td>
+                    Data menunjukkan potensi kolaborasi antar kelompok sosial dan agama.  
+                    <b>Rekomendasi:</b> Bangun kerja sama dengan lembaga keagamaan, kelompok pemuda, dan komunitas lokal untuk memperluas jangkauan program sosial dan ekonomi desa.
+                </td>
+            </tr>
         </tbody>
     </table>
 
     <div class="catatan">
-        <b>Kesimpulan:</b> Berdasarkan data sosial ekonomi dan kependudukan, pemerintah desa dapat memetakan keluarga rentan dan merancang program pengentasan kemiskinan berbasis data yang lebih tepat sasaran. Evaluasi tahunan terhadap perubahan persentase pada setiap indikator diperlukan untuk menyesuaikan prioritas dan intensitas intervensi agar tetap relevan dengan kondisi terkini.
+        <b>Kesimpulan:</b>  
+        Berdasarkan data kependudukan terbaru, desa memiliki potensi SDM yang besar tetapi masih menghadapi tantangan pengangguran dan struktur keluarga dengan banyak tanggungan.  
+        Rekomendasi di atas dirancang untuk meningkatkan kesejahteraan masyarakat secara nyata dengan pendekatan yang mudah dipahami dan terukur. Evaluasi secara berkala diperlukan untuk menyesuaikan program dengan dinamika kondisi desa.
     </div>
+
 
 </div>
 </body>

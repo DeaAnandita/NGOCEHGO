@@ -22,10 +22,19 @@
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "mikehaertl/phpwkhtmltopdf": "^2.5",
+
         "setasign/fpdf": "^1.8",
         "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/simple-excel": "^3.7",
+
+        "spatie/simple-excel": "^3.7",
+        "fakerphp/faker": "^1.23",
+        "openspout/openspout": "^4.28",
+        "phpoffice/phpspreadsheet": "*",
         "spatie/simple-excel": "^3.7"
+
+
     },
     "require-dev": {
         "laravel/breeze": "^2.3",

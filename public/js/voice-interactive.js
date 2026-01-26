@@ -1,6 +1,7 @@
 class VoiceInteractive {
     constructor() {
         this.sessionId = null;
+        this.currentMode = null; // "keluarga" atau "penduduk"
         this.currentModule = 0;
         this.currentQuestion = 0;
         this.answers = {};
@@ -10,7 +11,41 @@ class VoiceInteractive {
         this.isSpeaking = false;
         this.isListening = false;
 
-        this.modules = [ /* sama seperti sebelumnya */ ];
+        // ==================== MODULES KELUARGA ====================
+        this.keluargaModules = [ /* sama seperti sebelumnya */ ];
+
+        // ==================== MODULES PENDUDUK ====================
+        this.pendudukModules = [
+            {
+                name: "Data Penduduk",
+                questions: [
+                    { field: 'kdpekerjaan', text: 'Apa pekerjaannya?' },
+                    { field: 'nik', text: 'Sebutkan nomor NIK 16 digit' },
+                    { field: 'penduduk_namalengkap', text: 'Sebutkan nama lengkap penduduk' },
+                    { field: 'penduduk_tempatlahir', text: 'Di mana tempat lahirnya?' },
+                    { field: 'penduduk_tanggallahir', text: 'Tanggal lahir? format YYYY-MM-DD' },
+                    { field: 'penduduk_goldarah', text: 'Apa golongan darahnya? A, AB, B, atau O?' },
+                    { field: 'penduduk_noaktalahir', text: 'Sebutkan nomor akta lahir' },
+                    { field: 'kdjeniskelamin', text: 'Apa jenis kelaminnya? Laki-laki atau perempuan?' },
+                    { field: 'kdagama', text: 'Apa agamanya?' },
+                    { field: 'no_kk', text: 'Sebutkan nomor kartu keluarga' },
+                    { field: 'penduduk_nourutkk', text: 'Sebutkan nomor urut dalam KK' },
+                    { field: 'kdhubungankeluarga', text: 'Apa hubungan dalam keluarga?' },
+                    { field: 'kdhubungankepalakeluarga', text: 'Apa hubungan dengan kepala keluarga?' },
+                    { field: 'kdstatuskawin', text: 'Apa status perkawinannya?' },
+                    { field: 'kdaktanikah', text: 'Memiliki akta nikah?' },
+                    { field: 'kdtercantumdalamkk', text: 'Apakah tercantum dalam KK?' },
+                    { field: 'kdstatustinggal', text: 'Apa status tinggalnya?' },
+                    { field: 'kdkartuidentitas', text: 'Jenis kartu identitas apa?' },
+                    { field: 'kdmutasimasuk', text: 'Jenis mutasi apa? Tetap, lahir, atau datang?' },
+                    { field: 'penduduk_namaayah', text: 'Sebutkan nama ayah' },
+                    { field: 'penduduk_namaibu', text: 'Sebutkan nama ibu' },
+                    { field: 'penduduk_namatempatbekerja', text: 'Sebutkan nama tempat bekerja jika ada' }
+                ]
+            }
+        ];
+
+        this.modules = []; // Akan diisi sesuai mode
 
         this.elements = { /* sama */ };
 
@@ -18,13 +53,75 @@ class VoiceInteractive {
     }
 
     async init() {
-        const res = await axios.post('/admin/voice/session', { type: 'keluarga' });
+        // Langkah 1: Tampilkan menu pemilihan mode
+        await this.showModeSelection();
+    }
+
+    async showModeSelection() {
+        this.elements.systemSpeech.textContent = "🎯 Pilih jenis input data";
+        this.elements.micStatus.textContent = "Klik untuk memilih";
+        this.elements.micBtn.disabled = false;
+
+        const modes = [
+            { name: "Keluarga", value: "keluarga" },
+            { name: "Penduduk", value: "penduduk" }
+        ];
+
+        let selectedMode = null;
+
+        // Create mode buttons for visual selection
+        const modeContainer = document.createElement('div');
+        modeContainer.className = 'flex gap-4 justify-center mb-4';
+        
+        modes.forEach((mode, idx) => {
+            const btn = document.createElement('button');
+            btn.textContent = `${idx + 1}. ${mode.name}`;
+            btn.className = 'px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600';
+            btn.onclick = () => {
+                selectedMode = mode.value;
+                this.setMode(mode.value);
+            };
+            modeContainer.appendChild(btn);
+        });
+
+        document.body.insertBefore(modeContainer, document.body.firstChild);
+
+        // Voice selection
+        this.elements.micBtn.onclick = async () => {
+            this.speakAndThenListen("Silakan pilih. Nomor 1 untuk Keluarga, atau Nomor 2 untuk Penduduk.", async (answer) => {
+                const lowerAnswer = answer.toLowerCase();
+                if (lowerAnswer.includes('1') || lowerAnswer.includes('keluarga')) {
+                    selectedMode = 'keluarga';
+                } else if (lowerAnswer.includes('2') || lowerAnswer.includes('penduduk')) {
+                    selectedMode = 'penduduk';
+                }
+
+                if (selectedMode) {
+                    this.setMode(selectedMode);
+                } else {
+                    alert('Pilihan tidak jelas. Silakan pilih ulang.');
+                    await this.showModeSelection();
+                }
+            });
+        };
+    }
+
+    async setMode(mode) {
+        this.currentMode = mode;
+        this.modules = mode === "keluarga" ? this.keluargaModules : this.pendudukModules;
+
+        // Create session
+        const res = await axios.post('/admin/voice/session', { type: mode });
         this.sessionId = res.data.session_id;
+
         this.renderSidebar();
         this.updateProgress();
 
-        // Langkah 1: Tunggu user klik tombol MULAI
-        this.elements.systemSpeech.textContent = "Selamat datang! Klik tombol mikrofon hijau untuk memulai pengisian data keluarga.";
+        const welcome = mode === "keluarga"
+            ? "Selamat datang! Klik tombol mikrofon hijau untuk memulai pengisian data keluarga."
+            : "Selamat datang! Klik tombol mikrofon hijau untuk memulai pengisian data penduduk.";
+
+        this.elements.systemSpeech.textContent = welcome;
         this.elements.micStatus.textContent = "Klik untuk Mulai";
         this.elements.micBtn.disabled = false;
 
@@ -38,11 +135,14 @@ class VoiceInteractive {
         this.elements.micStatus.textContent = "Memulai sesi...";
         this.elements.micBtn.classList.add('animate-pulse');
 
-        // Langkah 2: Sistem bicara dulu
-        this.speakAndThenListen("Baik, kita akan memulai pengisian form data keluarga. Sebutkan nomor Kartu Keluarga Anda.");
+        const welcomeMsg = this.currentMode === "keluarga"
+            ? "Baik, kita akan memulai pengisian form data keluarga. Sebutkan nomor Kartu Keluarga Anda."
+            : "Baik, kita akan memulai pengisian form data penduduk. Sebutkan nomor NIK Anda.";
+
+        this.speakAndThenListen(welcomeMsg);
     }
 
-    speakAndThenListen(text) {
+    speakAndThenListen(text, callback = null) {
         this.isSpeaking = true;
         this.elements.systemSpeech.textContent = text;
         this.elements.userAnswer.classList.add('hidden');
@@ -56,7 +156,12 @@ class VoiceInteractive {
             this.elements.micStatus.textContent = "Silakan jawab sekarang";
             this.elements.micBtn.disabled = false;
             this.elements.micBtn.classList.remove('animate-pulse');
-            this.elements.micBtn.onclick = () => this.startListening(); // Aktifkan mikrofon
+            
+            if (callback) {
+                this.elements.micBtn.onclick = () => this.startListeningWithCallback(callback);
+            } else {
+                this.elements.micBtn.onclick = () => this.startListening();
+            }
         };
 
         utter.onerror = () => {
@@ -65,6 +170,49 @@ class VoiceInteractive {
         };
 
         speechSynthesis.speak(utter);
+    }
+
+    startListeningWithCallback(callback) {
+        if (this.isListening || this.isSpeaking) return;
+
+        this.isListening = true;
+        this.elements.micBtn.disabled = true;
+        this.elements.stopBtn.classList.remove('hidden');
+        this.elements.micStatus.textContent = "Mendengarkan...";
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                this.mediaRecorder = new MediaRecorder(stream);
+                this.audioChunks = [];
+                this.mediaRecorder.ondataavailable = e => this.audioChunks.push(e.data);
+                this.mediaRecorder.start();
+            })
+            .catch(err => {
+                alert("Mikrofon tidak diizinkan.");
+                this.stopListening();
+            });
+
+        this.recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        this.recognition.lang = 'id-ID';
+        this.recognition.continuous = false;
+
+        this.recognition.onresult = (e) => {
+            const text = e.results[0][0].transcript.trim();
+            this.showUserAnswer(text);
+            callback(text);
+        };
+
+        this.recognition.onerror = (e) => {
+            console.error(e);
+            this.stopListening();
+            alert("Gagal mendengar. Coba lagi.");
+        };
+
+        this.recognition.onend = () => {
+            this.stopListening();
+        };
+
+        this.recognition.start();
     }
 
     startListening() {
@@ -136,6 +284,7 @@ class VoiceInteractive {
             const blob = new Blob(this.audioChunks, { type: 'audio/webm' });
             const formData = new FormData();
             formData.append('session_id', this.sessionId);
+            formData.append('mode', this.currentMode);
             formData.append('module', this.modules[this.currentModule].name);
             formData.append('field', q.field);
             formData.append('answer_text', text);
@@ -153,14 +302,28 @@ class VoiceInteractive {
         const q = this.modules[this.currentModule].questions[this.currentQuestion];
         const lowerText = text.toLowerCase();
 
-        // Cek mutasi datang
+        // Cek mutasi datang (untuk keluarga dan penduduk)
         if (q.field === 'kdmutasimasuk') {
-            const isDatang = this.masterMutasi.some(m => 
-                lowerText.includes(m.mutasimasuk.toLowerCase()) && 
-                m.mutasimasuk.toLowerCase().includes('datang')
-            );
+            const isDatang = lowerText.includes('datang');
             if (isDatang) {
                 this.insertWilayahDatangModule();
+            }
+        }
+
+        // Special handling untuk penduduk jenis kelamin
+        if (q.field === 'kdjeniskelamin' && this.currentMode === 'penduduk') {
+            if (lowerText.includes('perempuan') || lowerText.includes('wanita')) {
+                this.answers[q.field] = 'P';
+            } else {
+                this.answers[q.field] = 'L';
+            }
+        }
+
+        // Special handling untuk golongan darah
+        if (q.field === 'penduduk_goldarah') {
+            const match = ['a', 'b', 'o'].find(g => lowerText.includes(g));
+            if (match) {
+                this.answers[q.field] = match.toUpperCase();
             }
         }
 
@@ -173,7 +336,11 @@ class VoiceInteractive {
             this.currentModule++;
             this.currentQuestion = 0;
             if (this.currentModule >= this.modules.length) {
-                this.elements.systemSpeech.textContent = "SELESAI! Semua data telah diisi. Terima kasih.";
+                const finishMsg = this.currentMode === "keluarga"
+                    ? "SELESAI! Semua data keluarga telah diisi. Terima kasih."
+                    : "SELESAI! Semua data penduduk telah diisi. Terima kasih.";
+                
+                this.elements.systemSpeech.textContent = finishMsg;
                 this.elements.saveBtn.classList.remove('hidden');
                 return;
             }
@@ -203,10 +370,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btn-stop').onclick = () => voice.stopListening();
     document.getElementById('btn-save').onclick = () => {
-        axios.post('/admin/voice/final-save', { session_id: voice.sessionId })
+        const endpoint = voice.currentMode === "keluarga"
+            ? '/admin/voice/keluarga/final-save'
+            : '/admin/voice/penduduk/final-save';
+
+        axios.post(endpoint, { session_id: voice.sessionId })
             .then(() => {
-                alert('Semua data berhasil disimpan!');
+                const msg = voice.currentMode === "keluarga"
+                    ? 'Semua data keluarga berhasil disimpan!'
+                    : 'Semua data penduduk berhasil disimpan!';
+                alert(msg);
                 window.location.href = '/admin/voice';
+            })
+            .catch(err => {
+                alert('Gagal menyimpan: ' + (err.response?.data?.message || err.message));
             });
     };
 });

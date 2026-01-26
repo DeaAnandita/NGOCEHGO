@@ -369,30 +369,50 @@ class PendudukController extends Controller
             $hubunganStat[] = ['hubungan' => $nama, 'jumlah' => $jumlah];
         }
 
-        // ==========================
-        // Sebaran Keluarga per Desa
-        // ==========================
-        $dataKK = DB::table('data_keluarga')
-            ->join('master_desa', 'data_keluarga.kddesa', '=', 'master_desa.kddesa')
-            ->join('master_kecamatan', 'master_desa.kdkecamatan', '=', 'master_kecamatan.kdkecamatan')
-            ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
-            ->select(
-                'master_desa.desa',
-                'master_kecamatan.kecamatan',
-                DB::raw('COUNT(DISTINCT data_keluarga.no_kk) as keluarga'),
-                DB::raw('COUNT(data_penduduk.nik) as penduduk')
-            )
-            ->groupBy('master_desa.desa', 'master_kecamatan.kecamatan')
-            ->get()
-            ->map(function ($row) {
-                return [
-                    'wilayah' => "{$row->desa}, {$row->kecamatan}",
-                    'keluarga' => $row->keluarga,
-                    'penduduk' => $row->penduduk,
-                    'rata' => $row->keluarga > 0 ? round($row->penduduk / $row->keluarga, 1) : 0,
-                ];
-            })
-            ->toArray();
+                // ==========================
+                // Rekapitulasi Penduduk & KK keseluruhan
+                // ==========================
+                $rekapPenduduk = DB::table('data_keluarga')
+                    ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
+                    ->selectRaw('
+                        COUNT(DISTINCT data_keluarga.no_kk) as total_keluarga,
+                        COUNT(data_penduduk.nik) as total_penduduk
+                    ')
+                    ->first();
+
+                // ==========================
+                // Rekap per Dusun/Lingkungan
+                // ==========================
+                $perDusunPenduduk = DB::table('data_keluarga')
+                    ->leftJoin('master_dusun', 'data_keluarga.kddusun', '=', 'master_dusun.kddusun')
+                    ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
+                    ->selectRaw('
+                        COALESCE(master_dusun.dusun, "Tidak Diketahui") as dusun,
+                        COUNT(DISTINCT data_keluarga.no_kk) as total_keluarga,
+                        COUNT(data_penduduk.nik) as total_penduduk
+                    ')
+                    ->groupBy('master_dusun.dusun')
+                    ->orderBy('dusun')
+                    ->get();
+
+                // ==========================
+                // Rekap RW/RT (Hierarkis)
+                // ==========================
+                $rekapRwRtPenduduk = DB::table('data_keluarga')
+                    ->leftJoin('data_penduduk', 'data_penduduk.no_kk', '=', 'data_keluarga.no_kk')
+                    ->selectRaw('
+                        data_keluarga.keluarga_rw as rw,
+                        data_keluarga.keluarga_rt as rt,
+                        COUNT(DISTINCT data_keluarga.no_kk) as total_keluarga,
+                        COUNT(data_penduduk.nik) as total_penduduk
+                    ')
+                    ->groupBy('data_keluarga.keluarga_rw', 'data_keluarga.keluarga_rt')
+                    ->orderBy('data_keluarga.keluarga_rw')
+                    ->orderBy('data_keluarga.keluarga_rt')
+                    ->get();
+
+                // Group per RW
+                $rekapPendudukByRw = $rekapRwRtPenduduk->groupBy('rw');
 
         // ==========================
         // Buat PDF
@@ -411,7 +431,6 @@ class PendudukController extends Controller
             'mutasiStat' => $mutasiStat,
             'agamaStat' => $agamaStat,
             'hubunganStat' => $hubunganStat,
-            'dataKK' => $dataKK,
             // Tambahkan variabel baru
             'sekolahLaki'          => $sekolahLaki,
             'sekolahPerempuan'     => $sekolahPerempuan,
@@ -422,7 +441,12 @@ class PendudukController extends Controller
             'rumahTanggaLaki'      => $rumahTanggaLaki,
             'rumahTanggaPerempuan' => $rumahTanggaPerempuan,
             'totalRumahTangga'     => $totalRumahTangga,
-            
+            // Rekap
+            'rekapPenduduk' => $rekapPenduduk,
+            'perDusunPenduduk' => $perDusunPenduduk,
+            'rekapPendudukByRw' => $rekapPendudukByRw,
+            'rekapRwRtPenduduk' => $rekapRwRtPenduduk,
+
         ])->setPaper('a4', 'portrait');
 
         return $pdf->stream('Laporan-Analisis-Data-Penduduk.pdf');

@@ -72,7 +72,7 @@ class DataSosialEkonomi extends Model
 
     public function pendapatanperbulan()
     {
-        return $this->belongsTo(MasterPendapatanPerBulan::class, 'kdpendapatanperbulan', 'kdpendapatanperbulan');
+        return $this->belongsTo(MasterPendapatanPerbulan::class, 'kdpendapatanperbulan', 'kdpendapatanperbulan');
     }
 
     public function imunisasi()

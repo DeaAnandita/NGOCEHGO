@@ -1,6 +1,6 @@
 <?php
 namespace App\Http\Controllers\Voice;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\DataPenduduk;
@@ -204,6 +204,28 @@ class VoicePendudukController extends Controller
 
     public function storeAll(Request $request)
     {
+        \Log::info('VoicePenduduk storeAll called', [
+            'user_id' => auth()->id(),
+            'is_ajax' => $request->ajax(),
+            'headers' => $request->headers->all(),
+            'no_kk' => $request->no_kk,
+            'nik' => $request->nik
+        ]);
+
+        if (!auth()->check()) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Sesi login telah berakhir. Silakan login kembali.'
+            ], 401);
+        }
+
+        if (!$request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Request tidak valid.'
+            ], 400);
+        }
+
         try {
             // Validasi input dasar - SAMA PERSIS DENGAN BLADE
             $request->validate([
@@ -212,7 +234,8 @@ class VoicePendudukController extends Controller
                 'penduduk_namalengkap' => 'required|string|max:255',
                 'kdjeniskelamin' => 'required|exists:master_jeniskelamin,kdjeniskelamin',
                 'kdagama' => 'required|exists:master_agama,kdagama',
-                'penduduk_tanggallahir' => 'required|date',
+                'penduduk_tanggallahir' => 'required',
+                'penduduk_nourutkk' => 'nullable|string|regex:/^\d{2}$/',
             ]);
 
             // Validasi wilayah datang jika mutasi adalah "datang"
@@ -226,6 +249,22 @@ class VoicePendudukController extends Controller
             }
 
             $data = $request->all();
+            if (!empty($data['penduduk_tanggallahir'])) {
+$data['penduduk_tanggallahir'] = Carbon::parse($data['penduduk_tanggallahir'])->format('Y-m-d');
+
+            }
+
+            // Validasi nomor urut KK
+            if (!empty($data['penduduk_nourutkk'])) {
+                $nourut = (int)$data['penduduk_nourutkk'];
+                if ($nourut < 1 || $nourut > 99) {
+                    return response()->json([
+                        'success' => false,
+                        'error' => 'Nomor urut KK harus antara 1 sampai 99.'
+                    ], 422);
+                }
+                $data['penduduk_nourutkk'] = str_pad($nourut, 2, '0', STR_PAD_LEFT);
+            }
 
             // Mulai transaksi
             return DB::transaction(function () use ($data) {
@@ -263,7 +302,8 @@ class VoicePendudukController extends Controller
                     'kdkecamatan'               => $data['kdkecamatan'] ?? null,
                     'kddesa'                    => $data['kddesa'] ?? null,
 
-                    'penduduk_tanggallahir'     => $data['penduduk_tanggallahir'],
+                    'penduduk_tanggallahir' => $data['penduduk_tanggallahir']?? null,
+
                 ]);
 
                 DataKelahiran::create([
@@ -339,6 +379,19 @@ class VoicePendudukController extends Controller
                 }
                 DataLembagaEkonomi::create($lemek);
 
+                // ==================== SIMPAN VOICE FINGERPRINT ====================
+                if (session()->has('temp_voice_embedding')) {
+                    $fingerprint = session('temp_voice_embedding');
+
+                    VoiceFingerprint::create([
+                        'nik'        => $penduduk->nik,
+                        'no_kk'      => $penduduk->no_kk,
+                        'embedding'  => $fingerprint,
+                    ]);
+
+                    session()->forget('temp_voice_embedding');
+                }
+
                 return response()->json([
                     'success' => true, 
                     'message' => 'Data penduduk berhasil disimpan sepenuhnya!',
@@ -346,32 +399,6 @@ class VoicePendudukController extends Controller
                 ]);
 
             });
-                // ==================== SIMPAN VOICE FINGERPRINT ====================
-                if ($request->has('voice_fingerprint')) {
-                    $fingerprint = json_decode($request->voice_fingerprint, true);
-                    
-                    // Validasi fingerprint valid (array dengan minimal 20 elemen numeric)
-                    // Ganti dari session temp
-                    if (session()->has('temp_voice_embedding')) {
-                        $fingerprint = session('temp_voice_embedding');
-
-                        VoiceFingerprint::create([
-                            'nik'        => $penduduk->nik,              // Hubungkan ke NIK penduduk
-                            'no_kk'      => $penduduk->no_kk,            // Opsional, untuk referensi
-                            'embedding'  => $fingerprint,     // Simpan sebagai JSON di DB
-                        ]);
-
-                        session()->forget('temp_voice_embedding');
-                    } else {
-                        \Log::warning('Voice fingerprint invalid', [
-                        'nik'       => $penduduk->nik,
-                        'no_kk'     => $penduduk->no_kk,
-                        'fingerprint' => $fingerprint
-                        ]);
-                    }
-                }
-
-                return response()->json(['success' => true, 'message' => 'Data berhasil disimpan']);
 
 
         } catch (\Illuminate\Validation\ValidationException $e) {
