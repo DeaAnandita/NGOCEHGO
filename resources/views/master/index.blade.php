@@ -20,7 +20,7 @@
                         'route' => 'agama',
                         'title' => 'Agama',
                         'desc' => 'Kelola data agama',
-                        'icon' => '🕌',
+                        'icon' => 'building-library',
                         'color' => 'blue',
                     ],
                     [
@@ -40,7 +40,7 @@
                     [
                         'route' => 'asetlahan',
                         'title' => 'Aset Lahan',
-                        'desc' => 'Kelola data aset lahan & tanah',
+                        'desc' => 'Kelola data aset lahan dan tanah',
                         'icon' => '🌾',
                         'color' => 'yellow',
                     ],
@@ -862,9 +862,14 @@
             @endphp
 
             @foreach ($cards as $card)
-                <x-master-card route="{{ $card['route'] }}" color="{{ $card['color'] }}" icon="{{ $card['icon'] }}"
-                    title="{{ $card['title'] }}" desc="{{ $card['desc'] }}" />
-            @endforeach
+            <x-master-card
+                route="{{ $card['route'] }}"
+                color="{{ $card['color'] }}"
+                icon="{{ $card['icon'] }}"
+                title="{{ $card['title'] }}"
+                desc="{{ $card['desc'] }}"
+            />
+        @endforeach
 
         </div>
     </div>

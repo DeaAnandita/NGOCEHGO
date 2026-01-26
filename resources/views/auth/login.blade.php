@@ -4,7 +4,7 @@
 
     <style>
 a:hover {
-    color: #0d6efd;
+    color: #0f489d;
 }
 </style>
 
@@ -12,9 +12,9 @@ a:hover {
         @csrf
 
         <a href="/demo-login" class="text-decoration-none">
-            <div class="border rounded p-3 text-center bg-blue-100 mb-4 hover:bg-blue-100 cursor-pointer">
-                <strong>Mode Demo</strong><br>
-                <small class="text-muted">Masuk tanpa login untuk keperluan presentasi</small>
+            <div class="border rounded-lg p-3 text-center bg-blue-900 mb-4 hover:bg-blue-800 cursor-pointer">
+                <strong style="color: white;">Mode Demo</strong><br>
+                <small class="text-muted" style="color: white">Masuk tanpa login untuk keperluan presentasi</small>
             </div>
         </a>
 
