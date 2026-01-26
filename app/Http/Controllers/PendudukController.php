@@ -152,7 +152,7 @@ class PendudukController extends Controller
             'hubungan_kepala_keluargas' => MasterHubunganKepalaKeluarga::all(),
             'status_kawins' => MasterStatusKawin::all(),
             'akta_nikahs' => MasterAktaNikah::all(),
-            'tercantum_dalam_kks' => MasterTercantumDalamKK::all(),
+            'tercantum_dalam_kks' => MasterTercantumDalamKk::all(),
             'status_tinggals' => MasterStatusTinggal::all(),
             'kartu_identitass' => MasterKartuIdentitas::all(),
             'pekerjaans' => MasterPekerjaan::all(),

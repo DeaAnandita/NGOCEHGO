@@ -25,7 +25,7 @@ use App\Models\MasterHubunganKepalaKeluarga;
 use App\Models\MasterHubunganDalamKK;
 use App\Models\MasterStatusKawin;
 use App\Models\MasterAktaNikah;
-use App\Models\MasterTercantumDalamKK;
+use App\Models\;
 use App\Models\MasterStatusTinggal;
 use App\Models\MasterKartuIdentitas;
 use App\Models\MasterPekerjaan;

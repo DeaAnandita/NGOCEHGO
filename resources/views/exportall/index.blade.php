@@ -7,7 +7,7 @@
                class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 
                       text-sm font-medium transition-colors duration-200 
                       border-b-2 border-transparent hover:border-blue-300 pb-1">
-                <x-heroicon-o-arrow-left class="w-4 h-4" />
+                <x-heroicon-o-arrow-left class="w-4 hm-4" />
                 Kembali ke Dashboard
             </a>
         </div>
