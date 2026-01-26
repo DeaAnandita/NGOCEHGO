@@ -148,7 +148,7 @@ class DataPenduduk extends Model
 
     public function tercantumdalamKk()
     {
-        return $this->belongsTo(MasterTercantumDalamKK::class, 'kdtercantumdalamkk', 'kdtercantumdalamkk');
+        return $this->belongsTo(MasterTercantumDalamKk::class, 'kdtercantumdalamkk', 'kdtercantumdalamkk');
     }
 
     public function statustinggal()

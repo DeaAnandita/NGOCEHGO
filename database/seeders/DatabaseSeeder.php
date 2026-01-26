@@ -97,7 +97,7 @@ class DatabaseSeeder extends Seeder
             MasterSumberPeneranganUtamaSeeder::class,
             MasterTempatPersalinanSeeder::class,
             MasterTempatUsahaSeeder::class,
-            MasterTercantumDalamKkSeeder::class,
+            MasterTercantumDalamKKSeeder::class,
             MasterTingkatSulitDisabilitasSeeder::class,
             MasterJawabLahanSeeder::class,
 
