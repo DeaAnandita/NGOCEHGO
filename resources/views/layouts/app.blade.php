@@ -500,13 +500,7 @@
                     </button>
                 </div>
 
-<<<<<<< HEAD
-                <div class="relative">
-                    <button @click="settingsOpen = !settingsOpen" class="flex items-center gap-2 focus:outline-none">
-                        <span>{{ Auth::user()->name }}</span>
-                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-=======
+
                 <div class="relative" 
                      x-data="{ settingsOpen: false }">
                     <button @click="settingsOpen = !settingsOpen" 
@@ -516,21 +510,20 @@
                              :class="settingsOpen ? 'rotate-180' : ''"
                              fill="none" stroke="currentColor" stroke-width="2"
                              viewBox="0 0 24 24">
->>>>>>> 6f2c952 (update)
+
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
 
-<<<<<<< HEAD
+
                     <div x-show="settingsOpen" @click.outside="settingsOpen = false"
                         class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50"
                         x-cloak>
-=======
+
                     <div x-show="settingsOpen" 
                          @click="settingsOpen = false"
                          class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-[100] py-1" 
                          x-transition x-cloak>
->>>>>>> 6f2c952 (update)
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
