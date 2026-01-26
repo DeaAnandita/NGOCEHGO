@@ -13,12 +13,16 @@ class DataUsahaArtSeeder extends Seeder
         DB::table('data_usahaart')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        $nikList = DB::table('data_penduduk')->inRandomOrder()->limit(15)->pluck('nik');
+        // Ambil SEMUA NIK dari data_penduduk
+        $nikList = DB::table('data_penduduk')->pluck('nik');
 
+        $totalPenduduk = count($nikList);
         $records = [];
 
         foreach ($nikList as $index => $nik) {
-            $profil = $this->getProfilUsaha($index + 1);
+            // Gunakan modulo untuk mengulang 15 profil untuk semua penduduk
+            $profilIndex = ($index % 15) + 1;
+            $profil = $this->getProfilUsaha($profilIndex);
 
             $records[] = [
                 'nik'                    => $nik,
@@ -30,7 +34,13 @@ class DataUsahaArtSeeder extends Seeder
             ];
         }
 
-        DB::table('data_usahaart')->insert($records);
+        // Insert dengan batch untuk performa lebih baik
+        $batchSize = 500;
+        for ($i = 0; $i < count($records); $i += $batchSize) {
+            DB::table('data_usahaart')->insert(array_slice($records, $i, $batchSize));
+        }
+        
+        $this->command->info("Data usaha arti berhasil ditambahkan untuk $totalPenduduk penduduk.");
     }
 
     private function getProfilUsaha($no)

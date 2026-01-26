@@ -1,6 +1,6 @@
 <x-app-layout>
     @slot('progresspenduduk')
-        <div class="sticky top-16 left-0 right-0 z-30 bg-white shadow-md border-b">
+        <div class="sticky top-16 left-0 right-0 z-10 bg-white shadow-md border-b">
             <div class="max-w-7xl mx-auto overflow-x-auto scrollbar-hide">
                 <div id="progressSteps" class="flex items-center space-x-6 px-6 py-4 min-w-max">
                     <!-- JS generate -->

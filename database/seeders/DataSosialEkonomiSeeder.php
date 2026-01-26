@@ -13,14 +13,17 @@ class DataSosialEkonomiSeeder extends Seeder
         DB::table('data_sosialekonomi')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Ambil 15 NIK acak dari data_penduduk
-        $nikList = DB::table('data_penduduk')->inRandomOrder()->limit(15)->pluck('nik');
-
+        // Ambil SEMUA NIK dari data_penduduk
+        $nikList = DB::table('data_penduduk')->pluck('nik');
+        
+        $totalPenduduk = count($nikList);
         $records = [];
 
         foreach ($nikList as $index => $nik) {
-            // Kita buat 15 profil yang berbeda-beda tapi sangat realistis
-            $profil = $this->getProfilRealistis($index + 1);
+            // Kita buat profil yang berbeda-beda tapi sangat realistis
+            // Gunakan modulo untuk mengulang 15 profil untuk semua penduduk
+            $profilIndex = ($index % 15) + 1;
+            $profil = $this->getProfilRealistis($profilIndex);
 
             $records[] = [
                 'nik'                        => $nik,
@@ -36,7 +39,13 @@ class DataSosialEkonomiSeeder extends Seeder
             ];
         }
 
-        DB::table('data_sosialekonomi')->insert($records);
+        // Insert dengan batch untuk performa lebih baik
+        $batchSize = 500;
+        for ($i = 0; $i < count($records); $i += $batchSize) {
+            DB::table('data_sosialekonomi')->insert(array_slice($records, $i, $batchSize));
+        }
+        
+        $this->command->info("Data sosial ekonomi berhasil ditambahkan untuk $totalPenduduk penduduk.");
     }
 
     private function getProfilRealistis($no)

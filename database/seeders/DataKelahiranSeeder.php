@@ -14,9 +14,11 @@ class DataKelahiranSeeder extends Seeder
         DB::table('data_kelahiran')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Ambil 15 NIK dari data_penduduk (anggap 15 bayi lahir)
-        $nikList = DB::table('data_penduduk')->limit(15)->pluck('nik');
-
+        // Ambil SEMUA NIK dari data_penduduk
+        $nikList = DB::table('data_penduduk')->pluck('nik');
+        $allNik = $nikList->toArray(); // Untuk random selection ibu dan ayah
+        
+        $totalPenduduk = count($nikList);
         $records = [];
 
         foreach ($nikList as $index => $nik) {
@@ -29,12 +31,18 @@ class DataKelahiranSeeder extends Seeder
                 'kelahiran_kelahiranke' => fake()->numberBetween(1, 4),
                 'kelahiran_berat' => fake()->numberBetween(2700, 4000), // gram
                 'kelahiran_panjang' => fake()->numberBetween(45, 55),   // cm
-                'kelahiran_nikibu' => DB::table('data_penduduk')->inRandomOrder()->value('nik'),
-                'kelahiran_nikayah' => DB::table('data_penduduk')->inRandomOrder()->value('nik'),
+                'kelahiran_nikibu' => $allNik[array_rand($allNik)],
+                'kelahiran_nikayah' => $allNik[array_rand($allNik)],
                 'created_by' => 1,
             ];
         }
 
-        DB::table('data_kelahiran')->insert($records);
+        // Insert dengan batch untuk performa lebih baik
+        $batchSize = 500;
+        for ($i = 0; $i < count($records); $i += $batchSize) {
+            DB::table('data_kelahiran')->insert(array_slice($records, $i, $batchSize));
+        }
+        
+        $this->command->info("Data kelahiran berhasil ditambahkan untuk $totalPenduduk penduduk.");
     }
 }

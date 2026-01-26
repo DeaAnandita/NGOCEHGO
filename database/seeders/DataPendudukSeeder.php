@@ -76,7 +76,9 @@ class DataPendudukSeeder extends Seeder
         $dataPendudukBatch = [];
 
         foreach ($this->wilayah as $rw => $info) {
+        $rw3 = str_pad($rw, 3, '0', STR_PAD_LEFT);
             foreach ($info['rt'] as $rt => $jumlahKKdiRT) {
+                $rt3 = str_pad($rt, 3, '0', STR_PAD_LEFT);
                 for ($i = 0; $i < $jumlahKKdiRT; $i++) {
                     $kkCounter++;
                     $noKK = '3319012001' . str_pad($kkCounter, 6, '0', STR_PAD_LEFT);
@@ -109,7 +111,7 @@ class DataPendudukSeeder extends Seeder
                         ? $this->namaPria[array_rand($this->namaPria)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)]
                         : $this->namaWanita[array_rand($this->namaWanita)] . ' ' . $this->namaBelakang[array_rand($this->namaBelakang)];
 
-                    $alamatLengkap = "Dusun {$dusunNama}, RT {$rt}/RW {$rw}, Desa Kaliwungu";
+                    $alamatLengkap = "Dusun {$dusunNama}, RT {$rt3}/RW {$rw3}, Desa Kaliwungu";
 
                     $dataKeluarga[] = [
                         'no_kk' => $noKK,
@@ -117,8 +119,8 @@ class DataPendudukSeeder extends Seeder
                         'keluarga_tanggalmutasi' => now(),
                         'keluarga_kepalakeluarga' => $namaKK,
                         'kddusun' => $kddusunId,
-                        'keluarga_rw' => $rw,
-                        'keluarga_rt' => $rt,
+                        'keluarga_rw' => $rw3,
+                        'keluarga_rt' => $rt3,
                         'keluarga_alamatlengkap' => $alamatLengkap,
                         'kdprovinsi' => $provAsal,
                         'kdkabupaten' => $kabAsal,
