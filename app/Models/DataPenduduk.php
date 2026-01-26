@@ -146,7 +146,7 @@ class DataPenduduk extends Model
         return $this->belongsTo(MasterAktaNikah::class, 'kdaktanikah', 'kdaktanikah');
     }
 
-    public function tercantumdalamKK()
+    public function tercantumdalamKk()
     {
         return $this->belongsTo(MasterTercantumDalamKK::class, 'kdtercantumdalamkk', 'kdtercantumdalamkk');
     }

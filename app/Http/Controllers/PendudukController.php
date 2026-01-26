@@ -11,7 +11,7 @@ use App\Models\MasterHubunganKeluarga;
 use App\Models\MasterHubunganKepalaKeluarga;
 use App\Models\MasterStatusKawin;
 use App\Models\MasterAktaNikah;
-use App\Models\MasterTercantumDalamKK;
+use App\Models\MasterTercantumDalamKk;
 use App\Models\MasterStatusTinggal;
 use App\Models\MasterKartuIdentitas;
 use App\Models\MasterPekerjaan;
@@ -83,7 +83,7 @@ class PendudukController extends Controller
             'hubungan_kepala_keluargas' => MasterHubunganKepalaKeluarga::all(),
             'status_kawins' => MasterStatusKawin::all(),
             'akta_nikahs' => MasterAktaNikah::all(),
-            'tercantum_dalam_kks' => MasterTercantumDalamKK::all(),
+            'tercantum_dalam_kks' => MasterTercantumDalamKk::all(),
             'status_tinggals' => MasterStatusTinggal::all(),
             'kartu_identitass' => MasterKartuIdentitas::all(),
             'pekerjaans' => MasterPekerjaan::all(),

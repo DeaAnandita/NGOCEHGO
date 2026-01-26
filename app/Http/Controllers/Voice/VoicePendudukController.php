@@ -21,7 +21,7 @@ use App\Models\MasterHubunganKeluarga;
 use App\Models\MasterHubunganKepalaKeluarga;
 use App\Models\MasterStatusKawin;
 use App\Models\MasterAktaNikah;
-use App\Models\MasterTercantumDalamKK;
+use App\Models\MasterTercantumDalamKk;
 use App\Models\MasterStatusTinggal;
 use App\Models\MasterKartuIdentitas;
 use App\Models\MasterPekerjaan;
@@ -76,7 +76,7 @@ class VoicePendudukController extends Controller
             'hubungan_kepala_keluarga' => MasterHubunganKepalaKeluarga::pluck('hubungankepalakeluarga', 'kdhubungankepalakeluarga'),
             'status_kawin' => MasterStatusKawin::pluck('statuskawin', 'kdstatuskawin'),
             'akta_nikah' => MasterAktaNikah::pluck('aktanikah', 'kdaktanikah'),
-            'tercantum_kk' => MasterTercantumDalamKK::pluck('tercantumdalamkk', 'kdtercantumdalamkk'),
+            'tercantum_kk' => MasterTercantumDalamKk::pluck('tercantumdalamkk', 'kdtercantumdalamkk'),
             'status_tinggal' => MasterStatusTinggal::pluck('statustinggal', 'kdstatustinggal'),
             'kartu_identitas' => MasterKartuIdentitas::pluck('kartuidentitas', 'kdkartuidentitas'),
             'pekerjaan' => MasterPekerjaan::pluck('pekerjaan', 'kdpekerjaan'),
