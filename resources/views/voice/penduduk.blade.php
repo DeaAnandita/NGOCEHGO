@@ -235,12 +235,8 @@
             {type:"select",label:"Apakah bapak/ibu pengurus satgas kebersihan?",field:"lemmas_43",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus satgas kebakaran?",field:"lemmas_45",options:masters.jawab_lemmas},
             {type:"select",label:"Apakah bapak/ibu pengurus posko bencana?",field:"lemmas_47",options:masters.jawab_lemmas}
-<<<<<<< HEAD
             ];
-=======
->>>>>>> 266a794 (update merge)
 
-        // MODUL 8: LEMBAGA EKONOMI
         // MODUL 8: LEMBAGA EKONOMI
         questions[8] = [
             {type:"select",label:"Apakah memiliki atau terlibat dalam Koperasi?",field:"lemek_1",options:masters.jawab_lemek},
